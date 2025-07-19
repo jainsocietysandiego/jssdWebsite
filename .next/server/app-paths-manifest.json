@@ -1,13 +1,5 @@
 {
-  "/_not-found/page": "app/_not-found/page.js",
-  "/about/page": "app/about/page.js",
-  "/jinalay/page": "app/jinalay/page.js",
-  "/events/page": "app/events/page.js",
-  "/gallery/page": "app/gallery/page.js",
-  "/feedback/page": "app/feedback/page.js",
-  "/pathsala/[level]/page": "app/pathsala/[level]/page.js",
-  "/page": "app/page.js",
   "/pathsala/page": "app/pathsala/page.js",
-  "/contribute/page": "app/contribute/page.js",
-  "/membership/page": "app/membership/page.js"
+  "/page": "app/page.js",
+  "/about/page": "app/about/page.js"
 }

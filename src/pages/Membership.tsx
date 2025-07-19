@@ -58,12 +58,34 @@ const Membership: React.FC = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Here you would normally send the data to your backend
-    console.log('Form submitted:', formData);
-    setIsSubmitted(true);
-  };
+ const handleSubmit = (e: React.FormEvent) => {
+  e.preventDefault();
+
+  const form = new FormData();
+  Object.entries(formData).forEach(([key, value]) => {
+    if (Array.isArray(value)) {
+      form.append(key, value.join(", "));
+    } else {
+      form.append(key, value.toString());
+    }
+  });
+
+  fetch('https://script.google.com/macros/s/AKfycbywpX9zAQha4bTnmTBNksCafu6IAHe1U1oHgxWqlspDZHpZbl1oYB_v3UQCO9MKyKUaKQ/exec', {
+    method: 'POST',
+    mode: 'no-cors',
+    body: form
+  })
+    .then(() => {
+      setIsSubmitted(true);  // Optimistically assume success
+    })
+    .catch((error) => {
+      console.error('Error submitting form:', error);
+      alert("An error occurred. Please try again later.");
+    });
+};
+
+
+
 
   if (isSubmitted) {
     return (

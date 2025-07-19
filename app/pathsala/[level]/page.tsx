@@ -11,7 +11,7 @@ interface PathsalaLevelProps {
 
 const PathsalaLevel: React.FC<PathsalaLevelProps> = ({ params }) => {
   const { level } = params;
-  
+
   const levelData: Record<string, any> = {
     'level-1': {
       title: 'Foundation Level',
@@ -221,122 +221,74 @@ const PathsalaLevel: React.FC<PathsalaLevelProps> = ({ params }) => {
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50">
       <Navbar />
       <main>
+        {/* Header */}
         <div className="pt-16">
-          <div className="bg-gradient-to-r from-orange-600 to-orange-700 text-white py-20">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-              <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                Pathshala Level {levelNumber}
-              </h1>
-              <h2 className="text-2xl mb-4">{currentLevel.title}</h2>
-              <p className="text-xl opacity-90 max-w-3xl mx-auto">
-                {currentLevel.description}
-              </p>
-            </div>
+          <div className="bg-gradient-to-r from-orange-600 to-orange-700 text-white py-20 text-center">
+            <h1 className="text-4xl md:text-5xl font-bold mb-6">Pathshala Level {levelNumber}</h1>
+            <h2 className="text-2xl mb-4">{currentLevel.title}</h2>
+            <p className="text-xl opacity-90 max-w-3xl mx-auto">{currentLevel.description}</p>
           </div>
 
+          {/* Main Content */}
           <section className="py-20 bg-white">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-2">
-                  <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
-                    <h3 className="text-2xl font-bold text-gray-900 mb-6">Class Overview</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="flex items-center">
-                        <Users className="h-6 w-6 text-orange-600 mr-3" />
-                        <div>
-                          <p className="font-medium text-gray-900">Age Group</p>
-                          <p className="text-gray-600">{currentLevel.ageGroup}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center">
-                        <Clock className="h-6 w-6 text-orange-600 mr-3" />
-                        <div>
-                          <p className="font-medium text-gray-900">Duration</p>
-                          <p className="text-gray-600">{currentLevel.duration}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center">
-                        <User className="h-6 w-6 text-orange-600 mr-3" />
-                        <div>
-                          <p className="font-medium text-gray-900">Teacher</p>
-                          <p className="text-gray-600">{currentLevel.teacher}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center">
-                        <BookOpen className="h-6 w-6 text-orange-600 mr-3" />
-                        <div>
-                          <p className="font-medium text-gray-900">Enrolled Students</p>
-                          <p className="text-gray-600">{currentLevel.students} students</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
-                    <h3 className="text-2xl font-bold text-gray-900 mb-6">Syllabus</h3>
-                    <div className="space-y-3">
-                      {currentLevel.syllabus.map((item: string, index: number) => (
-                        <div key={index} className="flex items-start">
-                          <div className="bg-orange-600 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold text-sm mr-3 mt-1">
-                            {index + 1}
-                          </div>
-                          <p className="text-gray-700">{item}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="bg-white rounded-lg shadow-lg p-8">
-                    <h3 className="text-2xl font-bold text-gray-900 mb-6">Class Resources</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {currentLevel.resources.map((resource: string, index: number) => (
-                        <div key={index} className="flex items-center bg-orange-50 p-4 rounded-lg">
-                          <BookOpen className="h-5 w-5 text-orange-600 mr-3" />
-                          <span className="text-gray-700">{resource}</span>
-                        </div>
-                      ))}
-                    </div>
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Left Section */}
+              <div className="lg:col-span-2 space-y-8">
+                {/* Class Overview */}
+                <div className="bg-white rounded-lg shadow-lg p-8">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-6">Class Overview</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <OverviewItem icon={Users} label="Age Group" value={currentLevel.ageGroup} />
+                    <OverviewItem icon={Clock} label="Duration" value={currentLevel.duration} />
+                    <OverviewItem icon={User} label="Teacher" value={currentLevel.teacher} />
+                    <OverviewItem icon={BookOpen} label="Enrolled Students" value={`${currentLevel.students} students`} />
                   </div>
                 </div>
 
-                <div className="lg:col-span-1">
-                  <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
-                    <h3 className="text-2xl font-bold text-gray-900 mb-6">Class Timings</h3>
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-center border-b pb-2">
-                        <span className="font-medium">Start Time</span>
-                        <span className="text-gray-600">{currentLevel.timings.start}</span>
+                {/* Syllabus */}
+                <div className="bg-white rounded-lg shadow-lg p-8">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-6">Syllabus</h3>
+                  <div className="space-y-3">
+                    {currentLevel.syllabus.map((item: string, index: number) => (
+                      <div key={index} className="flex items-start">
+                        <div className="bg-orange-600 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold text-sm mr-3 mt-1">{index + 1}</div>
+                        <p className="text-gray-700">{item}</p>
                       </div>
-                      <div className="flex justify-between items-center border-b pb-2">
-                        <span className="font-medium">End Time</span>
-                        <span className="text-gray-600">{currentLevel.timings.end}</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="font-medium">Break Time</span>
-                        <span className="text-gray-600">{currentLevel.timings.breakTime}</span>
-                      </div>
-                    </div>
+                    ))}
                   </div>
+                </div>
 
-                  <div className="bg-orange-50 rounded-lg p-6">
-                    <h3 className="text-xl font-bold text-gray-900 mb-4">Interested in Joining?</h3>
-                    <p className="text-gray-600 mb-4">
-                      Register for this level or contact us for more information about our Pathshala program.
-                    </p>
-                    <div className="space-y-3">
-                      <a
-                        href="/membership"
-                        className="w-full bg-orange-600 hover:bg-orange-700 text-white py-2 px-4 rounded-lg font-medium transition-colors text-center block"
-                      >
-                        Register Now
-                      </a>
-                      <a
-                        href="/feedback"
-                        className="w-full bg-white hover:bg-gray-50 text-orange-600 border border-orange-600 py-2 px-4 rounded-lg font-medium transition-colors text-center block"
-                      >
-                        Ask Questions
-                      </a>
-                    </div>
+                {/* Resources */}
+                <div className="bg-white rounded-lg shadow-lg p-8">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-6">Class Resources</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {currentLevel.resources.map((resource: string, index: number) => (
+                      <div key={index} className="flex items-center bg-orange-50 p-4 rounded-lg">
+                        <BookOpen className="h-5 w-5 text-orange-600 mr-3" />
+                        <span className="text-gray-700">{resource}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Section */}
+              <div>
+                <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-6">Class Timings</h3>
+                  <div className="space-y-4">
+                    <TimeItem label="Start Time" value={currentLevel.timings.start} />
+                    <TimeItem label="End Time" value={currentLevel.timings.end} />
+                    <TimeItem label="Break Time" value={currentLevel.timings.breakTime} />
+                  </div>
+                </div>
+
+                <div className="bg-orange-50 rounded-lg p-6">
+                  <h3 className="text-xl font-bold text-gray-900 mb-4">Interested in Joining?</h3>
+                  <p className="text-gray-600 mb-4">Register for this level or contact us for more information about our Pathshala program.</p>
+                  <div className="space-y-3">
+                    <a href="/membership" className="block bg-orange-600 hover:bg-orange-700 text-white py-2 px-4 rounded-lg font-medium text-center">Register Now</a>
+                    <a href="/feedback" className="block bg-white hover:bg-gray-50 text-orange-600 border border-orange-600 py-2 px-4 rounded-lg font-medium text-center">Ask Questions</a>
                   </div>
                 </div>
               </div>
@@ -350,3 +302,38 @@ const PathsalaLevel: React.FC<PathsalaLevelProps> = ({ params }) => {
 };
 
 export default PathsalaLevel;
+
+// 🔧 Add this to support static export builds
+export async function generateStaticParams() {
+  return [
+    { level: 'level-1' },
+    { level: 'level-2' },
+    { level: 'level-3' },
+    { level: 'level-4' },
+    { level: 'level-5' },
+    { level: 'level-6' },
+    { level: 'level-7' }
+  ];
+}
+
+// 🔧 Optional components for cleaner code
+function OverviewItem({ icon: Icon, label, value }: any) {
+  return (
+    <div className="flex items-center">
+      <Icon className="h-6 w-6 text-orange-600 mr-3" />
+      <div>
+        <p className="font-medium text-gray-900">{label}</p>
+        <p className="text-gray-600">{value}</p>
+      </div>
+    </div>
+  );
+}
+
+function TimeItem({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex justify-between items-center border-b pb-2">
+      <span className="font-medium">{label}</span>
+      <span className="text-gray-600">{value}</span>
+    </div>
+  );
+}

@@ -31,13 +31,13 @@
       "static/chunks/777-ea18abd5f396d155.js",
       "static/chunks/app/jinalay/page-c6d09783c89cfd76.js"
     ],
-    "/contribute/page": [
+    "/events/page": [
       "static/chunks/webpack-c81f7fd28659d64f.js",
       "static/chunks/fd9d1056-cce117dc4e21e608.js",
       "static/chunks/117-ad13867fd29e94d4.js",
       "static/chunks/main-app-d817bd9d5bd4efbb.js",
       "static/chunks/777-ea18abd5f396d155.js",
-      "static/chunks/app/contribute/page-df67d937689059ad.js"
+      "static/chunks/app/events/page-0a052beb3ba426f5.js"
     ],
     "/gallery/page": [
       "static/chunks/webpack-c81f7fd28659d64f.js",
@@ -47,13 +47,21 @@
       "static/chunks/777-ea18abd5f396d155.js",
       "static/chunks/app/gallery/page-6bedc703c44c7d18.js"
     ],
-    "/events/page": [
+    "/feedback/page": [
       "static/chunks/webpack-c81f7fd28659d64f.js",
       "static/chunks/fd9d1056-cce117dc4e21e608.js",
       "static/chunks/117-ad13867fd29e94d4.js",
       "static/chunks/main-app-d817bd9d5bd4efbb.js",
       "static/chunks/777-ea18abd5f396d155.js",
-      "static/chunks/app/events/page-0a052beb3ba426f5.js"
+      "static/chunks/app/feedback/page-8f254cb862c4b557.js"
+    ],
+    "/pathsala/[level]/page": [
+      "static/chunks/webpack-c81f7fd28659d64f.js",
+      "static/chunks/fd9d1056-cce117dc4e21e608.js",
+      "static/chunks/117-ad13867fd29e94d4.js",
+      "static/chunks/main-app-d817bd9d5bd4efbb.js",
+      "static/chunks/777-ea18abd5f396d155.js",
+      "static/chunks/app/pathsala/[level]/page-e6ed9dc5a1682518.js"
     ],
     "/page": [
       "static/chunks/webpack-c81f7fd28659d64f.js",
@@ -71,21 +79,13 @@
       "static/chunks/777-ea18abd5f396d155.js",
       "static/chunks/app/pathsala/page-ac6007598181cbb2.js"
     ],
-    "/pathsala/[level]/page": [
+    "/contribute/page": [
       "static/chunks/webpack-c81f7fd28659d64f.js",
       "static/chunks/fd9d1056-cce117dc4e21e608.js",
       "static/chunks/117-ad13867fd29e94d4.js",
       "static/chunks/main-app-d817bd9d5bd4efbb.js",
       "static/chunks/777-ea18abd5f396d155.js",
-      "static/chunks/app/pathsala/[level]/page-e6ed9dc5a1682518.js"
-    ],
-    "/feedback/page": [
-      "static/chunks/webpack-c81f7fd28659d64f.js",
-      "static/chunks/fd9d1056-cce117dc4e21e608.js",
-      "static/chunks/117-ad13867fd29e94d4.js",
-      "static/chunks/main-app-d817bd9d5bd4efbb.js",
-      "static/chunks/777-ea18abd5f396d155.js",
-      "static/chunks/app/feedback/page-8f254cb862c4b557.js"
+      "static/chunks/app/contribute/page-df67d937689059ad.js"
     ],
     "/membership/page": [
       "static/chunks/webpack-c81f7fd28659d64f.js",

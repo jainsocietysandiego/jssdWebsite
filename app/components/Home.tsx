@@ -187,6 +187,25 @@ const Home: React.FC = () => {
             </div>
           </section>
 
+          <section className="bg-white py-16">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+              <h2 className="text-4xl font-bold text-orange-700 mb-6">
+                Announcements & JCNC Calendar
+              </h2>
+              <div className="flex justify-center">
+                <iframe
+                  src="https://calendar.google.com/calendar/embed?src=1066179e4aeb00253564961a28bb63dfe7c58ee0b4e4dd00a8117e2ee1325143%40group.calendar.google.com&ctz=UTC"
+                  style={{ border: 0 }}
+                  width="100%"
+                  height="600"
+                  frameBorder="0"
+                  scrolling="no"
+                  className="max-w-4xl w-full rounded shadow-lg"
+                ></iframe>
+              </div>
+            </div>
+          </section>
+
           <section className="bg-orange-50 py-16">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-8 items-center">
               {/* Feedback Heading */}

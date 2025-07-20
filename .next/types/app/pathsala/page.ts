@@ -1,4 +1,4 @@
-// File: C:\Users\KEYUR JAIN\Desktop\Playground\JSSD Next\NGO_jain\app\pathsala\page.tsx
+// File: D:\Projects\NGO\NGO_jain\app\pathsala\page.tsx
 import * as entry from '../../../../app/pathsala/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

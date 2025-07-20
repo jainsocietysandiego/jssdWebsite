@@ -502,6 +502,9 @@ video {
 [hidden]:where(:not([hidden="until-found"])) {
   display: none;
 }
+.static {
+  position: static;
+}
 .fixed {
   position: fixed;
 }
@@ -638,6 +641,9 @@ video {
 .h-1 {
   height: 0.25rem;
 }
+.h-10 {
+  height: 2.5rem;
+}
 .h-12 {
   height: 3rem;
 }
@@ -646,6 +652,9 @@ video {
 }
 .h-2 {
   height: 0.5rem;
+}
+.h-20 {
+  height: 5rem;
 }
 .h-3 {
   height: 0.75rem;
@@ -671,6 +680,9 @@ video {
 .h-96 {
   height: 24rem;
 }
+.h-\[300px\] {
+  height: 300px;
+}
 .h-auto {
   height: auto;
 }
@@ -686,6 +698,12 @@ video {
 .min-h-screen {
   min-height: 100vh;
 }
+.w-1\/2 {
+  width: 50%;
+}
+.w-1\/3 {
+  width: 33.333333%;
+}
 .w-11\/12 {
   width: 91.666667%;
 }
@@ -698,20 +716,41 @@ video {
 .w-2 {
   width: 0.5rem;
 }
+.w-2\/3 {
+  width: 66.666667%;
+}
 .w-24 {
   width: 6rem;
 }
 .w-3 {
   width: 0.75rem;
 }
+.w-3\/4 {
+  width: 75%;
+}
+.w-32 {
+  width: 8rem;
+}
+.w-36 {
+  width: 9rem;
+}
 .w-4 {
   width: 1rem;
+}
+.w-4\/5 {
+  width: 80%;
+}
+.w-44 {
+  width: 11rem;
 }
 .w-48 {
   width: 12rem;
 }
 .w-5 {
   width: 1.25rem;
+}
+.w-52 {
+  width: 13rem;
 }
 .w-6 {
   width: 1.5rem;
@@ -721,6 +760,15 @@ video {
 }
 .w-full {
   width: 100%;
+}
+.w-20 {
+  width: 5rem;
+}
+.w-28 {
+  width: 7rem;
+}
+.w-3\/5 {
+  width: 60%;
 }
 .max-w-2xl {
   max-width: 42rem;
@@ -750,6 +798,15 @@ video {
 }
 .transform {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+@keyframes pulse {
+
+  50% {
+    opacity: .5;
+  }
+}
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 .cursor-pointer {
   cursor: pointer;
@@ -975,6 +1032,14 @@ video {
 .bg-orange-100 {
   --tw-bg-opacity: 1;
   background-color: rgb(255 237 213 / var(--tw-bg-opacity, 1));
+}
+.bg-orange-200 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(254 215 170 / var(--tw-bg-opacity, 1));
+}
+.bg-orange-300 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(253 186 116 / var(--tw-bg-opacity, 1));
 }
 .bg-orange-50 {
   --tw-bg-opacity: 1;
@@ -1508,6 +1573,14 @@ video {
     display: none;
   }
 
+  .md\:h-20 {
+    height: 5rem;
+  }
+
+  .md\:h-\[600px\] {
+    height: 600px;
+  }
+
   .md\:w-3\/4 {
     width: 75%;
   }
@@ -1549,10 +1622,6 @@ video {
   }
 }
 @media (min-width: 1024px) {
-
-  .lg\:col-span-1 {
-    grid-column: span 1 / span 1;
-  }
 
   .lg\:col-span-2 {
     grid-column: span 2 / span 2;

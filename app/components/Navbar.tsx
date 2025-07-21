@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Menu, X, ChevronDown } from 'lucide-react';
@@ -8,7 +8,9 @@ import { Menu, X, ChevronDown } from 'lucide-react';
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [showPathsalaDropdown, setShowPathsalaDropdown] = useState(false);
+  const [hoveredDropdown, setHoveredDropdown] = useState<string | null>(null);
+  const dropdownTimeout = useRef<NodeJS.Timeout | null>(null); // 🧠 Timeout for delayed hide
+
   const pathname = usePathname();
 
   useEffect(() => {
@@ -24,10 +26,10 @@ const Navbar: React.FC = () => {
     { name: 'Home', path: '/' },
     { name: 'About', path: '/about' },
     { name: 'Pathshala', path: '/pathsala', hasDropdown: true },
-    { name: 'Contribute', path: '/contribute' },
+    { name: 'Donate', path: '/contribute' },
     { name: 'Events', path: '/events' },
     { name: 'Gallery', path: '/gallery' },
-    { name: 'Membership', path: '/membership' },
+    { name: 'Membership', path: '/membership', hasDropdown: true },
     { name: 'Feedback', path: '/feedback' },
     { name: 'Jinalay', path: '/jinalay' },
   ];
@@ -41,6 +43,29 @@ const Navbar: React.FC = () => {
     { name: 'Level 6', path: '/pathsala/level-6' },
     { name: 'Level 7', path: '/pathsala/level-7' },
   ];
+
+  const membershipOptions = [
+    { name: 'Subscribe to mailing list', path: '/membership/subscribe' },
+    { name: 'Newsletter', path: '/membership/newsletter' },
+  ];
+
+  const getDropdownItems = (itemName: string) => {
+    if (itemName === 'Pathshala') return pathsalaLevels;
+    if (itemName === 'Membership') return membershipOptions;
+    return [];
+  };
+
+  // 🧠 Dropdown delay logic
+  const handleMouseEnter = (name: string) => {
+    if (dropdownTimeout.current) clearTimeout(dropdownTimeout.current);
+    setHoveredDropdown(name);
+  };
+
+  const handleMouseLeave = () => {
+    dropdownTimeout.current = setTimeout(() => {
+      setHoveredDropdown(null);
+    }, 300); // 300ms delay
+  };
 
   return (
     <nav className={`fixed w-full z-50 transition-all duration-300 ${
@@ -57,13 +82,14 @@ const Navbar: React.FC = () => {
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-8">
               {navItems.map((item) => (
-                <div key={item.name} className="relative">
+                <div
+                  key={item.name}
+                  className="relative"
+                  onMouseEnter={() => item.hasDropdown && handleMouseEnter(item.name)}
+                  onMouseLeave={() => item.hasDropdown && handleMouseLeave()}
+                >
                   {item.hasDropdown ? (
-                    <div
-                      className="relative"
-                      onMouseEnter={() => setShowPathsalaDropdown(true)}
-                      onMouseLeave={() => setShowPathsalaDropdown(false)}
-                    >
+                    <>
                       <Link
                         href={item.path}
                         className={`flex items-center px-3 py-2 text-sm font-medium transition-colors ${
@@ -75,22 +101,23 @@ const Navbar: React.FC = () => {
                         {item.name}
                         <ChevronDown className="ml-1 h-4 w-4" />
                       </Link>
-                      {showPathsalaDropdown && (
-                        <div className="absolute left-0 mt-1 w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5">
+
+                      {hoveredDropdown === item.name && (
+                        <div className="absolute left-0 mt-1 w-56 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50">
                           <div className="py-1">
-                            {pathsalaLevels.map((level) => (
+                            {getDropdownItems(item.name).map((opt) => (
                               <Link
-                                key={level.name}
-                                href={level.path}
+                                key={opt.name}
+                                href={opt.path}
                                 className="block px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors"
                               >
-                                {level.name}
+                                {opt.name}
                               </Link>
                             ))}
                           </div>
                         </div>
                       )}
-                    </div>
+                    </>
                   ) : (
                     <Link
                       href={item.path}

@@ -100,6 +100,7 @@ const HomeSkeleton = () => (
           </div>
         </div>
       </section>
+      
 
       {/* Skeleton CTA */}
       <section className="py-20 bg-gradient-to-r from-orange-600 to-orange-700 text-white">

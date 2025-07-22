@@ -4,156 +4,61 @@ import { ChevronLeft, ChevronRight, ArrowDown } from "lucide-react";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 
-// API and cache constants
 const API_URL =
   "https://script.google.com/macros/s/AKfycbzN9-QOSlSBd5GWQqfnBljehPnKYiGHAbYbs3MjKVA3Bs4MPQO6X6UF5k-oh6UCOwMaTA/exec";
 const CACHE_KEY = "homepage-api";
-const CACHE_TTL = 10 * 60 * 1000; // 10 minutes
+const CACHE_TTL = 1 * 60 * 1000; // 10 minutes
 
-// Skeleton Loader Component
-const HomeSkeleton = () => (
-  <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 animate-pulse">
-    <Navbar />
-    <div className="pt-16">
-      {/* Skeleton Header */}
-      <div className="bg-gradient-to-r from-orange-600 to-orange-700 text-center py-6">
-        <div className="h-10 w-1/2 mx-auto rounded bg-orange-300" />
-      </div>
-
-      {/* Skeleton Hero */}
-      <section className="relative h-screen overflow-hidden">
-        <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-gray-200" />
-        </div>
-        <div className="relative z-10 flex items-center justify-center h-full">
-          <div className="text-center px-4 max-w-4xl w-full">
-            <div className="h-12 md:h-20 w-3/4 mx-auto mb-6 rounded bg-orange-200" />
-            <div className="h-6 w-1/2 mx-auto mb-8 rounded bg-orange-100" />
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <div className="h-10 w-36 rounded bg-orange-200" />
-              <div className="h-10 w-44 rounded bg-orange-200" />
-              <div className="h-10 w-52 rounded bg-orange-200" />
-            </div>
-          </div>
-        </div>
-        {/* Carousel bullets */}
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="w-3 h-3 bg-orange-200 rounded-full" />
-          ))}
-        </div>
-      </section>
-
-      {/* Skeleton About */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <div className="h-10 w-1/3 mx-auto rounded bg-orange-100 mb-4" />
-            <div className="h-1 w-24 bg-orange-200 mx-auto mb-8" />
-          </div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-              <div className="h-6 w-full bg-orange-100 rounded" />
-              <div className="h-20 w-2/3 bg-orange-50 rounded mb-6" />
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                {[1, 2, 3, 4].map((_, i) => (
-                  <div className="p-6 bg-gray-50 rounded-lg" key={i}>
-                    <div className="h-8 w-16 bg-orange-200 rounded mb-2 mx-auto" />
-                    <div className="h-4 w-24 bg-orange-100 mx-auto rounded" />
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="bg-gradient-to-r from-orange-400 to-amber-400 p-8 rounded-lg shadow-lg">
-              {[1,2,3].map((_, i) => (
-                <div className="h-4 w-4/5 bg-orange-200 mb-4 rounded" key={i}/>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Skeleton Calendar */}
-      <section className="bg-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="h-10 w-2/3 bg-orange-100 rounded mx-auto mb-6" />
-          <div className="flex justify-center">
-            <div className="w-full max-w-4xl h-[300px] md:h-[600px] rounded bg-orange-50" />
-          </div>
-        </div>
-      </section>
-
-      {/* Skeleton Feedback */}
-      <section className="bg-orange-50 py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-8 items-center">
-          <div>
-            <div className="h-10 w-2/3 bg-orange-200 rounded mb-4" />
-          </div>
-          <div>
-            <div className="space-y-4">
-              <div className="h-10 bg-orange-100 w-full rounded"></div>
-              <div className="h-10 bg-orange-100 w-full rounded"></div>
-              <div className="h-10 bg-orange-100 w-full rounded"></div>
-              <div className="h-20 bg-orange-100 w-full rounded"></div>
-              <div className="h-10 bg-orange-200 w-full rounded"></div>
-            </div>
-          </div>
-        </div>
-      </section>
-      
-
-      {/* Skeleton CTA */}
-      <section className="py-20 bg-gradient-to-r from-orange-600 to-orange-700 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="h-10 w-3/4 mx-auto rounded bg-orange-300 mb-6" />
-          <div className="h-6 w-1/2 mx-auto mb-8 rounded bg-orange-200" />
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <div className="h-10 w-32 rounded bg-orange-200" />
-            <div className="h-10 w-32 rounded bg-orange-200" />
-          </div>
-        </div>
-      </section>
-    </div>
-    <Footer />
-  </div>
-);
-
-// --- Main Home Page Component ---
 const Home: React.FC = () => {
   const [data, setData] = useState<any>(null);
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  // Load data from cache or fetch, with TTL
+  // Load from localStorage or /homepage.json
   useEffect(() => {
-    const cached = localStorage.getItem(CACHE_KEY);
-    let shouldFetch = true;
-    if (cached) {
-      try {
-        const { data: cachedData, timestamp } = JSON.parse(cached);
-        if (Date.now() - timestamp < CACHE_TTL) {
-          setData(cachedData); // use cache first!
-          shouldFetch = false;
+    const loadData = async () => {
+      let shouldFetch = true;
+
+      // 1. Try from localStorage
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (cached) {
+        try {
+          const { data: cachedData, timestamp } = JSON.parse(cached);
+          if (Date.now() - timestamp < CACHE_TTL) {
+            setData(cachedData);
+            shouldFetch = false;
+          }
+        } catch {
+          // corrupted cache
         }
-      } catch {
-        // ignore corrupted cache
       }
-    }
-    // Always fetch to update cache
-    fetch(API_URL)
-      .then((res) => res.json())
-      .then((apiData) => {
-        setData(apiData);
-        localStorage.setItem(
-          CACHE_KEY,
-          JSON.stringify({
-            data: apiData,
-            timestamp: Date.now(),
+
+      // 2. If still no data, load from public/homepage.json
+      if (!cached || shouldFetch) {
+        if (!data) {
+          const fallback = await fetch("/homepage.json")
+            .then((res) => res.json())
+            .catch(() => null);
+          if (fallback) setData(fallback);
+        }
+
+        // 3. Fetch fresh data in background
+        fetch(API_URL)
+          .then((res) => res.json())
+          .then((liveData) => {
+            setData(liveData);
+            localStorage.setItem(
+              CACHE_KEY,
+              JSON.stringify({ data: liveData, timestamp: Date.now() })
+            );
           })
-        );
-      });
+          .catch(() => {});
+      }
+    };
+
+    loadData();
   }, []);
 
-  // Image preloading for slides
+  // Preload slide images
   useEffect(() => {
     if (data?.slides) {
       data.slides.forEach((slide: any) => {
@@ -163,43 +68,41 @@ const Home: React.FC = () => {
     }
   }, [data]);
 
-  // Slide auto-advance
   useEffect(() => {
-    if (!data) return;
+    if (!data?.slides) return;
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % data.slides.length);
     }, 5000);
     return () => clearInterval(interval);
   }, [data]);
 
-  // Carousel controls
-  const nextSlide = () => setCurrentSlide((p) => (p + 1) % data.slides.length);
+  const nextSlide = () =>
+    setCurrentSlide((prev) => (prev + 1) % data.slides.length);
   const prevSlide = () =>
-    setCurrentSlide((p) => (p - 1 + data.slides.length) % data.slides.length);
+    setCurrentSlide((prev) => (prev - 1 + data.slides.length) % data.slides.length);
   const scrollToAbout = () =>
     document.getElementById("about")?.scrollIntoView({ behavior: "smooth" });
 
-  // Show skeleton while loading
-  if (!data) return <HomeSkeleton />;
+  if (!data) return <div className="min-h-screen bg-orange-100">Loading...</div>;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50">
       <Navbar />
       <main>
         <div className="pt-16">
+          {/* Header */}
           <div className="bg-gradient-to-r from-orange-600 to-orange-700 text-white text-center py-6">
-            <h1 className="text-3xl md:text-4xl font-bold">
-              {data.headerTitle}
-            </h1>
+            <h1 className="text-3xl md:text-4xl font-bold">{data.headerTitle}</h1>
           </div>
-          {/* Hero Section */}
+
+          {/* Hero */}
           <section className="relative h-screen overflow-hidden">
             <div className="absolute inset-0">
-              {data.slides.map((slide: any, index: number) => (
+              {data.slides.map((slide: any, i: number) => (
                 <div
-                  key={index}
+                  key={i}
                   className={`absolute inset-0 transition-opacity duration-1000 ${
-                    index === currentSlide ? "opacity-100" : "opacity-0"
+                    i === currentSlide ? "opacity-100" : "opacity-0"
                   }`}
                 >
                   <img
@@ -213,12 +116,8 @@ const Home: React.FC = () => {
             </div>
             <div className="relative z-10 flex items-center justify-center h-full">
               <div className="text-center text-white px-4 max-w-4xl">
-                <h2 className="text-4xl md:text-6xl font-bold mb-6 animate-fade-in">
-                  {data.heroHeading}
-                </h2>
-                <p className="text-xl md:text-2xl mb-8 opacity-90">
-                  {data.heroTagline}
-                </p>
+                <h2 className="text-4xl md:text-6xl font-bold mb-6">{data.heroHeading}</h2>
+                <p className="text-xl md:text-2xl mb-8">{data.heroTagline}</p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <button
                     onClick={scrollToAbout}
@@ -241,6 +140,7 @@ const Home: React.FC = () => {
                 </div>
               </div>
             </div>
+
             <button
               onClick={prevSlide}
               className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-2 rounded-full transition-colors"
@@ -253,6 +153,7 @@ const Home: React.FC = () => {
             >
               <ChevronRight className="h-6 w-6" />
             </button>
+
             <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
               {data.slides.map((_: any, index: number) => (
                 <button
@@ -265,6 +166,7 @@ const Home: React.FC = () => {
               ))}
             </div>
           </section>
+
           {/* About Section */}
           <section id="about" className="py-20 bg-white">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -285,11 +187,8 @@ const Home: React.FC = () => {
                     </blockquote>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    {data.stats.map((stat: any, index: number) => (
-                      <div
-                        key={index}
-                        className="text-center p-6 bg-gray-50 rounded-lg"
-                      >
+                    {data.stats.map((stat: any, i: number) => (
+                      <div key={i} className="text-center p-6 bg-gray-50 rounded-lg">
                         <h3 className="text-2xl font-bold text-orange-600 mb-2">
                           {stat.number}
                         </h3>
@@ -304,21 +203,20 @@ const Home: React.FC = () => {
                       {data.missionHeading}
                     </h3>
                     <ul className="space-y-3 text-white">
-                      {data.missionPoints.map(
-                        (point: string, idx: number) => (
-                          <li key={idx} className="flex items-start">
-                            <span className="w-2 h-2 bg-white rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                            <span>{point}</span>
-                          </li>
-                        )
-                      )}
+                      {data.missionPoints.map((point: string, idx: number) => (
+                        <li key={idx} className="flex items-start">
+                          <span className="w-2 h-2 bg-white rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                          <span>{point}</span>
+                        </li>
+                      ))}
                     </ul>
                   </div>
                 </div>
               </div>
             </div>
           </section>
-          {/* Announcements & JCNC Calendar */}
+
+          {/* Calendar */}
           <section className="bg-white py-16">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
               <h2 className="text-4xl font-bold text-orange-700 mb-6">
@@ -337,6 +235,7 @@ const Home: React.FC = () => {
               </div>
             </div>
           </section>
+
           {/* Feedback */}
           <section className="bg-orange-50 py-16">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-8 items-center">
@@ -349,9 +248,7 @@ const Home: React.FC = () => {
                 <form
                   onSubmit={(e) => {
                     e.preventDefault();
-                    const formData = new FormData(
-                      e.currentTarget
-                    );
+                    const formData = new FormData(e.currentTarget);
                     fetch(
                       "https://script.google.com/macros/s/AKfycbwT8l5yxogr5Ywwu_dfsmzmYBjOiEGlvNdAzyZW_MdLWKYJbmZd14UIGrfr0bQCZtu0yQ/exec",
                       {
@@ -359,12 +256,8 @@ const Home: React.FC = () => {
                         body: formData,
                       }
                     )
-                      .then(() =>
-                        alert("Thank you for your feedback!")
-                      )
-                      .catch(() =>
-                        alert("Error! Please try again.")
-                      );
+                      .then(() => alert("Thank you for your feedback!"))
+                      .catch(() => alert("Error! Please try again."));
                     e.currentTarget.reset();
                   }}
                   className="space-y-4"
@@ -388,9 +281,7 @@ const Home: React.FC = () => {
                     required
                     className="w-full border border-gray-300 rounded px-4 py-2"
                   >
-                    <option value="">
-                      --Please choose an option--
-                    </option>
+                    <option value="">--Please choose an option--</option>
                     <option>Any</option>
                     <option>Religious</option>
                     <option>Cultural</option>
@@ -421,15 +312,12 @@ const Home: React.FC = () => {
               </div>
             </div>
           </section>
+
           {/* CTA */}
           <section className="py-20 bg-gradient-to-r from-orange-600 to-orange-700 text-white">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-              <h2 className="text-4xl font-bold mb-6">
-                {data.ctaHeading}
-              </h2>
-              <p className="text-xl mb-8 opacity-90">
-                {data.ctaTagline}
-              </p>
+              <h2 className="text-4xl font-bold mb-6">{data.ctaHeading}</h2>
+              <p className="text-xl mb-8 opacity-90">{data.ctaTagline}</p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <a
                   href="/membership"

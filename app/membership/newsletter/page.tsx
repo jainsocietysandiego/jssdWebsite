@@ -16,26 +16,21 @@ const NEWSLETTERS_API = "https://script.google.com/macros/s/AKfycbw1eyzoi3VZiTYt
 const CACHE_KEY = "newsletter-api-v1";
 const CACHE_TTL = 10 * 60 * 1000; // 10 minutes
 
-// Fix link to always have /preview
 function toPreviewUrl(url: string): string {
-  let fileIdMatch = url.match(/\/d\/([a-zA-Z0-9\-_]+)/);
-  if (!fileIdMatch) {
-    // support open?id=...
+  let match = url.match(/\/d\/([a-zA-Z0-9\-_]+)/);
+  if (!match) {
     const idMatch = url.match(/[?&]id=([a-zA-Z0-9\-_]+)/);
     const fileId = idMatch ? idMatch[1] : null;
     return fileId
       ? `https://drive.google.com/file/d/${fileId}/preview`
       : url;
   }
-  const fileId = fileIdMatch[1];
-  return `https://drive.google.com/file/d/${fileId}/preview`;
+  return `https://drive.google.com/file/d/${match[1]}/preview`;
 }
 
-// Main selector logic: no future newsletters!
 function getCurrentAndPrevious(newsletters: Newsletter[]): [Newsletter | null, Newsletter[]] {
-  if (!newsletters || !newsletters.length) return [null, []];
+  if (!newsletters?.length) return [null, []];
 
-  // Parse dates and sort newest first
   const sorted = [...newsletters]
     .map(n => ({ ...n, dateObj: new Date(n.Date) }))
     .sort((a, b) => b.dateObj.getTime() - a.dateObj.getTime());
@@ -43,7 +38,6 @@ function getCurrentAndPrevious(newsletters: Newsletter[]): [Newsletter | null, N
   const now = new Date();
   now.setHours(0, 0, 0, 0);
 
-  // Current = for present month+year; prev < today only! (NOT future)
   const thisYear = now.getFullYear();
   const thisMonth = now.getMonth();
 
@@ -55,26 +49,21 @@ function getCurrentAndPrevious(newsletters: Newsletter[]): [Newsletter | null, N
       break;
     }
   }
-  // fallback: most recent <= now
   if (!current) {
     current = sorted.find(n => n.dateObj.getTime() <= now.getTime()) || sorted[0];
   }
 
-  // previous = date strictly less than NOW (NOT future, not current)
   const prev = sorted
-    .filter(n =>
-      n.dateObj.getTime() < now.getTime() // strictly before today
-      && (current ? n.Date !== current.Date : true)
-    )
+    .filter(n => n.dateObj.getTime() < now.getTime() && (current ? n.Date !== current.Date : true))
     .map(({ dateObj, ...rest }) => rest);
 
   const cur = current
     ? Object.fromEntries(Object.entries(current).filter(([k]) => k !== "dateObj")) as Newsletter
     : null;
+
   return [cur, prev];
 }
 
-// ---------- Skeleton Loader --------------
 const NewsletterSkeleton = () => (
   <div className="py-32 min-h-[60vh] flex flex-col items-center gap-10 animate-pulse">
     <div className="bg-orange-100 h-14 w-80 rounded-lg" />
@@ -91,50 +80,70 @@ const NewsletterPage: React.FC = () => {
   const [previous, setPrevious] = useState<Newsletter[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // --- With Caching ---
   useEffect(() => {
     let didCancel = false;
 
-    const cached = localStorage.getItem(CACHE_KEY);
-    let shouldFetch = true;
-    if (cached) {
-      try {
-        const { data, timestamp } = JSON.parse(cached);
-        if (Date.now() - timestamp < CACHE_TTL) {
-          setNewsletters(data);
-          setLoading(false);
-          shouldFetch = false;
-        }
-      } catch {
-        // ignore
-      }
-    }
-    if (shouldFetch) {
-      setLoading(true);
-      fetch(NEWSLETTERS_API)
-        .then(res => res.json())
-        .then((rows: Newsletter[]) => {
-          if (didCancel) return;
-          setNewsletters(rows);
-          setLoading(false);
-          localStorage.setItem(
-            CACHE_KEY,
-            JSON.stringify({
-              data: rows,
-              timestamp: Date.now()
-            })
-          );
-        }).catch(() => setLoading(false));
-    }
-    return () => { didCancel = true; }
-  }, []);
+    const applyAndSplit = (data: Newsletter[]) => {
+      setNewsletters(data);
+      const [curr, prev] = getCurrentAndPrevious(data);
+      setCurrent(curr);
+      setPrevious(prev);
+    };
 
-  useEffect(() => {
-    if (newsletters.length === 0) return;
-    const [curr, prev] = getCurrentAndPrevious(newsletters);
-    setCurrent(curr);
-    setPrevious(prev);
-  }, [newsletters]);
+    const useFallback = async () => {
+      try {
+        const res = await fetch('/newsletter.json');
+        const json = await res.json();
+        if (!didCancel) {
+          applyAndSplit(json);
+          setLoading(false);
+        }
+      } catch (err) {
+        console.error('Failed to load fallback JSON', err);
+      }
+    };
+
+    const checkLocalCache = () => {
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (cached) {
+        try {
+          const { data, timestamp } = JSON.parse(cached);
+          if (Date.now() - timestamp < CACHE_TTL) {
+            applyAndSplit(data);
+            setLoading(false);
+            return true;
+          }
+        } catch {
+          return false;
+        }
+      }
+      return false;
+    };
+
+    const fetchLatest = async () => {
+      try {
+        const res = await fetch(NEWSLETTERS_API);
+        const rows = await res.json();
+        if (!didCancel && rows?.length) {
+          localStorage.setItem(CACHE_KEY, JSON.stringify({
+            data: rows,
+            timestamp: Date.now()
+          }));
+          applyAndSplit(rows);
+        }
+      } catch (e) {
+        console.error("Failed to fetch from API", e);
+      }
+    };
+
+    if (!checkLocalCache()) {
+      useFallback().then(() => fetchLatest());
+    } else {
+      fetchLatest(); // background refresh
+    }
+
+    return () => { didCancel = true; };
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-amber-100">
@@ -151,11 +160,8 @@ const NewsletterPage: React.FC = () => {
           </div>
         </header>
 
-        {loading ?
-          <NewsletterSkeleton />
-          :
+        {loading ? <NewsletterSkeleton /> : (
           <>
-            {/* Present Newsletter */}
             <section className="mb-20">
               <div className="text-2xl font-bold text-amber-700 mb-5 tracking-wide">
                 Present Newsletter
@@ -197,7 +203,6 @@ const NewsletterPage: React.FC = () => {
               )}
             </section>
 
-            {/* Previous Newsletters */}
             <section>
               <div className="text-2xl font-bold text-amber-700 mb-5 tracking-wide">
                 Previous Newsletters
@@ -227,7 +232,7 @@ const NewsletterPage: React.FC = () => {
               </ul>
             </section>
           </>
-        }
+        )}
       </main>
       <Footer />
     </div>

@@ -1,4 +1,13 @@
 {
   "/_not-found/page": "app/_not-found/page.js",
-  "/page": "app/page.js"
+  "/about/page": "app/about/page.js",
+  "/contribute/page": "app/contribute/page.js",
+  "/events/page": "app/events/page.js",
+  "/feedback/page": "app/feedback/page.js",
+  "/gallery/page": "app/gallery/page.js",
+  "/page": "app/page.js",
+  "/pathsala/page": "app/pathsala/page.js",
+  "/jinalay/page": "app/jinalay/page.js",
+  "/membership/page": "app/membership/page.js",
+  "/pathsala/[level]/page": "app/pathsala/[level]/page.js"
 }

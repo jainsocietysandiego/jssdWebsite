@@ -4,62 +4,13 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import Link from "next/link";
 
-<<<<<<< HEAD
-const API_URL =
-  "https://script.google.com/macros/s/AKfycbyF2o2z99qlJJB8L7CqOewouIdDbNlt-xJJa6G1Jm5_cNYA5qlGVQReJZkik9zs8LbiGQ/exec";
-const CACHE_KEY = "membership-api";
-const CACHE_TTL = 10 * 60 * 1000; // 10min in ms
-
-// -------------- Skeleton Loader Component --------------
-const MembershipSkeleton = () => (
-  <div className="min-h-screen">
-    <Navbar />
-    <main className="pt-32 animate-pulse">
-      {/* Skeleton Hero Section */}
-      <section className="w-full mb-4">
-        <div className="w-full h-[550px] bg-gray-200" />
-        <div className="mt-10 flex ml-40">
-          <div className="h-12 w-56 rounded bg-red-200" />
-        </div>
-      </section>
-      {/* Skeleton Benefits */}
-      <section className="py-16 px-4 text-center bg-gray-50">
-        <div className="h-10 w-72 bg-gray-200 rounded mx-auto mb-4" />
-        <div className="h-6 w-1/2 bg-gray-100 rounded mx-auto mb-10" />
-        <div className="max-w-4xl mx-auto space-y-4">
-          {[...Array(3)].map((_, idx) => (
-            <div key={idx} className="flex items-start bg-white rounded-lg p-4 shadow text-left">
-              <div className="flex-shrink-0 mr-4">
-                <div className="w-12 h-12 rounded bg-gray-200" />
-              </div>
-              <div className="flex-1">
-                <div className="h-6 w-52 rounded bg-gray-200 mb-2" />
-                <div className="h-4 w-full rounded bg-gray-100 mb-2" />
-                <div className="h-4 w-3/4 rounded bg-gray-100" />
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-      {/* Skeleton Pricing Cards */}
-      <section className="py-8 px-4 text-center bg-white">
-        <div className="h-10 w-72 bg-gray-200 rounded mx-auto mb-4" />
-        <div className="h-6 w-1/2 bg-gray-100 rounded mx-auto mb-10" />
-        <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 justify-center">
-          {[...Array(3)].map((_, idx) => (
-            <div key={idx} className="bg-white border rounded-lg p-8 shadow w-full max-w-xs mx-auto">
-              <div className="h-8 w-32 rounded bg-gray-100 mb-3 mx-auto" />
-              <div className="h-4 w-full rounded bg-gray-50 mb-4 mx-auto" />
-              <div className="h-10 w-32 mx-auto bg-red-200 rounded mb-6" />
-              <div className="h-12 w-full bg-red-100 rounded" />
-=======
-// API URL and Cache constants
+// -- Constants --
 const API_URL =
   "https://script.google.com/macros/s/AKfycbzPvcWT8omIA992X5wAktnx5HFukyFoau_E-WL3WeIIVtoyoIo28OBTdaSWB_QSMQlX/exec";
 const CACHE_KEY = "membership-api";
-const CACHE_TTL = 10 * 60 * 1000; // 10 minutes
+const CACHE_TTL = 10 * 60 * 1000; // 10min in ms
 
-// Skeleton Loader Component
+// -- Skeleton Loader Component --
 const MembershipSkeleton = () => (
   <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 animate-pulse">
     <Navbar />
@@ -97,82 +48,36 @@ const MembershipSkeleton = () => (
               <div className="h-12 w-12 rounded-full bg-orange-200 mx-auto mb-4" />
               <div className="h-6 w-3/4 mx-auto mb-2 rounded bg-orange-300" />
               <div className="h-4 w-2/3 mx-auto rounded bg-orange-300" />
->>>>>>> origin/main
             </div>
           ))}
         </div>
       </section>
-<<<<<<< HEAD
-      {/* Skeleton Rules Section */}
-      <section className="py-16 px-4 bg-gray-50 flex flex-col items-center">
-        <div className="h-10 w-72 bg-gray-200 rounded mx-auto mb-4" />
-        <div className="max-w-2xl mx-auto space-y-6 text-left w-full">
-          {[...Array(3)].map((_, i) => (
-            <div className="h-4 w-full bg-gray-100 rounded" key={i} />
-          ))}
-          <div className="h-6 w-1/2 bg-gray-200 rounded mt-6" />
-          <div className="h-4 w-1/2 bg-gray-100 rounded mt-2" />
-          <div className="h-4 w-full bg-gray-100 rounded mt-2" />
-        </div>
-      </section>
-    </main>
-=======
     </div>
->>>>>>> origin/main
     <Footer />
   </div>
 );
 
-<<<<<<< HEAD
-// -------------- Membership Main Component --------------
-=======
->>>>>>> origin/main
+// -- Main Membership Component --
 const Membership = () => {
   const [data, setData] = useState<any>(null);
 
   // Fetch data with caching logic
   useEffect(() => {
-<<<<<<< HEAD
     // Try cache first
-=======
->>>>>>> origin/main
     const cached = localStorage.getItem(CACHE_KEY);
     let shouldFetch = true;
     if (cached) {
       try {
         const { data: cachedData, timestamp } = JSON.parse(cached);
         if (Date.now() - timestamp < CACHE_TTL) {
-<<<<<<< HEAD
           setData(cachedData);
           shouldFetch = false;
         }
-      } catch {}
-    }
-    // Always fetch to refresh cache in the background
-    fetch(API_URL)
-      .then((res) => res.json())
-      .then((apiData) => {
-        setData(apiData);
-        localStorage.setItem(
-          CACHE_KEY,
-          JSON.stringify({
-            data: apiData,
-            timestamp: Date.now(),
-          })
-        );
-      });
-  }, []);
-
-  if (!data) return <MembershipSkeleton />;
-=======
-          setData(cachedData); // Use cache
-          shouldFetch = false;
-        }
       } catch {
-        // If cache is corrupted, we ignore it
+        // Ignore corrupted cache
       }
     }
-
+    // Always fetch to refresh cache in the background
     if (shouldFetch) {
       fetch(API_URL)
         .then((res) => res.json())
@@ -189,11 +94,7 @@ const Membership = () => {
     }
   }, []);
 
-  // Show skeleton loader if data is not loaded
-  if (!data) {
-    return <MembershipSkeleton />;
-  }
->>>>>>> origin/main
+  if (!data) return <MembershipSkeleton />;
 
   return (
     <div className="min-h-screen">

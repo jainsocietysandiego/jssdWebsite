@@ -9,7 +9,7 @@ const Membership = () => {
 
   useEffect(() => {
     fetch(
-      "https://script.google.com/macros/s/AKfycbyF2o2z99qlJJB8L7CqOewouIdDbNlt-xJJa6G1Jm5_cNYA5qlGVQReJZkik9zs8LbiGQ/exec"
+      "https://script.google.com/macros/s/AKfycbzPvcWT8omIA992X5wAktnx5HFukyFoau_E-WL3WeIIVtoyoIo28OBTdaSWB_QSMQlX/exec"
     )
       .then((res) => res.json())
       .then(setData);

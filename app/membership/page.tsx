@@ -4,6 +4,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import Link from "next/link";
 
+<<<<<<< HEAD
 const API_URL =
   "https://script.google.com/macros/s/AKfycbyF2o2z99qlJJB8L7CqOewouIdDbNlt-xJJa6G1Jm5_cNYA5qlGVQReJZkik9zs8LbiGQ/exec";
 const CACHE_KEY = "membership-api";
@@ -51,10 +52,57 @@ const MembershipSkeleton = () => (
               <div className="h-4 w-full rounded bg-gray-50 mb-4 mx-auto" />
               <div className="h-10 w-32 mx-auto bg-red-200 rounded mb-6" />
               <div className="h-12 w-full bg-red-100 rounded" />
+=======
+// API URL and Cache constants
+const API_URL =
+  "https://script.google.com/macros/s/AKfycbzPvcWT8omIA992X5wAktnx5HFukyFoau_E-WL3WeIIVtoyoIo28OBTdaSWB_QSMQlX/exec";
+const CACHE_KEY = "membership-api";
+const CACHE_TTL = 10 * 60 * 1000; // 10 minutes
+
+// Skeleton Loader Component
+const MembershipSkeleton = () => (
+  <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 animate-pulse">
+    <Navbar />
+    <div className="pt-16">
+      {/* Skeleton Header */}
+      <div className="bg-gradient-to-r from-orange-600 to-orange-700 text-center py-6">
+        <div className="h-10 w-1/2 mx-auto rounded bg-orange-300" />
+      </div>
+
+      {/* Skeleton Hero */}
+      <section className="relative h-screen overflow-hidden">
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gray-200" />
+        </div>
+        <div className="relative z-10 flex items-center justify-center h-full">
+          <div className="text-center px-4 max-w-4xl w-full">
+            <div className="h-12 md:h-20 w-3/4 mx-auto mb-6 rounded bg-orange-200" />
+            <div className="h-6 w-1/2 mx-auto mb-8 rounded bg-orange-100" />
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <div className="h-10 w-36 rounded bg-orange-200" />
+              <div className="h-10 w-44 rounded bg-orange-200" />
+              <div className="h-10 w-52 rounded bg-orange-200" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Skeleton for Membership Benefits and Types */}
+      <section className="py-16 px-4 text-center bg-gray-50">
+        <div className="h-10 w-1/2 mx-auto rounded bg-orange-100 mb-4" />
+        <div className="h-6 w-1/4 mx-auto mb-6 rounded bg-orange-200" />
+        <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 justify-center">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="bg-white rounded-lg p-6 shadow hover:shadow-lg transition w-full max-w-xs mx-auto">
+              <div className="h-12 w-12 rounded-full bg-orange-200 mx-auto mb-4" />
+              <div className="h-6 w-3/4 mx-auto mb-2 rounded bg-orange-300" />
+              <div className="h-4 w-2/3 mx-auto rounded bg-orange-300" />
+>>>>>>> origin/main
             </div>
           ))}
         </div>
       </section>
+<<<<<<< HEAD
       {/* Skeleton Rules Section */}
       <section className="py-16 px-4 bg-gray-50 flex flex-col items-center">
         <div className="h-10 w-72 bg-gray-200 rounded mx-auto mb-4" />
@@ -68,22 +116,33 @@ const MembershipSkeleton = () => (
         </div>
       </section>
     </main>
+=======
+    </div>
+>>>>>>> origin/main
     <Footer />
   </div>
 );
 
+<<<<<<< HEAD
 // -------------- Membership Main Component --------------
+=======
+>>>>>>> origin/main
 const Membership = () => {
   const [data, setData] = useState<any>(null);
 
+  // Fetch data with caching logic
   useEffect(() => {
+<<<<<<< HEAD
     // Try cache first
+=======
+>>>>>>> origin/main
     const cached = localStorage.getItem(CACHE_KEY);
     let shouldFetch = true;
     if (cached) {
       try {
         const { data: cachedData, timestamp } = JSON.parse(cached);
         if (Date.now() - timestamp < CACHE_TTL) {
+<<<<<<< HEAD
           setData(cachedData);
           shouldFetch = false;
         }
@@ -105,6 +164,36 @@ const Membership = () => {
   }, []);
 
   if (!data) return <MembershipSkeleton />;
+=======
+          setData(cachedData); // Use cache
+          shouldFetch = false;
+        }
+      } catch {
+        // If cache is corrupted, we ignore it
+      }
+    }
+
+    if (shouldFetch) {
+      fetch(API_URL)
+        .then((res) => res.json())
+        .then((apiData) => {
+          setData(apiData);
+          localStorage.setItem(
+            CACHE_KEY,
+            JSON.stringify({
+              data: apiData,
+              timestamp: Date.now(),
+            })
+          );
+        });
+    }
+  }, []);
+
+  // Show skeleton loader if data is not loaded
+  if (!data) {
+    return <MembershipSkeleton />;
+  }
+>>>>>>> origin/main
 
   return (
     <div className="min-h-screen">

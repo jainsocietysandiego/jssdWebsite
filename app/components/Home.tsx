@@ -6,7 +6,7 @@ import Footer from "./Footer";
 
 // API and cache constants
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbwDyFhShOhEf6mEFJGMFrSh3kQtGRw8AwYZlY750WYENI4LmWPhH0o7WTmHuDpQan-aIg/exec";
+  "https://script.google.com/macros/s/AKfycbzN9-QOSlSBd5GWQqfnBljehPnKYiGHAbYbs3MjKVA3Bs4MPQO6X6UF5k-oh6UCOwMaTA/exec";
 const CACHE_KEY = "homepage-api";
 const CACHE_TTL = 10 * 60 * 1000; // 10 minutes
 

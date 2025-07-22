@@ -7,7 +7,6 @@ import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import axios from 'axios';
 
-// Corrected LevelData interface based on the API response structure
 interface LevelData {
   Level: string;
   Title: string;
@@ -16,59 +15,81 @@ interface LevelData {
   Duration: string;
   Students: number;
   'Topics Covered': string;
-  'Key Activities ': string; // Note the trailing space in the key from the API
+  'Key Activities ': string;
   'Teachers Note': string;
   'Learning Outcome': string;
 }
 
 const API_URL = 'https://script.google.com/macros/s/AKfycbyHVNzO5Wbr-OBUAD_KPKPazFsZWz4ak7LONoccChBmZnAmnINE6cUbcnmH_647G5urKw/exec';
+const FALLBACK_JSON = '/pathsalalevel.json';
+const CACHE_TTL = 10 * 60 * 1000;
 
 const PathsalaLevel: React.FC = () => {
   const params = useParams();
-  // Strip the 'level-' prefix from the level parameter
-  const level = Array.isArray(params.level) ? params.level[0].replace('level-', '').trim() : params.level?.replace('level-', '').trim();
+  const level = Array.isArray(params.level)
+    ? params.level[0].replace('level-', '').trim()
+    : params.level?.replace('level-', '').trim();
 
   const [data, setData] = useState<LevelData | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const cacheKey = `pathsala-level-${level}`;
+
   useEffect(() => {
-    console.log('Level parameter from URL (stripped):', level); // Log level parameter
-
-    const stored = sessionStorage.getItem(`pathsala-level-${level}`);
-    if (stored) {
-      setData(JSON.parse(stored));
-      setLoading(false);
-    } else {
-      axios.get(API_URL)
-        .then((res) => {
-          console.log("API Response:", res.data); // <-- Log the raw response here
-          
-          // Check if the levels exist in the API data
-          const found = res.data.levels.find((lvl: LevelData) => {
-            // Log both values being compared
-            console.log('Comparing level from URL:', level, 'with API level:', lvl.Level); // Log level comparison
-
-            // Convert both `level` and `lvl.Level` to strings before comparing
-            return String(lvl.Level).trim() === level; // Compare the level from the URL with the API data
-          });
-
-          if (found) {
-            setData(found);
-          } else {
-            console.log('No matching level found.');
-            setData(null); // Set to null if no matching level is found
+    const fetchFromAPI = async () => {
+      try {
+        const res = await axios.get(API_URL);
+        if (res.data?.levels) {
+          const match = res.data.levels.find((lvl: LevelData) => String(lvl.Level).trim() === level);
+          if (match) {
+            sessionStorage.setItem(cacheKey, JSON.stringify({ data: match, timestamp: Date.now() }));
+            setData(match);
           }
+        }
+      } catch (err) {
+        console.error('Failed to fetch from API', err);
+      }
+    };
+
+    const loadData = async () => {
+      const cached = sessionStorage.getItem(cacheKey);
+      if (cached) {
+        try {
+          const parsed = JSON.parse(cached);
+          if (Date.now() - parsed.timestamp < CACHE_TTL) {
+            setData(parsed.data);
+            setLoading(false);
+            fetchFromAPI(); // update in background
+            return;
+          }
+        } catch (e) {
+          console.warn('Error parsing cache', e);
+        }
+      }
+
+      // Fallback to public JSON
+      try {
+        const fallback = await fetch(FALLBACK_JSON);
+        const json = await fallback.json();
+        const found = json.levels.find((lvl: LevelData) => String(lvl.Level).trim() === level);
+        if (found) {
+          setData(found);
           setLoading(false);
-        })
-        .catch((err) => {
-          console.error('Fetch error:', err);
-          setLoading(false);
-        });
-    }
+        } else {
+          console.warn('Level not found in fallback JSON');
+        }
+      } catch (e) {
+        console.error('Failed to load fallback JSON', e);
+      }
+
+      fetchFromAPI(); // update in background
+    };
+
+    loadData();
   }, [level]);
 
   if (loading) return <div className="min-h-screen">Loading...</div>;
-  if (!data) return <div className="min-h-screen">Level not found.</div>;
+  if (!data) return <div className="min-h-screen text-center pt-20 text-red-600">Level not found.</div>;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50">
@@ -83,47 +104,11 @@ const PathsalaLevel: React.FC = () => {
         <section className="py-20 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-8">
-              <div className="bg-white rounded-lg shadow-lg p-8">
-                <h3 className="text-2xl font-bold text-gray-900 mb-6">Class Overview</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <OverviewItem icon={Users} label="Age Group" value={data['Age Group']} />
-                  <OverviewItem icon={Clock} label="Duration" value={data.Duration} />
-                  <OverviewItem icon={User} label="Students" value={`${data.Students} enrolled`} />
-                  <OverviewItem icon={BookOpen} label="Level" value={`Level ${data.Level}`} />
-                </div>
-              </div>
-
-              <div className="bg-white rounded-lg shadow-lg p-8">
-                <h3 className="text-2xl font-bold text-gray-900 mb-6">Topics Covered</h3>
-                <ul className="list-disc pl-6 text-gray-700 space-y-2">
-                  {data['Topics Covered'].split(',').map((item, idx) => (
-                    <li key={idx}>{item.trim()}</li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="bg-white rounded-lg shadow-lg p-8">
-                <h3 className="text-2xl font-bold text-gray-900 mb-6">Key Activities</h3>
-                <ul className="list-disc pl-6 text-gray-700 space-y-2">
-                  {data['Key Activities '].split(',').map((item, idx) => (
-                    <li key={idx}>{item.trim()}</li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="bg-white rounded-lg shadow-lg p-8">
-                <h3 className="text-2xl font-bold text-gray-900 mb-6">Teacher's Note</h3>
-                <p className="text-gray-700 whitespace-pre-line">{data['Teachers Note']}</p>
-              </div>
-
-              <div className="bg-white rounded-lg shadow-lg p-8">
-                <h3 className="text-2xl font-bold text-gray-900 mb-6">Learning Outcomes</h3>
-                <ul className="list-disc pl-6 text-gray-700 space-y-2">
-                  {data['Learning Outcome'].split(',').map((item, idx) => (
-                    <li key={idx}>{item.trim()}</li>
-                  ))}
-                </ul>
-              </div>
+              <OverviewCard data={data} />
+              <InfoCard title="Topics Covered" items={data['Topics Covered']} />
+              <InfoCard title="Key Activities" items={data['Key Activities ']} />
+              <TextCard title="Teacher's Note" text={data['Teachers Note']} />
+              <InfoCard title="Learning Outcomes" items={data['Learning Outcome']} />
             </div>
 
             <div className="bg-orange-50 rounded-lg p-6 h-fit">
@@ -148,6 +133,20 @@ const PathsalaLevel: React.FC = () => {
   );
 };
 
+function OverviewCard({ data }: { data: LevelData }) {
+  return (
+    <div className="bg-white rounded-lg shadow-lg p-8">
+      <h3 className="text-2xl font-bold text-gray-900 mb-6">Class Overview</h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <OverviewItem icon={Users} label="Age Group" value={data['Age Group']} />
+        <OverviewItem icon={Clock} label="Duration" value={data.Duration} />
+        <OverviewItem icon={User} label="Students" value={`${data.Students} enrolled`} />
+        <OverviewItem icon={BookOpen} label="Level" value={`Level ${data.Level}`} />
+      </div>
+    </div>
+  );
+}
+
 function OverviewItem({ icon: Icon, label, value }: { icon: any; label: string; value: string }) {
   return (
     <div className="flex items-center">
@@ -156,6 +155,28 @@ function OverviewItem({ icon: Icon, label, value }: { icon: any; label: string; 
         <p className="font-medium text-gray-900">{label}</p>
         <p className="text-gray-600">{value}</p>
       </div>
+    </div>
+  );
+}
+
+function InfoCard({ title, items }: { title: string; items: string }) {
+  return (
+    <div className="bg-white rounded-lg shadow-lg p-8">
+      <h3 className="text-2xl font-bold text-gray-900 mb-6">{title}</h3>
+      <ul className="list-disc pl-6 text-gray-700 space-y-2">
+        {items.split(',').map((item, idx) => (
+          <li key={idx}>{item.trim()}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function TextCard({ title, text }: { title: string; text: string }) {
+  return (
+    <div className="bg-white rounded-lg shadow-lg p-8">
+      <h3 className="text-2xl font-bold text-gray-900 mb-6">{title}</h3>
+      <p className="text-gray-700 whitespace-pre-line">{text}</p>
     </div>
   );
 }

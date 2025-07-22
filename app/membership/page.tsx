@@ -1,420 +1,155 @@
-'use client'
+import React from "react";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import Link from "next/link";
 
-import React, { useState } from 'react';
-import { Users, Mail, Phone, MapPin, CheckCircle } from 'lucide-react';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
-
-const Membership: React.FC = () => {
-  const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    phone: '',
-    address: '',
-    city: '',
-    state: '',
-    zipCode: '',
-    familyMembers: '',
-    interests: [] as string[],
-    subscribeEmail: false,
-    pathsalaInterest: false,
-    volunteerInterest: false
-  });
-
-  const [isSubmitted, setIsSubmitted] = useState(false);
-
-  const interestOptions = [
-    'Religious Events',
-    'Community Service',
-    'Cultural Programs',
-    'Educational Activities',
-    'Pathsala Teaching',
-    'Event Planning',
-    'Fundraising',
-    'Youth Programs',
-    'Senior Activities',
-    'Wellness Programs'
-  ];
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value, type } = e.target;
-    
-    if (type === 'checkbox') {
-      const checked = (e.target as HTMLInputElement).checked;
-      setFormData(prev => ({
-        ...prev,
-        [name]: checked
-      }));
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        [name]: value
-      }));
-    }
-  };
-
-  const handleInterestChange = (interest: string) => {
-    setFormData(prev => ({
-      ...prev,
-      interests: prev.interests.includes(interest)
-        ? prev.interests.filter(i => i !== interest)
-        : [...prev.interests, interest]
-    }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const form = new FormData();
-    Object.entries(formData).forEach(([key, value]) => {
-      if (Array.isArray(value)) {
-        form.append(key, value.join(", "));
-      } else {
-        form.append(key, value.toString());
-      }
-    });
-
-    fetch('https://script.google.com/macros/s/AKfycbywpX9zAQha4bTnmTBNksCafu6IAHe1U1oHgxWqlspDZHpZbl1oYB_v3UQCO9MKyKUaKQ/exec', {
-      method: 'POST',
-      mode: 'no-cors',
-      body: form
-    })
-      .then(() => {
-        setIsSubmitted(true);
-      })
-      .catch((error) => {
-        console.error('Error submitting form:', error);
-        alert("An error occurred. Please try again later.");
-      });
-  };
-
-  if (isSubmitted) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50">
-        <Navbar />
-        <main>
-          <div className="pt-16 min-h-screen flex items-center justify-center">
-            <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-              <div className="bg-white rounded-lg shadow-lg p-8">
-                <div className="mb-6">
-                  <CheckCircle className="h-16 w-16 text-green-600 mx-auto mb-4" />
-                  <h1 className="text-3xl font-bold text-gray-900 mb-4">Thank You for Joining!</h1>
-                  <p className="text-lg text-gray-600 mb-6">
-                    Your membership application has been successfully submitted.
-                  </p>
-                  <div className="bg-orange-50 p-6 rounded-lg border-l-4 border-orange-600">
-                    <h2 className="text-xl font-semibold text-gray-900 mb-2">What's Next?</h2>
-                    <p className="text-gray-700">
-                      You will receive an invitation email to join our community within 1-2 days. 
-                      Our membership committee will review your application and send you all the 
-                      necessary information to get started.
-                    </p>
-                  </div>
-                  <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center">
-                    <a
-                      href="/"
-                      className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
-                    >
-                      Return to Home
-                    </a>
-                    <a
-                      href="/events"
-                      className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-medium transition-colors"
-                    >
-                      View Events
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
+const membershipBenefits = [
+  {
+    title: "Your Fees go to JSSD General Donation Fund",
+    description: "Your membership fees contribute to the JSSD General Donation Fund to support community activities."
+  },
+  {
+    title: "Free Pass to JSSD Annual Picnic",
+    description: "Enjoy a complimentary pass to the JSSD Annual Picnic — a day of fun, food, and community bonding."
+  },
+  {
+    title: "Discounted Rates for JSSD Events",
+    description: "As a member, you receive discounted rates on various JSSD events.",
+    subpoints: [
+      "Pathshala Fees",
+      "Renting JSSD Facilities for Private Events",
+      "Navratri Garba Events",
+      "Other community events"
+    ]
+  },
+  {
+    title: "Access to Members Only Events",
+    description: "Gain access to exclusive members-only events hosted by JSSD.",
+    subpoints: [
+      "JSSD Cricket League",
+      "JSSD Volleyball League",
+      "Other special member events"
+    ]
+  },
+  {
+    title: "Eligible to sign-up for volunteer hours for President’s Volunteer Service Award (PVSA) program",
+    description: "Members can sign up for volunteer opportunities that count towards the PVSA program."
+  },
+  {
+    title: "Preference to Limited Attendance Activities",
+    description: "Get preference for attending activities with limited spots."
+  },
+  {
+    title: "Right to Vote in JSSD Elections",
+    description: "Exercise your right to vote in the JSSD elections and shape the future of the community."
+  },
+  {
+    title: "Membership Fees Are Tax Deductible",
+    description: "Your membership fees may be tax deductible as per applicable laws."
   }
+];
 
+const membershipTypes = [
+  { title: "Life Membership", coverage: "Entire family (children under 18) for lifetime", price: "$501" },
+  { title: "Family Annual", coverage: "Entire family (children under 18) for the calendar year.", price: "$51" },
+  { title: "Individual Annual", coverage: "One individual for the calendar year.", price: "$31" },
+];
+
+const Membership = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50">
+    <div className="min-h-screen">
       <Navbar />
-      <main>
-        <div className="pt-16">
-          <div className="bg-gradient-to-r from-orange-600 to-orange-700 text-white py-20">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-              <h1 className="text-4xl md:text-5xl font-bold mb-6">Join Our Community</h1>
-              <p className="text-xl opacity-90 max-w-3xl mx-auto">
-                Become a member of JSSD and be part of our growing spiritual family
-              </p>
-            </div>
+      <main className="pt-32">
+        {/* Hero Section */}
+        <section className="w-full mb-4">
+          <img
+            src="/Membership-banner.jpg"
+            alt="Membership Hero"
+            className="w-full h-[550px]"
+          />
+          <div className="mt-10 flex ml-40">
+            <Link href="/membership/become-a-member">
+              <button className="text-lg font-semibold border-2 border-red-600 bg-red-700 text-white px-6 py-2 rounded hover:bg-white hover:text-red-600 hover:border-red-600 transition">
+                Become a Member
+              </button>
+            </Link>
           </div>
+        </section>
 
-          <section className="py-20 bg-white">
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="text-center mb-12">
-                <h2 className="text-3xl font-bold text-gray-900 mb-4">Membership Benefits</h2>
-                <p className="text-gray-600 max-w-3xl mx-auto">
-                  Join our community and enjoy exclusive benefits and opportunities
-                </p>
-              </div>
+        {/* Membership Benefits Section */}
+        <section className="py-16 px-4 text-center bg-gray-50">
+          <h2 className="text-4xl font-bold mb-4">Membership Benefits</h2>
+          <p className="text-gray-600 mb-10">The benefits of becoming a JSSD member are many!</p>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-                <div className="text-center p-6 bg-orange-50 rounded-lg">
-                  <div className="bg-orange-600 text-white p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                    <Users className="h-8 w-8" />
-                  </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Community Access</h3>
-                  <p className="text-gray-600">
-                    Full access to all community events, festivals, and gatherings
-                  </p>
+          <div className="max-w-4xl mx-auto space-y-4">
+            {membershipBenefits.map((benefit, index) => (
+              <div key={index} className="flex items-start bg-white rounded-lg p-4 shadow hover:shadow-lg transition text-left">
+                <div className="flex-shrink-0 mr-4">
+                  <img src="/hand-icon.png" alt="Benefit Icon" className="w-12 h-12" />
                 </div>
-
-                <div className="text-center p-6 bg-orange-50 rounded-lg">
-                  <div className="bg-orange-600 text-white p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                    <Mail className="h-8 w-8" />
-                  </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Regular Updates</h3>
-                  <p className="text-gray-600">
-                    Stay informed with newsletters, event notifications, and announcements
-                  </p>
-                </div>
-
-                <div className="text-center p-6 bg-orange-50 rounded-lg">
-                  <div className="bg-orange-600 text-white p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                    <Phone className="h-8 w-8" />
-                  </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Support Network</h3>
-                  <p className="text-gray-600">
-                    Connect with like-minded individuals and build lasting friendships
-                  </p>
-                </div>
-              </div>
-
-              <div className="bg-white rounded-lg shadow-lg p-8">
-                <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Membership Registration</h2>
-                
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  {/* Personal Information */}
-                  <div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-4">Personal Information</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Full Name *
-                        </label>
-                        <input
-                          type="text"
-                          name="fullName"
-                          value={formData.fullName}
-                          onChange={handleInputChange}
-                          required
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Email Address *
-                        </label>
-                        <input
-                          type="email"
-                          name="email"
-                          value={formData.email}
-                          onChange={handleInputChange}
-                          required
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Phone Number *
-                        </label>
-                        <input
-                          type="tel"
-                          name="phone"
-                          value={formData.phone}
-                          onChange={handleInputChange}
-                          required
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Address *
-                        </label>
-                        <input
-                          type="text"
-                          name="address"
-                          value={formData.address}
-                          onChange={handleInputChange}
-                          required
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          City *
-                        </label>
-                        <input
-                          type="text"
-                          name="city"
-                          value={formData.city}
-                          onChange={handleInputChange}
-                          required
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          State *
-                        </label>
-                        <input
-                          type="text"
-                          name="state"
-                          value={formData.state}
-                          onChange={handleInputChange}
-                          required
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          ZIP Code *
-                        </label>
-                        <input
-                          type="text"
-                          name="zipCode"
-                          value={formData.zipCode}
-                          onChange={handleInputChange}
-                          required
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Family Information */}
-                  <div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-4">Family Information</h3>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Family Members (Names and Ages)
-                      </label>
-                      <textarea
-                        name="familyMembers"
-                        value={formData.familyMembers}
-                        onChange={handleInputChange}
-                        rows={4}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                        placeholder="Please list all family members with their names and ages..."
-                      />
-                    </div>
-                  </div>
-
-                  {/* Interests */}
-                  <div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-4">Areas of Interest</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {interestOptions.map((interest) => (
-                        <label key={interest} className="flex items-center">
-                          <input
-                            type="checkbox"
-                            checked={formData.interests.includes(interest)}
-                            onChange={() => handleInterestChange(interest)}
-                            className="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded"
-                          />
-                          <span className="ml-2 text-gray-700">{interest}</span>
-                        </label>
+                <div>
+                  <h3 className="text-lg font-semibold">{benefit.title}</h3>
+                  <p className="text-gray-700">{benefit.description}</p>
+                  {benefit.subpoints && (
+                    <ul className="list-disc list-inside text-gray-700 mt-2">
+                      {benefit.subpoints.map((point, i) => (
+                        <li key={i}>{point}</li>
                       ))}
-                    </div>
-                  </div>
-
-                  {/* Additional Options */}
-                  <div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-4">Additional Options</h3>
-                    <div className="space-y-3">
-                      <label className="flex items-center">
-                        <input
-                          type="checkbox"
-                          name="subscribeEmail"
-                          checked={formData.subscribeEmail}
-                          onChange={handleInputChange}
-                          className="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded"
-                        />
-                        <span className="ml-2 text-gray-700">
-                          Subscribe to email updates and newsletters
-                        </span>
-                      </label>
-                      <label className="flex items-center">
-                        <input
-                          type="checkbox"
-                          name="pathsalaInterest"
-                          checked={formData.pathsalaInterest}
-                          onChange={handleInputChange}
-                          className="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded"
-                        />
-                        <span className="ml-2 text-gray-700">
-                          Interested in enrolling children in Pathsala
-                        </span>
-                      </label>
-                      <label className="flex items-center">
-                        <input
-                          type="checkbox"
-                          name="volunteerInterest"
-                          checked={formData.volunteerInterest}
-                          onChange={handleInputChange}
-                          className="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded"
-                        />
-                        <span className="ml-2 text-gray-700">
-                          Interested in volunteering for community activities
-                        </span>
-                      </label>
-                    </div>
-                  </div>
-
-                  <div className="pt-6">
-                    <button
-                      type="submit"
-                      className="w-full bg-orange-600 hover:bg-orange-700 text-white py-4 px-6 rounded-lg font-semibold text-lg transition-colors"
-                    >
-                      Submit Membership Application
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </section>
-
-          {/* Contact Information */}
-          <section className="py-20 bg-gray-50">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="text-center mb-12">
-                <h2 className="text-3xl font-bold text-gray-900 mb-4">Questions About Membership?</h2>
-                <p className="text-gray-600 max-w-3xl mx-auto">
-                  Our membership committee is here to help you with any questions
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div className="text-center p-6 bg-white rounded-lg shadow-md">
-                  <Mail className="h-8 w-8 text-orange-600 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Email Us</h3>
-                  <p className="text-gray-600">membership@jssd.org</p>
-                </div>
-
-                <div className="text-center p-6 bg-white rounded-lg shadow-md">
-                  <Phone className="h-8 w-8 text-orange-600 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Call Us</h3>
-                  <p className="text-gray-600">(555) 123-4567</p>
-                </div>
-
-                <div className="text-center p-6 bg-white rounded-lg shadow-md">
-                  <MapPin className="h-8 w-8 text-orange-600 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Visit Us</h3>
-                  <p className="text-gray-600">123 Temple Street<br />San Diego, CA 92101</p>
+                    </ul>
+                  )}
                 </div>
               </div>
-            </div>
-          </section>
-        </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Membership Types Pricing Cards */}
+        <section className="py-8 px-4 text-center bg-white">
+          <h2 className="text-4xl font-bold mb-4">Membership Types</h2>
+          <p className="text-gray-600 mb-10">Following membership types are available at JSSD</p>
+
+          <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 justify-center">
+            {membershipTypes.map((type, index) => (
+              <div key={index} className="bg-white border rounded-lg p-8 shadow hover:shadow-lg transition w-full max-w-xs mx-auto">
+                <h3 className="text-2xl font-semibold mb-2">{type.title}</h3>
+                <p className="text-gray-700 mb-4">{type.coverage}</p>
+                <div className="text-3xl font-bold text-red-600 mb-6">{type.price}</div>
+                <Link href="/become-a-member">
+                  <button className="w-full bg-red-600 text-white py-2 px-4 rounded hover:bg-white hover:text-red-600 hover:border hover:border-red-600 transition">
+                    Join Now
+                  </button>
+                </Link>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Who's Part of Membership Section */}
+        <section className="py-16 px-4 bg-gray-50 flex flex-col items-center">
+          <h2 className="text-4xl font-bold mb-4">Who's Part of Membership?</h2>
+          <div className="max-w-2xl mx-auto space-y-6 text-left">
+            <p className="text-gray-700">
+              1. A husband and wife with unmarried children under the age of twenty-one (21) and/or parent(s) and/or grandparent(s);
+            </p>
+            <p className="text-gray-700">
+              2. An individual with unmarried children under the age of twenty-one (21) and/or parent(s) and/or grandparent(s);
+            </p>
+            <p className="text-gray-700">
+              3. An individual or husband and wife with parents living with them.
+            </p>
+
+            <p className="text-lg font-semibold mt-6">Note:</p>
+            <ul className="list-decimal list-inside text-gray-700 mt-2">
+              <li>Your sister and her family would need to sign up separately.</li>
+              <li>
+                Only primary and secondary member of the membership will be eligible to vote for JSSD elections. If your parents and/or grandparents are part of the membership, they will be ineligible to vote.
+              </li>
+            </ul>
+            <p className="text-gray-700 mt-6">
+              For any questions you may have regarding membership, please contact <span className="text-red-600">pr@jssd.org</span>
+            </p>
+          </div>
+        </section>
       </main>
       <Footer />
     </div>

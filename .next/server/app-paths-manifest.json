@@ -1,3 +1,6 @@
 {
-  "/page": "app/page.js"
+  "/_not-found/page": "app/_not-found/page.js",
+  "/pathsala/page": "app/pathsala/page.js",
+  "/page": "app/page.js",
+  "/pathsala/[level]/page": "app/pathsala/[level]/page.js"
 }

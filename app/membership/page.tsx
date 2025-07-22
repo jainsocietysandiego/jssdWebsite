@@ -1,61 +1,30 @@
-import React from "react";
+"use client";
+import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import Link from "next/link";
 
-const membershipBenefits = [
-  {
-    title: "Your Fees go to JSSD General Donation Fund",
-    description: "Your membership fees contribute to the JSSD General Donation Fund to support community activities."
-  },
-  {
-    title: "Free Pass to JSSD Annual Picnic",
-    description: "Enjoy a complimentary pass to the JSSD Annual Picnic — a day of fun, food, and community bonding."
-  },
-  {
-    title: "Discounted Rates for JSSD Events",
-    description: "As a member, you receive discounted rates on various JSSD events.",
-    subpoints: [
-      "Pathshala Fees",
-      "Renting JSSD Facilities for Private Events",
-      "Navratri Garba Events",
-      "Other community events"
-    ]
-  },
-  {
-    title: "Access to Members Only Events",
-    description: "Gain access to exclusive members-only events hosted by JSSD.",
-    subpoints: [
-      "JSSD Cricket League",
-      "JSSD Volleyball League",
-      "Other special member events"
-    ]
-  },
-  {
-    title: "Eligible to sign-up for volunteer hours for President’s Volunteer Service Award (PVSA) program",
-    description: "Members can sign up for volunteer opportunities that count towards the PVSA program."
-  },
-  {
-    title: "Preference to Limited Attendance Activities",
-    description: "Get preference for attending activities with limited spots."
-  },
-  {
-    title: "Right to Vote in JSSD Elections",
-    description: "Exercise your right to vote in the JSSD elections and shape the future of the community."
-  },
-  {
-    title: "Membership Fees Are Tax Deductible",
-    description: "Your membership fees may be tax deductible as per applicable laws."
-  }
-];
-
-const membershipTypes = [
-  { title: "Life Membership", coverage: "Entire family (children under 18) for lifetime", price: "$501" },
-  { title: "Family Annual", coverage: "Entire family (children under 18) for the calendar year.", price: "$51" },
-  { title: "Individual Annual", coverage: "One individual for the calendar year.", price: "$31" },
-];
-
 const Membership = () => {
+  const [data, setData] = useState<any>(null);
+
+  useEffect(() => {
+    fetch(
+      "https://script.google.com/macros/s/AKfycbyF2o2z99qlJJB8L7CqOewouIdDbNlt-xJJa6G1Jm5_cNYA5qlGVQReJZkik9zs8LbiGQ/exec"
+    )
+      .then((res) => res.json())
+      .then(setData);
+  }, []);
+
+  if (!data) {
+    return (
+      <div className="min-h-screen">
+        <Navbar />
+        <div className="text-center pt-32">Loading...</div>
+        <Footer />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen">
       <Navbar />
@@ -70,7 +39,7 @@ const Membership = () => {
           <div className="mt-10 flex ml-40">
             <Link href="/membership/become-a-member">
               <button className="text-lg font-semibold border-2 border-red-600 bg-red-700 text-white px-6 py-2 rounded hover:bg-white hover:text-red-600 hover:border-red-600 transition">
-                Become a Member
+                {data.heroSection.buttonText}
               </button>
             </Link>
           </div>
@@ -78,11 +47,11 @@ const Membership = () => {
 
         {/* Membership Benefits Section */}
         <section className="py-16 px-4 text-center bg-gray-50">
-          <h2 className="text-4xl font-bold mb-4">Membership Benefits</h2>
-          <p className="text-gray-600 mb-10">The benefits of becoming a JSSD member are many!</p>
+          <h2 className="text-4xl font-bold mb-4">{data.benefitsTitle.mainTitle}</h2>
+          <p className="text-gray-600 mb-10">{data.benefitsTitle.subTitle}</p>
 
           <div className="max-w-4xl mx-auto space-y-4">
-            {membershipBenefits.map((benefit, index) => (
+            {data.benefits.map((benefit: any, index: number) => (
               <div key={index} className="flex items-start bg-white rounded-lg p-4 shadow hover:shadow-lg transition text-left">
                 <div className="flex-shrink-0 mr-4">
                   <img src="/hand-icon.png" alt="Benefit Icon" className="w-12 h-12" />
@@ -92,7 +61,7 @@ const Membership = () => {
                   <p className="text-gray-700">{benefit.description}</p>
                   {benefit.subpoints && (
                     <ul className="list-disc list-inside text-gray-700 mt-2">
-                      {benefit.subpoints.map((point, i) => (
+                      {benefit.subpoints.map((point: string, i: number) => (
                         <li key={i}>{point}</li>
                       ))}
                     </ul>
@@ -105,11 +74,11 @@ const Membership = () => {
 
         {/* Membership Types Pricing Cards */}
         <section className="py-8 px-4 text-center bg-white">
-          <h2 className="text-4xl font-bold mb-4">Membership Types</h2>
-          <p className="text-gray-600 mb-10">Following membership types are available at JSSD</p>
+          <h2 className="text-4xl font-bold mb-4">{data.membershipTypesTitle.mainTitle}</h2>
+          <p className="text-gray-600 mb-10">{data.membershipTypesTitle.subTitle}</p>
 
           <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 justify-center">
-            {membershipTypes.map((type, index) => (
+            {data.membershipTypes.map((type: any, index: number) => (
               <div key={index} className="bg-white border rounded-lg p-8 shadow hover:shadow-lg transition w-full max-w-xs mx-auto">
                 <h3 className="text-2xl font-semibold mb-2">{type.title}</h3>
                 <p className="text-gray-700 mb-4">{type.coverage}</p>
@@ -126,27 +95,19 @@ const Membership = () => {
 
         {/* Who's Part of Membership Section */}
         <section className="py-16 px-4 bg-gray-50 flex flex-col items-center">
-          <h2 className="text-4xl font-bold mb-4">Who's Part of Membership?</h2>
+          <h2 className="text-4xl font-bold mb-4">{data.ruleTitle}</h2>
           <div className="max-w-2xl mx-auto space-y-6 text-left">
-            <p className="text-gray-700">
-              1. A husband and wife with unmarried children under the age of twenty-one (21) and/or parent(s) and/or grandparent(s);
-            </p>
-            <p className="text-gray-700">
-              2. An individual with unmarried children under the age of twenty-one (21) and/or parent(s) and/or grandparent(s);
-            </p>
-            <p className="text-gray-700">
-              3. An individual or husband and wife with parents living with them.
-            </p>
+            {data.membershipRules.map((rule: string, index: number) => (
+              <p key={index} className="text-gray-700">{rule}</p>
+            ))}
 
-            <p className="text-lg font-semibold mt-6">Note:</p>
+            <p className="text-lg font-semibold mt-6">{data.note}</p>
             <ul className="list-decimal list-inside text-gray-700 mt-2">
-              <li>Your sister and her family would need to sign up separately.</li>
-              <li>
-                Only primary and secondary member of the membership will be eligible to vote for JSSD elections. If your parents and/or grandparents are part of the membership, they will be ineligible to vote.
-              </li>
+              <li>{data.noteRule.noteRule1}</li>
+              <li>{data.noteRule.noteRule2}</li>
             </ul>
             <p className="text-gray-700 mt-6">
-              For any questions you may have regarding membership, please contact <span className="text-red-600">pr@jssd.org</span>
+              {data.query} <span className="text-red-600">{data.contactEmail}</span>
             </p>
           </div>
         </section>

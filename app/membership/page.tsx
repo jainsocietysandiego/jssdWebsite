@@ -158,7 +158,7 @@ const Membership = () => {
                 <h3 className="text-2xl font-semibold mb-2">{type.title}</h3>
                 <p className="text-gray-700 mb-4">{type.coverage}</p>
                 <div className="text-3xl font-bold text-red-600 mb-6">{type.price}</div>
-                <Link href="/become-a-member">
+                <Link href="/membership/become-a-member">
                   <button className="w-full bg-red-600 text-white py-2 px-4 rounded hover:bg-white hover:text-red-600 hover:border hover:border-red-600 transition">
                     Join Now
                   </button>

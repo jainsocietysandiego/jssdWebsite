@@ -22,6 +22,7 @@ dist/
 out/
 coverage/
 
+
 # Next.js serverless target
 dist-ssr/
 

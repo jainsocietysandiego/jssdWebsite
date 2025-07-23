@@ -7,6 +7,7 @@ import Footer from '../../components/Footer';
 type PolicyItem = { title: string; link: string };
 
 const API_URL = 'https://script.google.com/macros/s/AKfycbzOaZ19OuJZNEiMshDfGS74NiMd4PTqdsgJJRVEFmk6H3XOHxBeTxCvBJQBbOumufckLg/exec';
+const FALLBACK_JSON = '/about-policy.json';
 const CACHE_KEY = 'policy-data';
 const CACHE_TTL = 10 * 60 * 1000; // 10 minutes
 
@@ -30,7 +31,6 @@ const PolicyList: React.FC<{ title: string; items: PolicyItem[] }> = ({ title, i
   </div>
 );
 
-// Skeleton Loader
 const PolicySkeleton = () => (
   <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 animate-pulse">
     <Navbar />
@@ -66,33 +66,60 @@ const PoliciesPage: React.FC = () => {
   } | null>(null);
 
   useEffect(() => {
-    const cached = localStorage.getItem(CACHE_KEY);
-    let shouldFetch = true;
+    let didCancel = false;
 
-    if (cached) {
+    const loadFallbackAndUpdate = async () => {
       try {
-        const { data: cachedData, timestamp } = JSON.parse(cached);
-        if (Date.now() - timestamp < CACHE_TTL) {
-          setData(cachedData);
-          shouldFetch = false;
-        }
-      } catch {
-        // Ignore invalid cache
+        const res = await fetch(FALLBACK_JSON);
+        const fallbackData = await res.json();
+        if (!didCancel) setData(fallbackData);
+      } catch (err) {
+        console.error('Failed to load fallback JSON:', err);
       }
-    }
+    };
 
-    if (shouldFetch) {
+    const loadData = async () => {
+      const cached = localStorage.getItem(CACHE_KEY);
+      let shouldFetch = true;
+
+      if (cached) {
+        try {
+          const { data: cachedData, timestamp } = JSON.parse(cached);
+          if (Date.now() - timestamp < CACHE_TTL) {
+            setData(cachedData);
+            shouldFetch = false;
+          }
+        } catch {
+          // Corrupted cache
+        }
+      }
+
+      if (shouldFetch) {
+        await loadFallbackAndUpdate();
+      }
+
+      // Background fetch from Google Apps Script
       fetch(API_URL)
         .then((res) => res.json())
         .then((apiData) => {
-          setData(apiData);
-          localStorage.setItem(
-            CACHE_KEY,
-            JSON.stringify({ data: apiData, timestamp: Date.now() })
-          );
+          if (!didCancel) {
+            setData(apiData); // Optional re-render
+            localStorage.setItem(
+              CACHE_KEY,
+              JSON.stringify({ data: apiData, timestamp: Date.now() })
+            );
+          }
         })
-        .catch((err) => console.error('Error fetching policies:', err));
-    }
+        .catch((err) => {
+          console.error('Failed to fetch live policy data:', err);
+        });
+    };
+
+    loadData();
+
+    return () => {
+      didCancel = true;
+    };
   }, []);
 
   if (!data) return <PolicySkeleton />;

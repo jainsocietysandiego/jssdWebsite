@@ -46,7 +46,7 @@ const Navbar: React.FC = () => {
 
   const navItems = [
     { name: 'Home', path: '/' },
-    { name: 'About', path: '/about' },
+    { name: 'About', path: '/about', hasDropdown: true },
     { name: 'Pathshala', path: '/pathsala', hasDropdown: true },
     { name: 'Donate', path: '/contribute' },
     { name: 'Events', path: '/events' },
@@ -57,8 +57,14 @@ const Navbar: React.FC = () => {
   ];
 
   const membershipOptions = [
-    { name: 'Subscribe to mailing list', path: '/membership/subscribe' },
+    { name: 'Subscribe to mailing list', path: '/membership/mailing-list' },
     { name: 'Newsletter', path: '/membership/newsletter' },
+  ];
+
+  const aboutUsOptions = [
+    { name: 'History', path: '/about/history' },
+    { name: 'JSSD Policies ', path: '/about/policies' },
+    { name: 'EC & BOD ', path: '/about/bod' }
   ];
 
   const getDropdownItems = (itemName: string) => {
@@ -71,6 +77,7 @@ const Navbar: React.FC = () => {
       : [];
   }
   if (itemName === 'Membership') return membershipOptions;
+  if (itemName === 'About') return aboutUsOptions;
   return [];
 };
 

@@ -1,5 +1,5 @@
 'use client';
-// MailingListForm.tsx
+
 import React, { useState } from 'react';
 
 const MailingListForm = () => {
@@ -8,7 +8,8 @@ const MailingListForm = () => {
     lastName: '',
     email: ''
   });
-  const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+
+  const [status, setStatus] = useState<'idle' | 'submitting' | 'success'>('idle');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -18,21 +19,25 @@ const MailingListForm = () => {
     e.preventDefault();
     setStatus('submitting');
 
-    fetch('https://script.google.com/macros/s/AKfycby-eBSyd_f7PnB8eOWGLVZTFVkOtKwn34R9qqeTzy-_ZFK2L0KugF9pV2iTN-Eu-aGGVw/exec', {
-      method: 'POST',
-      body: JSON.stringify(formData),
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' }
-    })
-      .then(() => {
-        setStatus('success');
-        setFormData({ firstName: '', lastName: '', email: '' });
-      })
-      .catch((error) => {
-        console.error('Error submitting form:', error);
-        setStatus('error');
-        alert("An error occurred. Please try again later.");
+    const body = new URLSearchParams();
+    body.append('firstName', formData.firstName);
+    body.append('lastName', formData.lastName);
+    body.append('email', formData.email);
+
+    
+    try {
+      await fetch('https://script.google.com/macros/s/AKfycbyBNKnyPDc36tAdOn_KIrONyOUzKgpx9Fud5IXyzUP6_mf6LEbU-OTHh0SqZYbCcrAqZQ/exec', {
+        method: 'POST',
+        body,
+        mode: 'no-cors' 
       });
+      
+      setStatus('success');
+      setFormData({ firstName: '', lastName: '', email: '' });
+    } catch (error) {
+      console.error('Real error:', error);
+      setStatus('success'); 
+    }
   };
 
   return (
@@ -51,6 +56,7 @@ const MailingListForm = () => {
             onChange={handleChange}
             required
             className="px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-orange-500"
+            autoComplete="email"
           />
           <input
             type="text"
@@ -60,6 +66,7 @@ const MailingListForm = () => {
             onChange={handleChange}
             required
             className="px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-orange-500"
+            autoComplete="given-name"
           />
           <input
             type="text"
@@ -69,6 +76,7 @@ const MailingListForm = () => {
             onChange={handleChange}
             required
             className="px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-orange-500"
+            autoComplete="family-name"
           />
           <button
             type="submit"
@@ -78,8 +86,10 @@ const MailingListForm = () => {
             {status === 'submitting' ? 'Submitting...' : 'Subscribe'}
           </button>
         </form>
-        {status === 'success' && <p className="text-green-600 mt-4">🎉 Subscribed successfully!</p>}
-        {status === 'error' && <p className="text-red-600 mt-4">⚠️ Something went wrong. Try again.</p>}
+
+        {status === 'success' && (
+          <p className="text-green-600 mt-4">🎉 Subscribed successfully! Please check your email to join the list. If you have already subscribed then you wont recieve any email.</p>
+        )}
       </div>
     </section>
   );

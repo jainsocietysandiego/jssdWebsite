@@ -54,8 +54,65 @@ const Contribute: React.FC = () => {
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="bg-white rounded-lg shadow-lg p-8">
                 <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Make a Donation</h2>
+                {/* Donor Information */}
+                  <div>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-4">Donor Information</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Full Name *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Email Address *
+                        </label>
+                        <input
+                          type="email"
+                          required
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Phone Number
+                        </label>
+                        <input
+                          type="tel"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Address
+                        </label>
+                        <input
+                          type="text"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                        />
+                      </div>
+                    </div>
+                  </div>
 
-                <div className="space-y-8">
+                  {/* Special Instructions */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1 mt-4">
+                      Special Instructions (Optional)
+                    </label>
+                    <textarea
+                      rows={3}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                      placeholder="Any specific wishes or instructions for your donation..."
+                    />
+                  </div>
+
+                  
+                <div className="space-y-8 mt-6">
                   {/* Donation Type */}
                   <div>
                     <h3 className="text-xl font-semibold text-gray-900 mb-4">Donation Type</h3>
@@ -86,8 +143,8 @@ const Contribute: React.FC = () => {
                   </div>
 
                   {/* Donation Category */}
-                  <div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-4">Donation Category</h3>
+                  <div className=''>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-4 ">Donation Category</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {categories.map((category) => (
                         <button
@@ -136,62 +193,7 @@ const Contribute: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Donor Information */}
-                  <div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-4">Donor Information</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Full Name *
-                        </label>
-                        <input
-                          type="text"
-                          required
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Email Address *
-                        </label>
-                        <input
-                          type="email"
-                          required
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Phone Number
-                        </label>
-                        <input
-                          type="tel"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Address
-                        </label>
-                        <input
-                          type="text"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Special Instructions */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Special Instructions (Optional)
-                    </label>
-                    <textarea
-                      rows={3}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                      placeholder="Any specific wishes or instructions for your donation..."
-                    />
-                  </div>
+                  
 
                   {/* Anonymous Donation */}
                   <div className="flex items-center">

@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import React, { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight, ArrowDown } from "lucide-react";
 import Navbar from "./Navbar";
@@ -11,6 +11,9 @@ const CACHE_TTL = 1 * 60 * 1000; // 10 minutes
 
 const Home: React.FC = () => {
   const [data, setData] = useState<any>(null);
+  const [missionPointsWarning, setMissionPointsWarning] = useState<
+    string | null
+  >(null);
   const [currentSlide, setCurrentSlide] = useState(0);
 
   // Load from localStorage or /homepage.json
@@ -50,6 +53,12 @@ const Home: React.FC = () => {
               CACHE_KEY,
               JSON.stringify({ data: liveData, timestamp: Date.now() })
             );
+
+            if (liveData.missionPoints?.length > 5) {
+              setMissionPointsWarning(
+                "You cannot add more than 10 mission points."
+              );
+            }
           })
           .catch(() => {});
       }
@@ -79,11 +88,49 @@ const Home: React.FC = () => {
   const nextSlide = () =>
     setCurrentSlide((prev) => (prev + 1) % data.slides.length);
   const prevSlide = () =>
-    setCurrentSlide((prev) => (prev - 1 + data.slides.length) % data.slides.length);
+    setCurrentSlide(
+      (prev) => (prev - 1 + data.slides.length) % data.slides.length
+    );
   const scrollToAbout = () =>
     document.getElementById("about")?.scrollIntoView({ behavior: "smooth" });
 
-  if (!data) return <div className="min-h-screen bg-orange-100">Loading...</div>;
+  const handleFeedbackSubmit = async (
+    event: React.FormEvent<HTMLFormElement>
+  ) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+
+    formData.append("access_key", "4c5f5788-8bae-46e1-b35a-f2f8b7b93318");
+    formData.append("from_name", formData.get("email") as string);
+    formData.append("subject", "New Feedback Submission from Website");
+    formData.append("replyto", formData.get("email") as string);
+
+    const object = Object.fromEntries(formData);
+    const json = JSON.stringify(object);
+
+    const response = await fetch("https://api.web3forms.com/submit", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: json,
+    });
+
+    const result = await response.json();
+    if (result.success) {
+      console.log("Feedback submitted successfully:", result);
+      alert("Thank you for your feedback!");
+    } else {
+      alert("Error! Please try again.");
+    }
+
+    form.reset();
+  };
+
+  if (!data)
+    return <div className="min-h-screen bg-orange-100">Loading...</div>;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50">
@@ -92,7 +139,9 @@ const Home: React.FC = () => {
         <div className="pt-16">
           {/* Header */}
           <div className="bg-gradient-to-r from-orange-600 to-orange-700 text-white text-center py-6">
-            <h1 className="text-3xl md:text-4xl font-bold">{data.headerTitle}</h1>
+            <h1 className="text-3xl md:text-4xl font-bold">
+              {data.headerTitle}
+            </h1>
           </div>
 
           {/* Hero */}
@@ -116,7 +165,9 @@ const Home: React.FC = () => {
             </div>
             <div className="relative z-10 flex items-center justify-center h-full">
               <div className="text-center text-white px-4 max-w-4xl">
-                <h2 className="text-4xl md:text-6xl font-bold mb-6">{data.heroHeading}</h2>
+                <h2 className="text-4xl md:text-6xl font-bold mb-6">
+                  {data.heroHeading}
+                </h2>
                 <p className="text-xl md:text-2xl mb-8">{data.heroTagline}</p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <button
@@ -188,7 +239,10 @@ const Home: React.FC = () => {
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     {data.stats.map((stat: any, i: number) => (
-                      <div key={i} className="text-center p-6 bg-gray-50 rounded-lg">
+                      <div
+                        key={i}
+                        className="text-center p-6 bg-gray-50 rounded-lg"
+                      >
                         <h3 className="text-2xl font-bold text-orange-600 mb-2">
                           {stat.number}
                         </h3>
@@ -197,19 +251,27 @@ const Home: React.FC = () => {
                     ))}
                   </div>
                 </div>
-                <div className="relative">
+                {/* Our Mission Box*/}
+                <div className="relative lg:top-[-78px] md:top-[-20px] sm:top-0">
                   <div className="bg-gradient-to-r from-orange-400 to-amber-400 p-8 rounded-lg shadow-lg">
                     <h3 className="text-2xl font-bold text-white mb-6">
                       {data.missionHeading}
                     </h3>
                     <ul className="space-y-3 text-white">
-                      {data.missionPoints.map((point: string, idx: number) => (
-                        <li key={idx} className="flex items-start">
-                          <span className="w-2 h-2 bg-white rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                          <span>{point}</span>
-                        </li>
-                      ))}
+                      {data.missionPoints
+                        ?.slice(0, 10)
+                        .map((point: string, idx: number) => (
+                          <li key={idx} className="flex items-start">
+                            <span className="w-2 h-2 bg-white rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                            <span>{point}</span>
+                          </li>
+                        ))}
                     </ul>
+                    {missionPointsWarning && (
+                      <p className="text-red-500 text-sm mt-4">
+                        {missionPointsWarning}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -224,7 +286,7 @@ const Home: React.FC = () => {
               </h2>
               <div className="flex justify-center">
                 <iframe
-                  src="https://calendar.google.com/calendar/embed?src=1066179e4aeb00253564961a28bb63dfe7c58ee0b4e4dd00a8117e2ee1325143%40group.calendar.google.com&ctz=UTC"
+                  src="https://calendar.google.com/calendar/embed?src=6db58ce32d670528f394614b256b704b7af31460e88f5755f1057e7cdcdf04ac%40group.calendar.google.com&ctz=Asia%2FKolkata"
                   style={{ border: 0 }}
                   width="100%"
                   height="600"
@@ -245,23 +307,7 @@ const Home: React.FC = () => {
                 </h2>
               </div>
               <div>
-                <form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    const formData = new FormData(e.currentTarget);
-                    fetch(
-                      "https://script.google.com/macros/s/AKfycbwT8l5yxogr5Ywwu_dfsmzmYBjOiEGlvNdAzyZW_MdLWKYJbmZd14UIGrfr0bQCZtu0yQ/exec",
-                      {
-                        method: "POST",
-                        body: formData,
-                      }
-                    )
-                      .then(() => alert("Thank you for your feedback!"))
-                      .catch(() => alert("Error! Please try again."));
-                    e.currentTarget.reset();
-                  }}
-                  className="space-y-4"
-                >
+                <form onSubmit={handleFeedbackSubmit} className="space-y-4">
                   <input
                     type="text"
                     name="name"
@@ -314,7 +360,7 @@ const Home: React.FC = () => {
           </section>
 
           {/* CTA */}
-          <section className="py-20 bg-gradient-to-r from-orange-600 to-orange-700 text-white">
+          <section className="py-10 bg-gradient-to-r from-orange-600 to-orange-700 text-white">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
               <h2 className="text-4xl font-bold mb-6">{data.ctaHeading}</h2>
               <p className="text-xl mb-8 opacity-90">{data.ctaTagline}</p>

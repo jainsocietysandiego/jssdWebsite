@@ -14,6 +14,7 @@ interface LevelData {
   'Age Group': string;
   Duration: string;
   Students: number;
+    Fees: string;
   'Topics Covered': string;
   'Key Activities ': string;
   'Teachers Note': string;
@@ -125,6 +126,10 @@ const Pathsala: React.FC = () => {
                       <h4 className="text-xl font-semibold text-gray-900 mb-3">{level.Title}</h4>
                       <p className="text-gray-600 mb-4">{level.Description}</p>
                       <div className="space-y-2 mb-6">
+                        <div className="flex items-center text-sm text-gray-500">
+                          <Star className="h-4 w-4 mr-2" />
+                          <span>Fees: {level.Fees}</span>
+                        </div>
                         <div className="flex items-center text-sm text-gray-500">
                           <Clock className="h-4 w-4 mr-2" />
                           <span>{level.Duration} per session</span>

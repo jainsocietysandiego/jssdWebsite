@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { BookOpen, Clock, Users, User } from 'lucide-react';
+import { BookOpen, Clock, Users, User, Star } from 'lucide-react';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import axios from 'axios';
@@ -14,6 +14,7 @@ interface LevelData {
   'Age Group': string;
   Duration: string;
   Students: number;
+  Fees: string;
   'Topics Covered': string;
   'Key Activities ': string;
   'Teachers Note': string;
@@ -109,6 +110,8 @@ const PathsalaLevel: React.FC = () => {
               <InfoCard title="Key Activities" items={data['Key Activities ']} />
               <TextCard title="Teacher's Note" text={data['Teachers Note']} />
               <InfoCard title="Learning Outcomes" items={data['Learning Outcome']} />
+              <OverviewItem icon={Star} label="Fees" value={data.Fees} />
+
             </div>
 
             <div className="bg-orange-50 rounded-lg p-6 h-fit">

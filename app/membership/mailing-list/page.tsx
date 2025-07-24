@@ -6,11 +6,9 @@ import Navbar from '@/app/components/Navbar';
 const MailingList = () => {
   return (
     <>
-    <Navbar />
     <div className="pt-24 px-4 min-h-screen bg-white">
       <MailingListForm />
     </div>
-    <Footer />
     </>
   );
 }

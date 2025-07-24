@@ -5,7 +5,6 @@ import axios from 'axios';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 
-// Constants
 const API_URL = 'https://script.google.com/macros/s/AKfycbw_x_gsRrQ3MEn1ZJBDGs8qhv6u0Uf4Ms_eGrzCetAOH4vwSawGVgkT5vGByArv040b/exec';
 const FALLBACK_JSON = '/about-history.json';
 const CACHE_KEY = 'history-data';
@@ -19,7 +18,6 @@ interface SheetEntry {
 
 const HistorySkeleton = () => (
   <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 animate-pulse">
-    <Navbar />
     <div className="pt-16">
       <section className="bg-gradient-to-r from-orange-600 to-orange-700 text-white py-20">
         <div className="h-10 w-1/2 mx-auto rounded bg-orange-300 mb-4" />
@@ -44,7 +42,6 @@ const HistorySkeleton = () => (
         </div>
       </section>
     </div>
-    <Footer />
   </div>
 );
 
@@ -70,7 +67,7 @@ const HistoryPage: React.FC = () => {
         const res = await fetch(FALLBACK_JSON);
         const fallbackData = await res.json();
         if (!didCancel) {
-          setData(fallbackData);
+          setData(fallbackData.content || []);
           setLoading(false);
         }
       } catch (err) {
@@ -87,7 +84,7 @@ const HistoryPage: React.FC = () => {
         try {
           const { data: cachedData, timestamp } = JSON.parse(cached);
           if (Date.now() - timestamp < CACHE_TTL) {
-            setData(cachedData);
+            setData(cachedData || []);
             setLoading(false);
             shouldFetch = false;
           }
@@ -100,13 +97,12 @@ const HistoryPage: React.FC = () => {
         await loadFallbackAndUpdate();
       }
 
-      // Background fetch
       axios
         .get(API_URL)
         .then(res => {
           const newData = res.data.content || [];
           if (!didCancel) {
-            setData(newData); // Re-render with fresh data
+            setData(newData);
           }
           localStorage.setItem(
             CACHE_KEY,
@@ -128,10 +124,7 @@ const HistoryPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50">
-      <Navbar />
-
       <main className="pt-16">
-        {/* Banner */}
         <section className="bg-gradient-to-r from-orange-600 to-orange-700 text-white py-20">
           <div className="max-w-7xl mx-auto px-4 text-center">
             <h1 className="text-5xl font-bold">
@@ -140,7 +133,6 @@ const HistoryPage: React.FC = () => {
           </div>
         </section>
 
-        {/* Paragraph Description */}
         <section className="py-16 bg-white border border-shadow-md border-colour-gray rounded-xl">
           <div className="max-w-5xl mx-auto px-4 space-y-6 text-gray-800 text-lg leading-relaxed text-justify">
             {getParagraphs().map((para, idx) => (
@@ -149,7 +141,6 @@ const HistoryPage: React.FC = () => {
           </div>
         </section>
 
-        {/* Phases Section */}
         <section className="py-16 bg-orange-50">
           <div className="max-w-5xl mx-auto px-4 space-y-10">
             {getPhases().map((phase, idx) => (
@@ -162,7 +153,7 @@ const HistoryPage: React.FC = () => {
         </section>
       </main>
 
-      <Footer />
+
     </div>
   );
 };

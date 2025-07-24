@@ -93,7 +93,7 @@ const PathsalaLevel: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50">
-      <Navbar />
+
       <main className="pt-16">
         <div className="bg-gradient-to-r from-orange-600 to-orange-700 text-white py-20 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">Pathshala Level {data.Level}</h1>
@@ -128,7 +128,6 @@ const PathsalaLevel: React.FC = () => {
           </div>
         </section>
       </main>
-      <Footer />
     </div>
   );
 };

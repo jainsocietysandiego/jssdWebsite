@@ -147,7 +147,6 @@ const NewsletterPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-amber-100">
-      <Navbar />
       <main className="max-w-5xl mx-auto pt-28 px-2 pb-24">
         <header className="mb-12">
           <div className="bg-gradient-to-r from-orange-600 to-orange-700 text-white rounded-2xl shadow px-8 py-8 text-center border-b-4 border-amber-300">
@@ -234,7 +233,7 @@ const NewsletterPage: React.FC = () => {
           </>
         )}
       </main>
-      <Footer />
+
     </div>
   );
 };

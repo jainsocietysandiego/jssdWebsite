@@ -91,7 +91,6 @@ const Pathsala: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50">
-      <Navbar />
       <main>
         <div className="pt-16">
           <div className="bg-gradient-to-r from-orange-600 to-orange-700 text-white py-20 text-center">
@@ -185,7 +184,6 @@ const Pathsala: React.FC = () => {
           </section>
         </div>
       </main>
-      <Footer />
     </div>
   );
 };

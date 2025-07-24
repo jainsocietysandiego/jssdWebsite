@@ -20,6 +20,7 @@ const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [hoveredDropdown, setHoveredDropdown] = useState<string | null>(null);
+  const [openMobileDropdown, setOpenMobileDropdown] = useState<string | null>(null);
   const [pathsalaLevels, setPathsalaLevels] = useState<LevelInfo[]>([]);
   const dropdownTimeout = useRef<NodeJS.Timeout | null>(null);
   const pathname = usePathname();
@@ -32,7 +33,6 @@ const Navbar: React.FC = () => {
 
   useEffect(() => {
     const loadData = async () => {
-      // 1. Check cache
       const cached = localStorage.getItem(CACHE_KEY);
       let shouldFetch = true;
 
@@ -43,12 +43,9 @@ const Navbar: React.FC = () => {
             setPathsalaLevels(cachedData);
             shouldFetch = false;
           }
-        } catch {
-          // ignore invalid cache
-        }
+        } catch {}
       }
 
-      // 2. Fallback to local JSON
       if (pathsalaLevels.length === 0 && shouldFetch) {
         try {
           const res = await fetch(LOCAL_JSON_PATH);
@@ -61,7 +58,6 @@ const Navbar: React.FC = () => {
         }
       }
 
-      // 3. Background fetch
       try {
         const res = await fetch(API_URL);
         const remoteData = await res.json();
@@ -211,18 +207,56 @@ const Navbar: React.FC = () => {
       {/* Mobile Menu */}
       {isOpen && (
         <div className="md:hidden bg-white px-4 py-4">
-          {navItems.map((item) => (
-            <Link
-              key={item.name}
-              href={item.path}
-              className={`block px-3 py-2 text-base font-medium ${
-                pathname === item.path ? 'text-orange-600' : 'text-gray-700'
-              }`}
-              onClick={() => setIsOpen(false)}
-            >
-              {item.name}
-            </Link>
-          ))}
+          {navItems.map((item) => {
+            const isActive = pathname === item.path;
+            const hasDropdown = item.hasDropdown;
+            const isOpenDropdown = openMobileDropdown === item.name;
+
+            return (
+              <div key={item.name} className="border-b border-gray-200 py-2">
+                <div className="flex justify-between items-center">
+                  <Link
+                    href={item.path}
+                    onClick={() => setIsOpen(false)}
+                    className={`text-base font-medium ${
+                      isActive ? 'text-orange-600' : 'text-gray-700'
+                    }`}
+                  >
+                    {item.name}
+                  </Link>
+                  {hasDropdown && (
+                    <button
+                      onClick={() =>
+                        setOpenMobileDropdown(isOpenDropdown ? null : item.name)
+                      }
+                      className="text-gray-500 hover:text-orange-600 focus:outline-none"
+                    >
+                      <ChevronDown
+                        className={`h-4 w-4 transform transition-transform ${
+                          isOpenDropdown ? 'rotate-180' : ''
+                        }`}
+                      />
+                    </button>
+                  )}
+                </div>
+
+                {hasDropdown && isOpenDropdown && (
+                  <div className="mt-2 pl-4 space-y-1">
+                    {getDropdownItems(item.name).map((opt) => (
+                      <Link
+                        key={opt.name}
+                        href={opt.path}
+                        onClick={() => setIsOpen(false)}
+                        className="block text-sm text-gray-700 hover:text-orange-600"
+                      >
+                        {opt.name}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
     </nav>

@@ -109,9 +109,7 @@ const PathsalaLevel: React.FC = () => {
               <InfoCard title="Topics Covered" items={data['Topics Covered']} />
               <InfoCard title="Key Activities" items={data['Key Activities ']} />
               <TextCard title="Teacher's Note" text={data['Teachers Note']} />
-              <InfoCard title="Learning Outcomes" items={data['Learning Outcome']} />
-              <OverviewItem icon={Star} label="Fees" value={data.Fees} />
-
+              <InfoCard title="Learning Outcomes" items={data['Learning Outcome']} />            
             </div>
 
             <div className="bg-orange-50 rounded-lg p-6 h-fit">
@@ -139,11 +137,13 @@ function OverviewCard({ data }: { data: LevelData }) {
   return (
     <div className="bg-white rounded-lg shadow-lg p-8">
       <h3 className="text-2xl font-bold text-gray-900 mb-6">Class Overview</h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <OverviewItem icon={Users} label="Age Group" value={data['Age Group']} />
         <OverviewItem icon={Clock} label="Duration" value={data.Duration} />
         <OverviewItem icon={User} label="Students" value={`${data.Students} enrolled`} />
         <OverviewItem icon={BookOpen} label="Level" value={`Level ${data.Level}`} />
+        <OverviewItem icon={Star} label="Fees" value={data.Fees} />
+
       </div>
     </div>
   );

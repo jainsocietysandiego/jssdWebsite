@@ -1,0 +1,71 @@
+{
+  "content": [
+    { "Section": "hero", "Label": "Title", "Content": "About JSSD", "": "" },
+    {
+      "Section": "hero",
+      "Label": "Description",
+      "Content": "The Jain Center of Northern California (JCNC) is a unique membership-run, non profit organization incorporating the innovative and progressive life styles Jain families in the Silicon Valley and San Francisco Bay Area while sustaining the religion with its roots back to 900 B.C. The JCNC was incorporated in 1981 in the state of California. Jain Milan, the predecessor organization of JCNC was founded in 1975 with a membership of 20 families. Currently, JCNC has over 2200 members in the San Francisco Bay Area.\n\nWith the blessing of Shri Adinath Bhagawan, JCNC celebrated one of the most memorable and historical Pratishtha Mahotsav of JAIN BHAWAN from August 4-8, 2000. It was attended by more than 5,000 people. Jain Bhawan is the first Jain temple in the entire North America to have Pratimajis with Pran Pratishtha, uniting all Jains beliefs under one roof – Shwetambar, Digambar, Sthanakwasi, Terapanthi and the inspired ones by Shrimad Rajchandraji. Jain Bhawan’s authentic design and architecture makes it a unique landmark, first of its kind in North America. This 24000 sq. ft. two story structure sits on a 1.7 acre lot in the heart of the Silicon Valley.",
+      "": ""
+    },
+    {
+      "Section": "hero",
+      "Label": "Image URL",
+      "Content": "https://jssd.org/wp-content/uploads/2024/03/Tapasvi-Group-Photo-scaled.jpg",
+      "": ""
+    },
+    {
+      "Section": "events",
+      "Label": "Events",
+      "Content": "Mahavir Jayanti, Paryushan Parv, Youth Talent Show, Eco Diwali",
+      "": ""
+    },
+    {
+      "Section": "org_structure",
+      "Label": "Executive Roles",
+      "Content": "President, Vice President, Secretary, Treasurer",
+      "": ""
+    },
+    {
+      "Section": "org_structure",
+      "Label": "Trustee Duties",
+      "Content": "Financial Oversight, Strategic Planning, Policy Development, Community Representation",
+      "": ""
+    },
+    {
+      "Section": "contact",
+      "Label": "Address",
+      "Content": "1830 Anna Lane, Vista, CA 92083",
+      "": ""
+    },
+    {
+      "Section": "contact",
+      "Label": "Mailing Address",
+      "Content": "Treasurer - JSSD, 1830 Anna Lane, Vista, CA 92083",
+      "": ""
+    },
+    {
+      "Section": "contact",
+      "Label": "Regular Hours",
+      "Content": "9:30AM – 11:00AM Sunday",
+      "": ""
+    },
+    {
+      "Section": "contact",
+      "Label": "Pathshala Hours",
+      "Content": "9:30AM – 1:30PM",
+      "": ""
+    },
+    {
+      "Section": "contact",
+      "Label": "Event Contact",
+      "Content": "ec.group@jssd.org",
+      "": ""
+    },
+    {
+      "Section": "contact",
+      "Label": "Emails",
+      "Content": "ec.group@jssd.org, tc.group@jssd.org",
+      "": ""
+    }
+  ]
+}

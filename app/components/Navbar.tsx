@@ -57,11 +57,13 @@ const Navbar: React.FC = () => {
   ];
 
   const membershipOptions = [
+    { name: 'Membership', path: '/membership' },
     { name: 'Subscribe to mailing list', path: '/membership/mailing-list' },
     { name: 'Newsletter', path: '/membership/newsletter' },
   ];
 
   const aboutUsOptions = [
+    { name: 'About Us', path: '/about' },
     { name: 'History', path: '/about/history' },
     { name: 'JSSD Policies ', path: '/about/policies' },
     { name: 'EC & BOD ', path: '/about/bod' }

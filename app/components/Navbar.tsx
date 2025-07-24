@@ -86,7 +86,7 @@ const Navbar: React.FC = () => {
     { name: 'Events', path: '/events' },
     { name: 'Gallery', path: '/gallery' },
     { name: 'Membership', path: '/membership', hasDropdown: true },
-    { name: 'Feedback', path: '/feedback' },
+    { name: 'Groups', path: '/feedback' },
     { name: 'Jinalay', path: '/jinalay' },
   ];
 

@@ -1,14 +1,20 @@
-'use client'
+'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Menu, X, ChevronDown } from 'lucide-react';
-import axios from 'axios';
 
 interface LevelInfo {
-  level: string;
+  Level: number;
+  Title: string;
 }
+
+const API_URL =
+  'https://script.google.com/macros/s/AKfycbyHVNzO5Wbr-OBUAD_KPKPazFsZWz4ak7LONoccChBmZnAmnINE6cUbcnmH_647G5urKw/exec';
+const LOCAL_JSON_PATH = '/pathsala.json';
+const CACHE_KEY = 'navbar-pathshala-levels';
+const CACHE_TTL = 10 * 60 * 1000; // 10 minutes
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -25,23 +31,55 @@ const Navbar: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const fetchLevels = async () => {
+    const loadData = async () => {
+      // 1. Check cache
+      const cached = localStorage.getItem(CACHE_KEY);
+      let shouldFetch = true;
+
+      if (cached) {
+        try {
+          const { data: cachedData, timestamp } = JSON.parse(cached);
+          if (Date.now() - timestamp < CACHE_TTL) {
+            setPathsalaLevels(cachedData);
+            shouldFetch = false;
+          }
+        } catch {
+          // ignore invalid cache
+        }
+      }
+
+      // 2. Fallback to local JSON
+      if (pathsalaLevels.length === 0 && shouldFetch) {
+        try {
+          const res = await fetch(LOCAL_JSON_PATH);
+          if (res.ok) {
+            const localData = await res.json();
+            setPathsalaLevels(localData.levels);
+          }
+        } catch {
+          console.warn('⚠️ Failed to load fallback pathsala.json');
+        }
+      }
+
+      // 3. Background fetch
       try {
-        const res = await axios.get('https://script.google.com/macros/s/AKfycbyHVNzO5Wbr-OBUAD_KPKPazFsZWz4ak7LONoccChBmZnAmnINE6cUbcnmH_647G5urKw/exec'); // 🔁 replace later
-        const allLevels = res.data.levels || [];
-
-        const extracted: LevelInfo[] = allLevels.map((lvl: any) => ({
-        level: lvl.Level,
-      }));
-
-
-        setPathsalaLevels(extracted);
-      } catch (error) {
-        console.error('❌ Error fetching levels for Navbar:', error);
+        const res = await fetch(API_URL);
+        const remoteData = await res.json();
+        if (remoteData?.levels?.length) {
+          localStorage.setItem(
+            CACHE_KEY,
+            JSON.stringify({ data: remoteData.levels, timestamp: Date.now() })
+          );
+          if (JSON.stringify(remoteData.levels) !== JSON.stringify(pathsalaLevels)) {
+            setPathsalaLevels(remoteData.levels);
+          }
+        }
+      } catch {
+        console.warn('⚠️ Background fetch failed.');
       }
     };
 
-    fetchLevels();
+    loadData();
   }, []);
 
   const navItems = [
@@ -65,23 +103,21 @@ const Navbar: React.FC = () => {
   const aboutUsOptions = [
     { name: 'About Us', path: '/about' },
     { name: 'History', path: '/about/history' },
-    { name: 'JSSD Policies ', path: '/about/policies' },
-    { name: 'EC & BOD ', path: '/about/bod' }
+    { name: 'JSSD Policies', path: '/about/policies' },
+    { name: 'EC & BOD', path: '/about/bod' },
   ];
 
   const getDropdownItems = (itemName: string) => {
-  if (itemName === 'Pathshala') {
-    return pathsalaLevels?.length > 0
-      ? pathsalaLevels.map((lvl) => ({
-          name: `Level ${lvl.level}`,
-          path: `/pathsala/level-${lvl.level}`,
-        }))
-      : [];
-  }
-  if (itemName === 'Membership') return membershipOptions;
-  if (itemName === 'About') return aboutUsOptions;
-  return [];
-};
+    if (itemName === 'Pathshala') {
+      return pathsalaLevels.map((lvl) => ({
+        name: `Level ${lvl.Level}: ${lvl.Title}`,
+        path: `/pathsala/level-${lvl.Level}`,
+      }));
+    }
+    if (itemName === 'Membership') return membershipOptions;
+    if (itemName === 'About') return aboutUsOptions;
+    return [];
+  };
 
   const handleMouseEnter = (name: string) => {
     if (dropdownTimeout.current) clearTimeout(dropdownTimeout.current);
@@ -93,12 +129,14 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <nav className={`fixed w-full z-50 transition-all duration-300 ${
-      isScrolled ? 'bg-white/95 backdrop-blur-md shadow-lg' : 'bg-white/80 backdrop-blur-sm'
-    }`}>
+    <nav
+      className={`fixed w-full z-50 transition-all duration-300 ${
+        isScrolled ? 'bg-white/95 backdrop-blur-md shadow-lg' : 'bg-white/80 backdrop-blur-sm'
+      }`}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <Link href="/" className="text-2xl font-bold text-orange-600 hover:text-orange-700 transition-colors">
+          <Link href="/" className="text-2xl font-bold text-orange-600 hover:text-orange-700">
             JSSD
           </Link>
 
@@ -126,13 +164,13 @@ const Navbar: React.FC = () => {
                         <ChevronDown className="ml-1 h-4 w-4" />
                       </Link>
                       {hoveredDropdown === item.name && (
-                        <div className="absolute left-0 mt-1 w-56 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50">
-                          <div className="py-1">
+                        <div className="absolute left-0 mt-1 w-72 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50">
+                          <div className="py-1 max-h-96 overflow-y-auto">
                             {getDropdownItems(item.name).map((opt) => (
                               <Link
                                 key={opt.name}
                                 href={opt.path}
-                                className="block px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors"
+                                className="block px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600"
                               >
                                 {opt.name}
                               </Link>
@@ -158,11 +196,11 @@ const Navbar: React.FC = () => {
             </div>
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Toggle */}
           <div className="md:hidden">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="p-2 rounded-md text-gray-700 hover:text-orange-600 hover:bg-orange-50 focus:outline-none transition"
+              className="p-2 rounded-md text-gray-700 hover:text-orange-600 hover:bg-orange-50 transition"
             >
               {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>

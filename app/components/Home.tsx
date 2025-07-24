@@ -134,7 +134,6 @@ const Home: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50">
-      <Navbar />
       <main>
         <div className="pt-16">
           {/* Header */}
@@ -382,7 +381,6 @@ const Home: React.FC = () => {
           </section>
         </div>
       </main>
-      <Footer />
     </div>
   );
 };

@@ -118,7 +118,6 @@ const BODPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50">
-      <Navbar />
 
       <main className="pt-16">
         {loading ? (
@@ -149,7 +148,6 @@ const BODPage: React.FC = () => {
         )}
       </main>
 
-      <Footer />
     </div>
   );
 };

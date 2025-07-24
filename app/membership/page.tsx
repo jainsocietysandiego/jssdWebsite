@@ -14,7 +14,6 @@ const CACHE_TTL = 10 * 60 * 1000; // 10 minutes
 // Skeleton Component
 const MembershipSkeleton = () => (
   <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 animate-pulse">
-    <Navbar />
     <div className="pt-16">
       <div className="bg-gradient-to-r from-orange-600 to-orange-700 text-center py-6">
         <div className="h-10 w-1/2 mx-auto rounded bg-orange-300" />
@@ -47,7 +46,6 @@ const MembershipSkeleton = () => (
         </div>
       </section>
     </div>
-    <Footer />
   </div>
 );
 
@@ -108,7 +106,6 @@ const Membership = () => {
 
   return (
     <div className="min-h-screen">
-      <Navbar />
       <main className="pt-32">
         {/* Hero Section */}
         <section className="w-full mb-4">
@@ -196,7 +193,6 @@ const Membership = () => {
           </div>
         </section>
       </main>
-      <Footer />
     </div>
   );
 };

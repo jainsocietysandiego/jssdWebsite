@@ -91,7 +91,6 @@ const BecomeAMember: React.FC = () => {
   if (isSubmitted) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50">
-        <Navbar />
         <main>
           <div className="pt-16 min-h-screen flex items-center justify-center">
             <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -129,14 +128,12 @@ const BecomeAMember: React.FC = () => {
             </div>
           </div>
         </main>
-        <Footer />
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50">
-      <Navbar />
       <main>
         <div className="pt-16">
           <div className="bg-gradient-to-r from-orange-600 to-orange-700 text-white py-20">
@@ -343,11 +340,8 @@ const BecomeAMember: React.FC = () => {
               </div>
             </div>
           </section>
-
-          
         </div>
       </main>
-      <Footer />
     </div>
   );
 };

@@ -33,7 +33,7 @@ const PolicyList: React.FC<{ title: string; items: PolicyItem[] }> = ({ title, i
 
 const PolicySkeleton = () => (
   <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 animate-pulse">
-    <Navbar />
+   
     <div className="pt-16">
       <div className="bg-gradient-to-r from-orange-600 to-orange-700 text-white py-20 text-center">
         <div className="h-10 w-1/2 mx-auto rounded bg-orange-300 mb-4" />
@@ -52,7 +52,7 @@ const PolicySkeleton = () => (
         </div>
       </section>
     </div>
-    <Footer />
+
   </div>
 );
 
@@ -126,7 +126,7 @@ const PoliciesPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50">
-      <Navbar />
+      
       <main>
         <div className="pt-16">
           <div className="bg-gradient-to-r from-orange-600 to-orange-700 text-white py-20">
@@ -147,7 +147,7 @@ const PoliciesPage: React.FC = () => {
           </section>
         </div>
       </main>
-      <Footer />
+
     </div>
   );
 };

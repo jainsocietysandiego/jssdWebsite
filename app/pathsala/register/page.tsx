@@ -4,9 +4,33 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { CheckCircle, Heart } from 'lucide-react';
 
+// External endpoints
 const LEVELS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyHVNzO5Wbr-OBUAD_KPKPazFsZWz4ak7LONoccChBmZnAmnINE6cUbcnmH_647G5urKw/exec';
-const ZELLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzIHxb91BTRhLhjOr4an8hcgHBzjOOFWRDPiJgGMlfDEpxGA3yksX0RGjwqE3luzNNDlw/exec'; // <-- Replace!
-const SUBMIT_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwI3rHapQJgBJg1vV-DX6qSAeeMFnhjqx1GmVulizdSIPMZoikv3Vl5KvL5qJbcshfr/exec'; // <-- Replace!
+const ZELLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzIHxb91BTRhLhjOr4an8hcgHBzjOOFWRDPiJgGMlfDEpxGA3yksX0RGjwqE3luzNNDlw/exec';
+const SUBMIT_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwI3rHapQJgBJg1vV-DX6qSAeeMFnhjqx1GmVulizdSIPMZoikv3Vl5KvL5qJbcshfr/exec';
+
+// Helper for localStorage cache
+const cacheFetch = async (key: string, fetcher: () => Promise<any>, maxAgeMs = 15 * 60 * 1000) => {
+  const now = Date.now();
+  try {
+    const cachedRaw = localStorage.getItem(key);
+    if (cachedRaw) {
+      const cached = JSON.parse(cachedRaw);
+      if (now - cached.timestamp < maxAgeMs) return cached.data;
+    }
+    const data = await fetcher();
+    localStorage.setItem(key, JSON.stringify({ timestamp: now, data }));
+    return data;
+  } catch {
+    // Fallback: just fetch
+    return await fetcher();
+  }
+};
+
+const Skeleton = ({ height = 38, className = '' }) => (
+  <div className={`bg-gray-200 rounded animate-pulse mb-2 ${className}`}
+       style={{ height, marginBottom: 8 }} />
+);
 
 const PathshalaRegister: React.FC = () => {
   const [levels, setLevels] = useState<any[]>([]);
@@ -17,7 +41,7 @@ const PathshalaRegister: React.FC = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // NEW: Father & Mother contact split!
+  // Father & Mother contact split!
   const [formData, setFormData] = useState({
     studentName: '',
     studentAge: '',
@@ -33,26 +57,34 @@ const PathshalaRegister: React.FC = () => {
     zipCode: '',
   });
 
+  // --- USER EXPERIENCE: Skeleton and Caching ---
   useEffect(() => {
-    async function fetchData() {
+    async function fetchAll() {
+      setLoading(true);
       try {
-        // Fetch Levels
-        const res = await fetch(LEVELS_SCRIPT_URL);
-        const json = await res.json();
-        setLevels(json.levels);
+        // Levels with cache (~15 min)
+        const levelsRes = await cacheFetch('jc_levels_cache', async () => {
+          const res = await fetch(LEVELS_SCRIPT_URL);
+          return (await res.json()).levels;
+        });
+        setLevels(levelsRes || []);
 
-        // Fetch Zelle QR
-        const qrRes = await fetch(ZELLE_SCRIPT_URL);
-        const qrJson = await qrRes.json();
-        const zelleItem = qrJson.content.find((i: any) => String(i.Section || '').toLowerCase() === 'zelle_qr');
+        // Zelle QR with cache (~1 hour)
+        const qrRes = await cacheFetch('jc_zelleqr_cache', async () => {
+          const res = await fetch(ZELLE_SCRIPT_URL);
+          return (await res.json()).content;
+        }, 60 * 60 * 1000);
+        const zelleItem =
+          (qrRes || []).find((i: any) => String(i.Section || '').toLowerCase() === 'zelle_qr');
         if (zelleItem && zelleItem.ImageURL) setZelleQrUrl(zelleItem.ImageURL);
       } catch (e) {
-        console.error(e);
+        // fallback: just show no data
+        setLevels([]);
       } finally {
         setLoading(false);
       }
     }
-    fetchData();
+    fetchAll();
   }, []);
 
   const selectedPlan = levels.find(lvl => String(lvl.Level) === String(selectedLevel));
@@ -63,6 +95,7 @@ const PathshalaRegister: React.FC = () => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
+  // Custom validation for unique emails/phones (father ≠ mother)
   const validateEmailsPhones = () => {
     if (
       !formData.fatherEmail || !formData.motherEmail ||
@@ -80,12 +113,11 @@ const PathshalaRegister: React.FC = () => {
       return;
     }
     if (!formData.studentName) {
-      alert("Please fill Student Name");
+      alert('Please fill Student Name');
       return;
     }
-    // require both father's and mother's contacts, and they mustn't be the same
     if (!validateEmailsPhones()) {
-      alert("Father and mother must have different email and phone numbers, and all must be filled.");
+      alert('Father and mother must have different email and phone numbers, and all must be filled.');
       return;
     }
     const payload = {
@@ -112,7 +144,24 @@ const PathshalaRegister: React.FC = () => {
     }
   };
 
-  if (loading) return <div className="p-12 text-center">Loading...</div>;
+  // --- SKELETON LOADING UI ---
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-orange-50 p-6">
+        <div className="bg-white rounded-xl shadow-xl p-8 space-y-3 w-full max-w-2xl">
+          <Skeleton height={28} className="w-2/3 mx-auto" />
+          <Skeleton height={36} className="w-1/2" />
+          <Skeleton height={36} className="w-1/2" />
+          <Skeleton height={36} className="w-full" />
+          <Skeleton height={36} className="w-3/4" />
+          <Skeleton height={32} className="w-full" />
+          <Skeleton height={44} className="w-1/2" />
+          <Skeleton height={56} className="w-full" />
+        </div>
+      </div>
+    );
+  }
+  // --- SUCCESS UI ---
   if (isSubmitted) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-orange-50 p-6">
@@ -126,12 +175,13 @@ const PathshalaRegister: React.FC = () => {
     );
   }
 
+  // --- MAIN FORM UI ---
   return (
     <div className="min-h-screen bg-orange-50 p-6 md:p-12">
       <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-xl p-8 space-y-10">
         <h1 className="text-3xl font-bold text-orange-700 text-center">Pathshala Registration</h1>
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Step 1: Student Info */}
+          {/* Student Info */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-1">Student Name</label>
@@ -146,9 +196,8 @@ const PathshalaRegister: React.FC = () => {
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg" />
             </div>
           </div>
-          {/* Step 2: Father & Mother */}
+          {/* Father & Mother Info */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Father */}
             <div>
               <label className="block text-sm font-medium mb-1">Father's Name</label>
               <input type="text" name="fatherName" value={formData.fatherName}
@@ -167,7 +216,6 @@ const PathshalaRegister: React.FC = () => {
                 onChange={handleInputChange} required
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg" />
             </div>
-            {/* Mother */}
             <div>
               <label className="block text-sm font-medium mb-1">Mother's Name</label>
               <input type="text" name="motherName" value={formData.motherName}
@@ -187,7 +235,7 @@ const PathshalaRegister: React.FC = () => {
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg" />
             </div>
           </div>
-          {/* Step 3: Address */}
+          {/* Address */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-1">Address</label>
@@ -214,7 +262,7 @@ const PathshalaRegister: React.FC = () => {
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg" />
             </div>
           </div>
-          {/* Step 4: Level Selection */}
+          {/* Level Selection */}
           <div>
             <label className="block text-lg font-semibold mb-2">Select Pathshala Level</label>
             <select
@@ -235,7 +283,7 @@ const PathshalaRegister: React.FC = () => {
               </div>
             )}
           </div>
-          {/* Step 5: 3% Fee Option + Total */}
+          {/* 3% Fee Option + Total */}
           <div className="bg-yellow-50 p-4 rounded border border-yellow-200">
             <label className="flex items-start space-x-2">
               <input
@@ -252,7 +300,7 @@ const PathshalaRegister: React.FC = () => {
               Total: <span className="text-red-600">${totalWithFee.toFixed(2)}</span>
             </div>
           </div>
-          {/* Step 6: Payment Method */}
+          {/* Payment Method */}
           <div>
             <h2 className="text-xl font-semibold mb-2">Choose Payment Method</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -260,9 +308,7 @@ const PathshalaRegister: React.FC = () => {
                 <button
                   key={method}
                   type="button"
-                  className={`border rounded-lg p-4 text-center transition ${
-                    paymentMethod === method ? 'border-orange-600 bg-orange-50' : 'border-gray-200 hover:border-orange-300'
-                  }`}
+                  className={`border rounded-lg p-4 text-center transition ${paymentMethod === method ? 'border-orange-600 bg-orange-50' : 'border-gray-200 hover:border-orange-300'}`}
                   onClick={() => setPaymentMethod(method as any)}
                 >
                   <div className="text-lg font-bold capitalize">{method}</div>
@@ -277,7 +323,9 @@ const PathshalaRegister: React.FC = () => {
                     <Image src={zelleQrUrl} alt="Zelle QR" fill className="object-contain" />
                   </div>
                 )}
-                <p className="text-sm text-gray-600 mt-2">or send to <strong>donate@yourdomain.org</strong></p>
+                <p className="text-sm text-gray-600 mt-2">
+                  or send to <strong>donate@yourdomain.org</strong>
+                </p>
               </div>
             )}
             {paymentMethod === 'paypal' && (
@@ -302,7 +350,7 @@ const PathshalaRegister: React.FC = () => {
               </div>
             )}
           </div>
-          {/* Step 7: Submit */}
+          {/* Submit */}
           <button
             type="submit"
             className="w-full bg-orange-600 hover:bg-orange-700 text-white py-4 rounded font-semibold text-lg flex items-center justify-center mt-6"

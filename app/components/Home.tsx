@@ -402,7 +402,7 @@ useEffect(() => {
                 >
                   View Events
                 </a>
-                <button onClick={() => setShowMailingModal(true)} className="bg-transparent border-2 border-white hover:bg-white hover:text-orange-600 text-white px-8 py-3 rounded-lg font-semibold transition-colors">Add to mailing list</button>
+                <button onClick={() => setShowMailingModal(true)} className="bg-transparent border-2 border-white hover:bg-white hover:text-orange-600 text-white px-8 py-3 rounded-lg font-semibold transition-colors">Add to Mailing List</button>
               </div>
             </div>
           </section>

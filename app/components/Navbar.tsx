@@ -104,16 +104,20 @@ const Navbar: React.FC = () => {
   ];
 
   const getDropdownItems = (itemName: string) => {
-    if (itemName === 'Pathshala') {
-      return pathsalaLevels.map((lvl) => ({
+  if (itemName === 'Pathshala') {
+    return [
+      { name: 'Pathshala', path: '/pathsala' },
+      ...pathsalaLevels.map((lvl) => ({
         name: `Level ${lvl.Level}: ${lvl.Title}`,
         path: `/pathsala/level-${lvl.Level}`,
-      }));
-    }
-    if (itemName === 'Membership') return membershipOptions;
-    if (itemName === 'About') return aboutUsOptions;
-    return [];
-  };
+      })),
+    ];
+  }
+  if (itemName === 'Membership') return membershipOptions;
+  if (itemName === 'About') return aboutUsOptions;
+  return [];
+};
+
 
   const handleMouseEnter = (name: string) => {
     if (dropdownTimeout.current) clearTimeout(dropdownTimeout.current);

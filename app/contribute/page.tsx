@@ -1,296 +1,255 @@
-'use client'
+// NOTE: Final version with conditional input fields only for categories without preset amount
 
-import React, { useState } from 'react';
-import { Heart, CreditCard, Calendar, DollarSign } from 'lucide-react';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
+'use client';
 
-const Contribute: React.FC = () => {
-  const [donationType, setDonationType] = useState<'one-time' | 'monthly'>('one-time');
-  const [selectedAmount, setSelectedAmount] = useState<number>(0);
-  const [customAmount, setCustomAmount] = useState<string>('');
-  const [donationCategory, setDonationCategory] = useState<string>('general');
+import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
+import { CreditCard, DollarSign, Mail, Heart } from 'lucide-react';
 
-  const predefinedAmounts = [25, 50, 100, 250, 500, 1000];
 
-  const categories = [
-    { id: 'general', name: 'General Fund', description: 'Support overall operations and community programs' },
-    { id: 'annadan', name: 'Annadan', description: 'Food donation for community events and festivals' },
-    { id: 'pathsala', name: 'Pathsala Education', description: 'Support educational programs and materials' },
-    { id: 'jinalay', name: 'Jinalay Project', description: 'Contribute to the new temple construction' },
-    { id: 'events', name: 'Community Events', description: 'Fund cultural and religious celebrations' },
-    { id: 'maintenance', name: 'Facility Maintenance', description: 'Keep our community center in excellent condition' }
-  ];
+const DonatePage: React.FC = () => {
+  const [selected, setSelected] = useState<Record<string, string>>({});
+  const [addFees, setAddFees] = useState(true);
+  const [paymentMethod, setPaymentMethod] = useState<'paypal' | 'zelle' | 'cheque' | null>(null);
+  const [form, setForm] = useState({ name: '', email: '', phone: '', address: '' });
+  const [donationOptions, setDonationOptions] = useState<any[]>([]);
+const [zelleQrUrl, setZelleQrUrl] = useState('');
+const [loading, setLoading] = useState(true);
 
-  const handleAmountSelect = (amount: number) => {
-    setSelectedAmount(amount);
-    setCustomAmount('');
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const res = await fetch('https://script.google.com/macros/s/AKfycbxADt_M879LoY1jpgiboKGcUTl1yritzQclpwAZksu1a5la-CickuIOFlIVK94F2M4Z/exec');
+      const json = await res.json();
+
+      const categories = json.content.filter((item: any) => item.Section === 'donation_category');
+      const qr = json.content.find((item: any) => item.Section === 'zelle_qr');
+
+      setDonationOptions(
+        categories.map((item: any) => ({
+          id: item.ID,
+          label: item.Name,
+          amount: item.Amount ? Number(item.Amount) : undefined,
+          highlight: item.Highlight === 'TRUE',
+        }))
+      );
+
+      if (qr?.ImageURL) setZelleQrUrl(qr.ImageURL);
+    } catch (err) {
+      console.error('Error fetching donation data:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleCustomAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCustomAmount(e.target.value);
-    setSelectedAmount(0);
+  fetchData();
+}, []);
+
+
+  const toggleCategory = (id: string) => {
+    const category = donationOptions.find((opt) => opt.id === id);
+    const value = category?.amount ? String(category.amount) : '0';
+    setSelected((prev) => ({ ...prev, [id]: prev[id] ? '' : value }));
   };
 
-  const getFinalAmount = () => {
-    return customAmount ? parseFloat(customAmount) : selectedAmount;
+  const handleAmountChange = (id: string, value: string) => {
+    setSelected((prev) => ({ ...prev, [id]: value }));
   };
+
+  const baseTotal = Object.entries(selected)
+    .filter(([, val]) => val !== '')
+    .reduce(
+      (sum, [key, val]) => sum + (parseFloat(val) || donationOptions.find((opt) => opt.id === key)?.amount || 0),
+      0
+    );
+
+  const totalWithFee = addFees ? baseTotal * 1.03 : baseTotal;
+
+  const handleSubmit = async () => {
+  const confirmed = window.confirm("Are you sure you have completed the payment?");
+  if (!confirmed) return;
+
+  const payload = {
+    timestamp: new Date().toISOString(),
+    ...form,
+    selectedCategories: Object.keys(selected).join(' | '),
+    categoryAmounts: Object.entries(selected)
+      .map(([k, v]) => `${k}:${v}`)
+      .join(' | '),
+    baseTotal,
+    add3Percent: addFees,
+    finalTotal: totalWithFee.toFixed(2),
+    paymentMethod,
+  };
+
+  try {
+    await fetch('https://script.google.com/macros/s/AKfycbygRiXyqYnrYhSKPlaeQaP15xfhFp5aZB9Qy2JAjN-OV5-eM3LTfLwZEP5-KVscc42-vg/exec', {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    alert('Donation info recorded! Proceed with your payment method.');
+  } catch (err) {
+    console.error('Failed to record donation:', err);
+    alert('Something went wrong while recording the donation.');
+  }
+};
+
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50">
-      <Navbar />
-      <main>
-        <div className="pt-16">
-          <div className="bg-gradient-to-r from-orange-600 to-orange-700 text-white py-20">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-              <h1 className="text-4xl md:text-5xl font-bold mb-6">Support Our Community</h1>
-              <p className="text-xl opacity-90 max-w-3xl mx-auto">
-                Your generous contributions help us preserve Jain traditions and serve our community
-              </p>
+    <div className="min-h-screen bg-orange-50 p-6 md:p-12">
+      <div className="max-w-5xl mx-auto bg-white rounded-xl shadow p-8 space-y-8">
+        <h1 className="text-3xl font-bold text-orange-700 text-center">Make a Donation</h1>
+
+        {/* Categories */}
+        <div>
+          <h2 className="text-xl font-semibold mb-2">Please indicate category (Can select more than one)</h2>
+          <div className="grid md:grid-cols-3 gap-4">
+            {donationOptions.map((opt) => (
+              <div
+                key={opt.id}
+                className={`p-4 rounded-lg border transition-all ${
+                  opt.highlight ? 'border-red-500 bg-red-50 text-red-600 font-semibold' : 'border-gray-200 hover:border-orange-300'
+                } ${selected[opt.id] ? 'bg-orange-50 border-orange-500' : ''}`}
+              >
+                <label className="flex items-center">
+                  <input
+                    type="checkbox"
+                    className="mr-2"
+                    checked={!!selected[opt.id]}
+                    onChange={() => toggleCategory(opt.id)}
+                  />
+                  <span className="flex-1">
+                    {opt.label}
+                    {opt.amount && (
+                      <span className="text-red-600 ml-1 font-semibold"> - ${opt.amount.toLocaleString()}</span>
+                    )}
+                  </span>
+                </label>
+                {selected[opt.id] && !opt.amount && (
+                  <input
+                    type="number"
+                    placeholder={`Enter amount for ${opt.label}`}
+                    className="mt-3 w-full border border-gray-300 rounded px-3 py-2"
+                    value={selected[opt.id]}
+                    onChange={(e) => handleAmountChange(opt.id, e.target.value)}
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* 3% Credit Card Fees */}
+        <div className="bg-yellow-50 p-4 rounded border border-yellow-200">
+          <label className="flex items-start space-x-2">
+            <input
+              type="checkbox"
+              checked={addFees}
+              onChange={() => setAddFees(!addFees)}
+              className="mt-1"
+            />
+            <span className="text-red-600 font-medium">
+              Jain Center pays up to 3% of the donation as commission.
+              <br />Please consider donating that much extra so that we receive the full amount of your donation.
+            </span>
+          </label>
+          <div className="text-right font-semibold mt-2 text-gray-700">
+            Total Amount: <span className="text-red-600">${totalWithFee.toFixed(2)}</span>
+          </div>
+        </div>
+
+        {/* Donor Info */}
+        <div className="grid md:grid-cols-2 gap-4">
+          {['Full Name', 'Email', 'Phone Number', 'Address'].map((field) => (
+            <div key={field}>
+              <label className="block text-sm font-medium mb-1">{field}</label>
+              <input
+                type="text"
+                className="border px-3 py-2 rounded w-full"
+                value={form[field.toLowerCase().replace(/ /g, '') as keyof typeof form]}
+                onChange={(e) =>
+                  setForm({ ...form, [field.toLowerCase().replace(/ /g, '')]: e.target.value })
+                }
+              />
             </div>
+          ))}
+        </div>
+
+        {/* Payment Method */}
+        <div>
+          <h2 className="text-xl font-semibold mb-2">Choose Payment Method</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {['paypal', 'zelle', 'cheque'].map((method) => (
+              <button
+                key={method}
+                className={`border rounded-lg p-4 text-center transition ${
+                  paymentMethod === method ? 'border-orange-600 bg-orange-50' : 'border-gray-200 hover:border-orange-300'
+                }`}
+                onClick={() => setPaymentMethod(method as any)}
+              >
+                <div className="text-lg font-bold capitalize">{method}</div>
+              </button>
+            ))}
           </div>
 
-          <section className="py-20 bg-white">
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="bg-white rounded-lg shadow-lg p-8">
-                <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Make a Donation</h2>
-                {/* Donor Information */}
-                  <div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-4">Donor Information</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Full Name *
-                        </label>
-                        <input
-                          type="text"
-                          required
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Email Address *
-                        </label>
-                        <input
-                          type="email"
-                          required
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Phone Number
-                        </label>
-                        <input
-                          type="tel"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Address
-                        </label>
-                        <input
-                          type="text"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Special Instructions */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1 mt-4">
-                      Special Instructions (Optional)
-                    </label>
-                    <textarea
-                      rows={3}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                      placeholder="Any specific wishes or instructions for your donation..."
-                    />
-                  </div>
-
-                  
-                <div className="space-y-8 mt-6">
-                  {/* Donation Type */}
-                  <div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-4">Donation Type</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <button
-                        onClick={() => setDonationType('one-time')}
-                        className={`p-4 rounded-lg border-2 transition-colors ${
-                          donationType === 'one-time'
-                            ? 'border-orange-600 bg-orange-50 text-orange-600'
-                            : 'border-gray-200 hover:border-orange-300'
-                        }`}
-                      >
-                        <CreditCard className="h-6 w-6 mx-auto mb-2" />
-                        <p className="font-medium">One-time Donation</p>
-                      </button>
-                      <button
-                        onClick={() => setDonationType('monthly')}
-                        className={`p-4 rounded-lg border-2 transition-colors ${
-                          donationType === 'monthly'
-                            ? 'border-orange-600 bg-orange-50 text-orange-600'
-                            : 'border-gray-200 hover:border-orange-300'
-                        }`}
-                      >
-                        <Calendar className="h-6 w-6 mx-auto mb-2" />
-                        <p className="font-medium">Monthly Donation</p>
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Donation Category */}
-                  <div className=''>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-4 ">Donation Category</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {categories.map((category) => (
-                        <button
-                          key={category.id}
-                          onClick={() => setDonationCategory(category.id)}
-                          className={`p-4 rounded-lg border-2 text-left transition-colors ${
-                            donationCategory === category.id
-                              ? 'border-orange-600 bg-orange-50'
-                              : 'border-gray-200 hover:border-orange-300'
-                          }`}
-                        >
-                          <h4 className="font-medium text-gray-900 mb-1">{category.name}</h4>
-                          <p className="text-sm text-gray-600">{category.description}</p>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Amount Selection */}
-                  <div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-4">Select Amount</h3>
-                    <div className="grid grid-cols-3 md:grid-cols-6 gap-4 mb-4">
-                      {predefinedAmounts.map((amount) => (
-                        <button
-                          key={amount}
-                          onClick={() => handleAmountSelect(amount)}
-                          className={`p-3 rounded-lg border-2 font-medium transition-colors ${
-                            selectedAmount === amount
-                              ? 'border-orange-600 bg-orange-50 text-orange-600'
-                              : 'border-gray-200 hover:border-orange-300'
-                          }`}
-                        >
-                          ${amount}
-                        </button>
-                      ))}
-                    </div>
-                    <div className="relative">
-                      <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                      <input
-                        type="number"
-                        placeholder="Enter custom amount"
-                        value={customAmount}
-                        onChange={handleCustomAmountChange}
-                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                      />
-                    </div>
-                  </div>
-
-                  
-
-                  {/* Anonymous Donation */}
-                  <div className="flex items-center">
-                    <input
-                      type="checkbox"
-                      id="anonymous"
-                      className="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded"
-                    />
-                    <label htmlFor="anonymous" className="ml-2 block text-sm text-gray-700">
-                      Make this donation anonymous
-                    </label>
-                  </div>
-
-                  {/* Donation Summary */}
-                  <div className="bg-orange-50 p-6 rounded-lg">
-                    <h3 className="text-xl font-semibold text-gray-900 mb-4">Donation Summary</h3>
-                    <div className="space-y-2">
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Donation Type:</span>
-                        <span className="font-medium">{donationType === 'one-time' ? 'One-time' : 'Monthly'}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Category:</span>
-                        <span className="font-medium">
-                          {categories.find(c => c.id === donationCategory)?.name}
-                        </span>
-                      </div>
-                      <div className="flex justify-between border-t pt-2">
-                        <span className="text-gray-600">Amount:</span>
-                        <span className="font-bold text-xl text-orange-600">
-                          ${getFinalAmount() || 0}
-                          {donationType === 'monthly' && '/month'}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <button
-                    className="w-full bg-orange-600 hover:bg-orange-700 text-white py-4 px-6 rounded-lg font-semibold text-lg transition-colors flex items-center justify-center"
-                    disabled={!getFinalAmount()}
-                  >
-                    <Heart className="h-5 w-5 mr-2" />
-                    Donate ${getFinalAmount() || 0}
-                    {donationType === 'monthly' && '/month'}
-                  </button>
-
-                  <p className="text-sm text-gray-600 text-center">
-                    Your donation is secure and will be processed through our trusted payment gateway. 
-                    You will receive a tax-deductible receipt via email.
-                  </p>
-                </div>
-              </div>
+          {paymentMethod === 'paypal' && (
+            <div className="mt-4 border rounded p-4 bg-gray-50">
+              <form
+                action="https://www.sandbox.paypal.com/donate"
+                method="post"
+                target="_blank"
+              >
+                <input type="hidden" name="business" value="your-sandbox-paypal@email.com" />
+                <input type="hidden" name="currency_code" value="USD" />
+                <input type="hidden" name="amount" value={totalWithFee.toFixed(2)} />
+                <button className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-6 rounded">
+                  Pay with PayPal
+                </button>
+              </form>
             </div>
-          </section>
+          )}
 
-          {/* Impact Section */}
-          <section className="py-20 bg-gray-50">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="text-center mb-16">
-                <h2 className="text-3xl font-bold text-gray-900 mb-4">Your Impact</h2>
-                <p className="text-gray-600 max-w-3xl mx-auto">
-                  See how your contributions make a difference in our community
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div className="text-center p-6 bg-white rounded-lg shadow-md">
-                  <div className="bg-orange-100 text-orange-600 p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                    <span className="text-2xl font-bold">$25</span>
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Pathsala Materials</h3>
-                  <p className="text-gray-600">Provides educational materials for one student for a month</p>
+          {paymentMethod === 'zelle' && (
+            <div className="mt-4 border rounded p-4 bg-gray-50 text-center">
+              <p className="font-medium text-gray-700">Scan the Zelle QR code:</p>
+              {zelleQrUrl && (
+                <div className="relative w-[200px] h-[200px] mx-auto mt-2">
+                  <Image
+                    src={zelleQrUrl}
+                    alt="Zelle QR"
+                    fill
+                    className="object-contain"
+                  />
                 </div>
-
-                <div className="text-center p-6 bg-white rounded-lg shadow-md">
-                  <div className="bg-orange-100 text-orange-600 p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                    <span className="text-2xl font-bold">$100</span>
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Community Event</h3>
-                  <p className="text-gray-600">Helps organize and host one community festival or celebration</p>
-                </div>
-
-                <div className="text-center p-6 bg-white rounded-lg shadow-md">
-                  <div className="bg-orange-100 text-orange-600 p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                    <span className="text-2xl font-bold">$500</span>
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Facility Maintenance</h3>
-                  <p className="text-gray-600">Covers monthly maintenance costs for our community center</p>
-                </div>
-              </div>
+              )}
+              <p className="text-sm text-gray-600 mt-2">or send to <strong>donate@yourdomain.org</strong></p>
             </div>
-          </section>
+          )}
+
+
+          {paymentMethod === 'cheque' && (
+            <div className="mt-4 border rounded p-4 bg-gray-50">
+              <p>Mail your cheque to:</p>
+              <p className="mt-2 font-medium text-gray-700">
+                Jain Center<br />1234 Jain Street<br />Your City, State ZIP
+              </p>
+            </div>
+          )}
         </div>
-      </main>
-      <Footer />
+
+        <button
+          onClick={handleSubmit}
+          className="w-full bg-orange-600 hover:bg-orange-700 text-white py-4 rounded font-semibold text-lg flex items-center justify-center"
+        >
+          <Heart className="h-5 w-5 mr-2" />
+          Submit Donation Info
+        </button>
+      </div>
     </div>
   );
 };
 
-export default Contribute;
+export default DonatePage;

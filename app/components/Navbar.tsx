@@ -9,8 +9,15 @@ interface LevelInfo {
   Level: number;
   Title: string;
 }
+interface CommitteeInfo {
+  Slug: string;
+  'Committee Name': string;
+}
 
-const API_URL =
+const GROUP_CACHE_KEY = 'navbar-groups';
+const COMMITTEES_API_URL =
+  'https://script.google.com/macros/s/AKfycbyiANfsf4RIKXvBMFuDSeNpuSQ_hITNSb_WbAphTtUk-u8GKhcyfB061dLLsAS7wVXC/exec';
+const LEVELS_API_URL =
   'https://script.google.com/macros/s/AKfycbyHVNzO5Wbr-OBUAD_KPKPazFsZWz4ak7LONoccChBmZnAmnINE6cUbcnmH_647G5urKw/exec';
 const LOCAL_JSON_PATH = '/pathsala.json';
 const CACHE_KEY = 'navbar-pathshala-levels';
@@ -22,6 +29,7 @@ const Navbar: React.FC = () => {
   const [hoveredDropdown, setHoveredDropdown] = useState<string | null>(null);
   const [openMobileDropdown, setOpenMobileDropdown] = useState<string | null>(null);
   const [pathsalaLevels, setPathsalaLevels] = useState<LevelInfo[]>([]);
+  const [committeeList, setCommitteeList] = useState<CommitteeInfo[]>([]);
   const dropdownTimeout = useRef<NodeJS.Timeout | null>(null);
   const pathname = usePathname();
 
@@ -32,7 +40,43 @@ const Navbar: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const loadData = async () => {
+    const fetchCommittees = async () => {
+      const cached = localStorage.getItem(GROUP_CACHE_KEY);
+      if (cached) {
+        try {
+          const { data, timestamp } = JSON.parse(cached);
+          if (Date.now() - timestamp < CACHE_TTL) {
+            setCommitteeList(data);
+            return;
+          }
+        } catch {}
+      }
+
+      try {
+        const res = await fetch(COMMITTEES_API_URL);
+        const json = await res.json();
+        if (json.committees?.length) {
+          const minimalData = json.committees.map((c: any) => ({
+            Slug: c.Slug,
+            'Committee Name': c['Committee Name'],
+          }));
+
+          setCommitteeList(minimalData);
+          localStorage.setItem(
+            GROUP_CACHE_KEY,
+            JSON.stringify({ data: minimalData, timestamp: Date.now() })
+          );
+        }
+      } catch (err) {
+        console.error('Failed to load committees', err);
+      }
+    };
+
+    fetchCommittees();
+  }, []);
+
+  useEffect(() => {
+    const loadLevels = async () => {
       const cached = localStorage.getItem(CACHE_KEY);
       let shouldFetch = true;
 
@@ -59,7 +103,7 @@ const Navbar: React.FC = () => {
       }
 
       try {
-        const res = await fetch(API_URL);
+        const res = await fetch(LEVELS_API_URL);
         const remoteData = await res.json();
         if (remoteData?.levels?.length) {
           localStorage.setItem(
@@ -75,7 +119,7 @@ const Navbar: React.FC = () => {
       }
     };
 
-    loadData();
+    loadLevels();
   }, []);
 
   const navItems = [
@@ -86,7 +130,7 @@ const Navbar: React.FC = () => {
     { name: 'Events', path: '/events' },
     { name: 'Gallery', path: '/gallery' },
     { name: 'Membership', path: '/membership', hasDropdown: true },
-    { name: 'Groups', path: '/feedback' },
+    { name: 'Groups', path: '', hasDropdown: true }, // ⬅️ no path
     { name: 'Jinalay', path: '/jinalay' },
   ];
 
@@ -104,20 +148,27 @@ const Navbar: React.FC = () => {
   ];
 
   const getDropdownItems = (itemName: string) => {
-  if (itemName === 'Pathshala') {
-    return [
-      { name: 'Pathshala', path: '/pathsala' },
-      ...pathsalaLevels.map((lvl) => ({
-        name: `Level ${lvl.Level}: ${lvl.Title}`,
-        path: `/pathsala/level-${lvl.Level}`,
-      })),
-    ];
-  }
-  if (itemName === 'Membership') return membershipOptions;
-  if (itemName === 'About') return aboutUsOptions;
-  return [];
-};
+    if (itemName === 'Pathshala') {
+      return [
+        { name: 'Pathshala', path: '/pathsala' },
+        ...pathsalaLevels.map((lvl) => ({
+          name: `Level ${lvl.Level}: ${lvl.Title}`,
+          path: `/pathsala/level-${lvl.Level}`,
+        })),
+      ];
+    }
 
+    if (itemName === 'Groups') {
+      return committeeList.map((c) => ({
+        name: c['Committee Name'],
+        path: `/group/${c.Slug}`,
+      }));
+    }
+
+    if (itemName === 'Membership') return membershipOptions;
+    if (itemName === 'About') return aboutUsOptions;
+    return [];
+  };
 
   const handleMouseEnter = (name: string) => {
     if (dropdownTimeout.current) clearTimeout(dropdownTimeout.current);
@@ -152,17 +203,26 @@ const Navbar: React.FC = () => {
                 >
                   {item.hasDropdown ? (
                     <>
-                      <Link
-                        href={item.path}
-                        className={`flex items-center px-3 py-2 text-sm font-medium transition-colors ${
-                          pathname === item.path
-                            ? 'text-orange-600 border-b-2 border-orange-600'
-                            : 'text-gray-700 hover:text-orange-600'
-                        }`}
-                      >
-                        {item.name}
-                        <ChevronDown className="ml-1 h-4 w-4" />
-                      </Link>
+                      {item.path ? (
+                        <Link
+                          href={item.path}
+                          className={`flex items-center px-3 py-2 text-sm font-medium transition-colors ${
+                            pathname === item.path
+                              ? 'text-orange-600 border-b-2 border-orange-600'
+                              : 'text-gray-700 hover:text-orange-600'
+                          }`}
+                        >
+                          {item.name}
+                          <ChevronDown className="ml-1 h-4 w-4" />
+                        </Link>
+                      ) : (
+                        <span
+                          className="flex items-center px-3 py-2 text-sm font-medium text-gray-700 hover:text-orange-600 cursor-pointer"
+                        >
+                          {item.name}
+                          <ChevronDown className="ml-1 h-4 w-4" />
+                        </span>
+                      )}
                       {hoveredDropdown === item.name && (
                         <div className="absolute left-0 mt-1 w-72 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50">
                           <div className="py-1 max-h-96 overflow-y-auto">
@@ -219,15 +279,19 @@ const Navbar: React.FC = () => {
             return (
               <div key={item.name} className="border-b border-gray-200 py-2">
                 <div className="flex justify-between items-center">
-                  <Link
-                    href={item.path}
-                    onClick={() => setIsOpen(false)}
-                    className={`text-base font-medium ${
-                      isActive ? 'text-orange-600' : 'text-gray-700'
-                    }`}
-                  >
-                    {item.name}
-                  </Link>
+                  {item.path ? (
+                    <Link
+                      href={item.path}
+                      onClick={() => setIsOpen(false)}
+                      className={`text-base font-medium ${
+                        isActive ? 'text-orange-600' : 'text-gray-700'
+                      }`}
+                    >
+                      {item.name}
+                    </Link>
+                  ) : (
+                    <span className="text-base font-medium text-gray-700">{item.name}</span>
+                  )}
                   {hasDropdown && (
                     <button
                       onClick={() =>

@@ -1,19 +1,24 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
-import Navbar from '../../components/Navbar';
-import Footer from '../../components/Footer';
+import React, { useState, useEffect, Suspense } from 'react';
+
 import {
-  Calendar, MapPin, Mail, Phone, Home, Hash, User, Users
+  Calendar,
+  MapPin,
+  Mail,
+  Phone,
+  Home,
+  Hash,
+  User,
+  Users
 } from 'lucide-react';
 
-// Google Calendar & App Script config
-const CALENDAR_ID = 'gamingaurav@gmail.com';
-const API_KEY = 'AIzaSyB8AZVAVLsFcDaSbrraZgwRtcylsHNRCxw';
+// CONFIG — SET YOUR GOOGLE APPSCRIPT DEPLOYMENT URL
 const SUBMIT_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyXzmrnSpc7uDjbZgYazubjNdsDC3oCwjociUcYZ1xU4i_vH6zmUx-6axkw0py1bZ6R/exec';
+const API_KEY = 'AIzaSyB8AZVAVLsFcDaSbrraZgwRtcylsHNRCxw';
+const CALENDAR_ID = 'gamingaurav@gmail.com';
 
-// Helper function to get event details from Google Calendar by ID
+// Util to fetch Google Calendar event details
 async function fetchEventById(eventId: string) {
   const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(CALENDAR_ID)}/events/${eventId}?key=${API_KEY}`;
   const res = await fetch(url);
@@ -29,7 +34,7 @@ async function fetchEventById(eventId: string) {
   };
 }
 
-// Reusable floating label input field
+// Floating Label Input field component
 function FloatingLabelInput(props: {
   icon: React.ReactNode,
   name: string,
@@ -69,11 +74,8 @@ function FloatingLabelInput(props: {
   );
 }
 
-const RegisterPage: React.FC = () => {
-  // Get eventId from query params
-  const searchParams = useSearchParams();
-  const eventId = searchParams.get('event') || '';
-  // Page state
+// --- The actual register page, wrapped in Suspense boundary for Next.js 14+ ---
+function RegisterPageInner({ eventId }: { eventId: string }) {
   const [eventData, setEventData] = useState<any | null>(null);
   const [loading, setLoading] = useState(true); // loading event info
   const [form, setForm] = useState({
@@ -85,7 +87,7 @@ const RegisterPage: React.FC = () => {
     zip: '',
   });
   const [success, setSuccess] = useState(false);
-  const [submitting, setSubmitting] = useState(false); // loading animation for submit
+  const [submitting, setSubmitting] = useState(false);
 
   // Fetch event data on load
   useEffect(() => {
@@ -96,15 +98,12 @@ const RegisterPage: React.FC = () => {
     });
   }, [eventId]);
 
-  // Form input handler
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setForm(f => ({ ...f, [e.target.name]: e.target.value }));
   }
 
-  // Form submit handler: disables and shows spinner while submitting
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    // All fields are required
     if (!form.name || !form.email || !form.phone || !form.address || !form.state || !form.zip) {
       alert('Please fill all fields');
       return;
@@ -135,11 +134,10 @@ const RegisterPage: React.FC = () => {
     setSuccess(true);
   }
 
-  // Success confirmation
   if (success) {
     return (
       <div className="min-h-screen flex flex-col items-center bg-gradient-to-br from-orange-50 to-amber-50">
-        <Navbar />
+    
         <div className="flex-grow flex items-center justify-center animate-fade-in">
           <div className="bg-white rounded-xl shadow-2xl px-10 py-12 max-w-md text-center">
             <div className="flex justify-center mb-5">
@@ -155,7 +153,7 @@ const RegisterPage: React.FC = () => {
             <p className="text-gray-500 text-sm">You’ll receive a confirmation email soon.</p>
           </div>
         </div>
-        <Footer />
+       
         <style jsx global>{`
           @keyframes fade-in { from { opacity:0; transform: translateY(40px);} to { opacity:1; transform:none; } }
           .animate-fade-in { animation: fade-in .7s cubic-bezier(.22,.7,.53,1.15); }
@@ -171,10 +169,9 @@ const RegisterPage: React.FC = () => {
     return <div className="min-h-screen flex items-center justify-center font-medium text-red-700">Event not found.</div>;
   }
 
-  // Main form
   return (
     <div className="min-h-screen bg-gradient-to-bl from-orange-50 to-amber-50 flex flex-col">
-      <Navbar />
+     
       <main className="flex-1">
         <div className="max-w-2xl mx-auto my-12">
           <div className="bg-white shadow-xl rounded-3xl overflow-hidden animate-fade-in">
@@ -265,13 +262,28 @@ const RegisterPage: React.FC = () => {
           </div>
         </div>
       </main>
-      <Footer />
+      
       <style jsx global>{`
         @keyframes fade-in { from { opacity:0; transform: translateY(40px);} to { opacity:1; transform:none; } }
         .animate-fade-in { animation: fade-in .7s cubic-bezier(.22,.7,.53,1.15); }
       `}</style>
     </div>
   );
-};
+}
 
-export default RegisterPage;
+// --- Actual page export: useSearchParams in Suspense-bound client component ---
+import { useSearchParams } from 'next/navigation';
+
+function RegisterWithSearchParams() {
+  const searchParams = useSearchParams();
+  const eventId = searchParams.get('event') || '';
+  return <RegisterPageInner eventId={eventId} />;
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading form...</div>}>
+      <RegisterWithSearchParams />
+    </Suspense>
+  );
+}

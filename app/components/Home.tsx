@@ -1,8 +1,8 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight, ArrowDown } from "lucide-react";
-import Navbar from "./Navbar";
-import Footer from "./Footer";
+import { useRouter,usePathname  } from "next/navigation"; 
+import MailingListForm from "./mailingListSection";
 
 const API_URL =
   "https://script.google.com/macros/s/AKfycbzN9-QOSlSBd5GWQqfnBljehPnKYiGHAbYbs3MjKVA3Bs4MPQO6X6UF5k-oh6UCOwMaTA/exec";
@@ -11,10 +11,36 @@ const CACHE_TTL = 1 * 60 * 1000; // 10 minutes
 
 const Home: React.FC = () => {
   const [data, setData] = useState<any>(null);
-  const [missionPointsWarning, setMissionPointsWarning] = useState<
-    string | null
-  >(null);
+  const [missionPointsWarning, setMissionPointsWarning] = useState<string | null>(null);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [showMailingModal, setShowMailingModal] = useState(false);
+
+  const pathname = usePathname();
+
+useEffect(() => {
+  if (typeof window === "undefined") return;
+
+  if (pathname === "/") {
+    const hash = window.location.hash;
+    if (hash) {
+      const scrollToHash = () => {
+        const el = document.querySelector(hash);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      };
+      setTimeout(scrollToHash, 500);
+    }
+  }
+}, [pathname]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setShowMailingModal(false);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   // Load from localStorage or /homepage.json
   useEffect(() => {
@@ -298,7 +324,7 @@ const Home: React.FC = () => {
           </section>
 
           {/* Feedback */}
-          <section className="bg-orange-50 py-16">
+          <section id = 'feedback' className="bg-orange-50 py-16">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-8 items-center">
               <div>
                 <h2 className="text-4xl font-bold text-orange-700 mb-4">
@@ -366,7 +392,7 @@ const Home: React.FC = () => {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <a
                   href="/membership"
-                  className="bg-white text-orange-600 hover:bg-gray-100 px-8 py-3 rounded-lg font-semibold transition-colors"
+                  className="bg-transparent border-2 border-white hover:bg-white hover:text-orange-600 text-white px-8 py-3 rounded-lg font-semibold transition-colors"
                 >
                   Become a Member
                 </a>
@@ -376,9 +402,18 @@ const Home: React.FC = () => {
                 >
                   View Events
                 </a>
+                <button onClick={() => setShowMailingModal(true)} className="bg-transparent border-2 border-white hover:bg-white hover:text-orange-600 text-white px-8 py-3 rounded-lg font-semibold transition-colors">Add to mailing list</button>
               </div>
             </div>
           </section>
+          {showMailingModal && (
+          <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl relative">
+              <button onClick={() => setShowMailingModal(false)} className="absolute top-4 right-4 text-gray-600 text-2xl font-bold hover:text-black">×</button>
+              <MailingListForm />
+            </div>
+          </div>
+        )}
         </div>
       </main>
     </div>

@@ -204,6 +204,7 @@ useEffect(() => {
                   name={name}
                   value={(formData as any)[name]}
                   onChange={handleInputChange}
+                  required
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 />
               </div>
@@ -236,6 +237,7 @@ useEffect(() => {
                     type="checkbox"
                     checked={formData.interests.includes(interest)}
                     onChange={() => handleInterestChange(interest)}
+                    required
                     className="mr-2"
                   />
                   <span>{interest}</span>

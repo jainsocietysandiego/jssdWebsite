@@ -110,7 +110,7 @@ const PathsalaLevel: React.FC = () => {
                 Register for this level or contact us for more information about our Pathshala program.
               </p>
               <div className="space-y-3">
-                <a href="/membership" className="block bg-orange-600 hover:bg-orange-700 text-white py-2 px-4 rounded-lg font-medium text-center">
+                <a href="/pathsala/register" className="block bg-orange-600 hover:bg-orange-700 text-white py-2 px-4 rounded-lg font-medium text-center">
                   Register Now
                 </a>
                 <a href="/feedback" className="block bg-white hover:bg-gray-50 text-orange-600 border border-orange-600 py-2 px-4 rounded-lg font-medium text-center">

@@ -1,11 +1,10 @@
-'use client'
+'use client';
 
-import React, { useState } from 'react';
-import { Users, Mail, Phone, MapPin, CheckCircle } from 'lucide-react';
-import Navbar from '../../components/Navbar';
-import Footer from '../../components/Footer';
+import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
+import { CheckCircle, Heart } from 'lucide-react';
 
-const BecomeAMember: React.FC = () => {
+const MembershipPage: React.FC = () => {
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -18,332 +17,309 @@ const BecomeAMember: React.FC = () => {
     interests: [] as string[],
     subscribeEmail: false,
     pathsalaInterest: false,
-    volunteerInterest: false
+    volunteerInterest: false,
   });
 
+  const [membershipTypes, setMembershipTypes] = useState<any[]>([]);
+  const [selectedMembership, setSelectedMembership] = useState<string>('');
+  const [addFees, setAddFees] = useState(true);
+  const [paymentMethod, setPaymentMethod] = useState<'paypal' | 'zelle' | 'cheque' | null>(null);
+  const [zelleQrUrl, setZelleQrUrl] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const interestOptions = [
-    'Religious Events',
-    'Community Service',
-    'Cultural Programs',
-    'Educational Activities',
-    'Pathsala Teaching',
-    'Event Planning',
-    'Fundraising',
-    'Youth Programs',
-    'Senior Activities',
-    'Wellness Programs'
-  ];
+  const FETCH_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx33ldKE6dib3hJFA6xYw0ShWDzwV2hZNV-loY2l6SfOxqRGvvh9cgdPRmeufgdrWSrAw/exec'; // Sheet A
+const SUBMIT_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx_NqV0nsolC6iX8o3pUZBJaJrdMeXJWBSAJKwQzPjS_sJ0GFBTOr87xSOQTky9gx86/exec'; // Sheet B
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value, type } = e.target;
-    
-    if (type === 'checkbox') {
-      const checked = (e.target as HTMLInputElement).checked;
-      setFormData(prev => ({
-        ...prev,
-        [name]: checked
-      }));
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        [name]: value
-      }));
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const res = await fetch(FETCH_SCRIPT_URL);
+      const json = await res.json();
+
+      const memberships = json.content.filter((item: any) => item.Section === 'membership_type');
+      const qr = json.content.find((item: any) => item.Section === 'zelle_qr');
+
+      setMembershipTypes(
+        memberships.map((item: any) => ({
+          id: item.ID,
+          name: item.Name,
+          amount: Number(item.Amount),
+          description: item.Description,
+          highlight: item.Highlight === 'TRUE',
+        }))
+      );
+
+      if (qr?.ImageURL) setZelleQrUrl(qr.ImageURL);
+    } catch (err) {
+      console.error('Error fetching donation data:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleInterestChange = (interest: string) => {
-    setFormData(prev => ({
+  fetchData();
+}, []);
+
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const target = e.target as HTMLInputElement;
+    const { name, type, value, checked } = target;
+
+    setFormData((prev) => ({
       ...prev,
-      interests: prev.interests.includes(interest)
-        ? prev.interests.filter(i => i !== interest)
-        : [...prev.interests, interest]
+      [name]: type === 'checkbox' ? checked : value,
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleInterestChange = (interest: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      interests: prev.interests.includes(interest)
+        ? prev.interests.filter((i) => i !== interest)
+        : [...prev.interests, interest],
+    }));
+  };
 
-    const form = new FormData();
-    Object.entries(formData).forEach(([key, value]) => {
-      if (Array.isArray(value)) {
-        form.append(key, value.join(", "));
-      } else {
-        form.append(key, value.toString());
-      }
-    });
+  const selectedPlan = membershipTypes.find((m) => m.id === selectedMembership);
+  const baseTotal = selectedPlan?.amount || 0;
+  const totalWithFee = addFees ? baseTotal * 1.03 : baseTotal;
 
-    fetch('https://script.google.com/macros/s/AKfycbywpX9zAQha4bTnmTBNksCafu6IAHe1U1oHgxWqlspDZHpZbl1oYB_v3UQCO9MKyKUaKQ/exec', {
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  if (!selectedPlan) {
+    alert('Please select a membership type.');
+    return;
+  }
+
+  const payload = {
+    timestamp: new Date().toISOString(),
+    ...formData,
+    interests: formData.interests.join(', '),
+    selectedMembership: selectedPlan.name,
+    baseTotal,
+    add3Percent: addFees,
+    finalTotal: totalWithFee.toFixed(2),
+    paymentMethod,
+  };
+
+  try {
+    await fetch(SUBMIT_SCRIPT_URL, {
       method: 'POST',
       mode: 'no-cors',
-      body: form
-    })
-      .then(() => {
-        setIsSubmitted(true);
-      })
-      .catch((error) => {
-        console.error('Error submitting form:', error);
-        alert("An error occurred. Please try again later.");
-      });
-  };
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    setIsSubmitted(true);
+  } catch (error) {
+    console.error('Submission failed:', error);
+    alert('Something went wrong. Please try again.');
+  }
+};
+
 
   if (isSubmitted) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50">
-        <main>
-          <div className="pt-16 min-h-screen flex items-center justify-center">
-            <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-              <div className="bg-white rounded-lg shadow-lg p-8">
-                <div className="mb-6">
-                  <CheckCircle className="h-16 w-16 text-green-600 mx-auto mb-4" />
-                  <h1 className="text-3xl font-bold text-gray-900 mb-4">Thank You for Joining!</h1>
-                  <p className="text-lg text-gray-600 mb-6">
-                    Your membership application has been successfully submitted.
-                  </p>
-                  <div className="bg-orange-50 p-6 rounded-lg border-l-4 border-orange-600">
-                    <h2 className="text-xl font-semibold text-gray-900 mb-2">What's Next?</h2>
-                    <p className="text-gray-700">
-                      You will receive an invitation email to join our community within 1-2 days. 
-                      Our membership committee will review your application and send you all the 
-                      necessary information to get started.
-                    </p>
-                  </div>
-                  <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center">
-                    <a
-                      href="/"
-                      className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
-                    >
-                      Return to Home
-                    </a>
-                    <a
-                      href="/events"
-                      className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-medium transition-colors"
-                    >
-                      View Events
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </main>
+      <div className="min-h-screen flex items-center justify-center bg-orange-50 p-6">
+        <div className="bg-white rounded-lg shadow-lg p-8 text-center max-w-lg w-full">
+          <CheckCircle className="h-12 w-12 text-green-600 mx-auto mb-4" />
+          <h1 className="text-2xl font-bold text-gray-800 mb-2">Thank You for Joining!</h1>
+          <p className="text-gray-700 mb-4">Your membership registration has been submitted successfully.</p>
+          <p className="text-gray-600">You will receive a confirmation email soon.</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50">
-      <main>
-        <div className="pt-16">
-          <div className="bg-gradient-to-r from-orange-600 to-orange-700 text-white py-20">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-              <h1 className="text-4xl md:text-5xl font-bold mb-6">Join Our Community</h1>
-              <p className="text-xl opacity-90 max-w-3xl mx-auto">
-                Become a member of JSSD and be part of our growing spiritual family
-              </p>
+    <div className="min-h-screen bg-orange-50 p-6 md:p-12">
+      <div className="max-w-5xl mx-auto bg-white rounded-xl shadow-xl p-8 space-y-10">
+        <h1 className="text-3xl font-bold text-orange-700 text-center">Membership Registration</h1>
+
+        {/* Membership Types */}
+        <div>
+          <h2 className="text-xl font-semibold mb-4">Choose a Membership Plan</h2>
+          <div className="grid md:grid-cols-3 gap-4">
+            {membershipTypes.map((type) => (
+              <label
+                key={type.id}
+                className={`p-4 rounded-lg border transition-all cursor-pointer ${
+                  selectedMembership === type.id
+                    ? 'bg-orange-50 border-orange-500'
+                    : 'border-gray-200 hover:border-orange-300'
+                } ${type.highlight ? 'bg-yellow-50 border-yellow-400' : ''}`}
+              >
+                <input
+                  type="radio"
+                  name="membershipType"
+                  className="mr-2"
+                  checked={selectedMembership === type.id}
+                  onChange={() => setSelectedMembership(type.id)}
+                />
+                <span className="font-semibold">{type.name}</span>
+                <div className="text-sm text-gray-600 mt-1">{type.description}</div>
+                <div className="text-orange-600 font-bold mt-1">${type.amount.toFixed(2)}</div>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        {/* Optional 3% */}
+        <div className="bg-yellow-50 p-4 rounded border border-yellow-200">
+          <label className="flex items-start space-x-2">
+            <input
+              type="checkbox"
+              checked={addFees}
+              onChange={() => setAddFees(!addFees)}
+              className="mt-1"
+            />
+            <span className="text-red-600 font-medium">
+              We pay ~3% in fees for online payments. Consider covering that cost so 100% of your contribution supports the community.
+            </span>
+          </label>
+          <div className="text-right font-semibold mt-2 text-gray-700">
+            Total: <span className="text-red-600">${totalWithFee.toFixed(2)}</span>
+          </div>
+        </div>
+
+        {/* Personal Info Form */}
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="grid md:grid-cols-2 gap-4">
+            {[
+              { name: 'fullName', label: 'Full Name' },
+              { name: 'email', label: 'Email' },
+              { name: 'phone', label: 'Phone' },
+              { name: 'address', label: 'Address' },
+              { name: 'city', label: 'City' },
+              { name: 'state', label: 'State' },
+              { name: 'zipCode', label: 'ZIP Code' },
+            ].map(({ name, label }) => (
+              <div key={name}>
+                <label className="block text-sm font-medium mb-1">{label}</label>
+                <input
+                  type="text"
+                  name={name}
+                  value={(formData as any)[name]}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                />
+              </div>
+            ))}
+          </div>
+
+          {/* Family Members */}
+          <div>
+            <label className="block text-sm font-medium mb-1">Family Members (Names & Ages)</label>
+            <textarea
+              name="familyMembers"
+              rows={3}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+              value={formData.familyMembers}
+              onChange={handleInputChange}
+            />
+          </div>
+
+          {/* Interests */}
+          <div>
+            <label className="block text-sm font-medium mb-2">Areas of Interest</label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              {[
+                'Religious Events', 'Community Service', 'Cultural Programs',
+                'Educational Activities', 'Pathsala Teaching', 'Event Planning',
+                'Fundraising', 'Youth Programs', 'Senior Activities', 'Wellness Programs',
+              ].map((interest) => (
+                <label key={interest} className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={formData.interests.includes(interest)}
+                    onChange={() => handleInterestChange(interest)}
+                    className="mr-2"
+                  />
+                  <span>{interest}</span>
+                </label>
+              ))}
             </div>
           </div>
 
-          <section className="py-20 bg-white">
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="bg-white rounded-lg shadow-lg p-8">
-                <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Membership Registration</h2>
-                
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  {/* Personal Information */}
-                  <div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-4">Personal Information</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Full Name *
-                        </label>
-                        <input
-                          type="text"
-                          name="fullName"
-                          value={formData.fullName}
-                          onChange={handleInputChange}
-                          required
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Email Address *
-                        </label>
-                        <input
-                          type="email"
-                          name="email"
-                          value={formData.email}
-                          onChange={handleInputChange}
-                          required
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Phone Number *
-                        </label>
-                        <input
-                          type="tel"
-                          name="phone"
-                          value={formData.phone}
-                          onChange={handleInputChange}
-                          required
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Address *
-                        </label>
-                        <input
-                          type="text"
-                          name="address"
-                          value={formData.address}
-                          onChange={handleInputChange}
-                          required
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          City *
-                        </label>
-                        <input
-                          type="text"
-                          name="city"
-                          value={formData.city}
-                          onChange={handleInputChange}
-                          required
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          State *
-                        </label>
-                        <input
-                          type="text"
-                          name="state"
-                          value={formData.state}
-                          onChange={handleInputChange}
-                          required
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          ZIP Code *
-                        </label>
-                        <input
-                          type="text"
-                          name="zipCode"
-                          value={formData.zipCode}
-                          onChange={handleInputChange}
-                          required
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                        />
-                      </div>
-                    </div>
-                  </div>
 
-                  {/* Family Information */}
-                  <div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-4">Family Information</h3>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Family Members (Names and Ages)
-                      </label>
-                      <textarea
-                        name="familyMembers"
-                        value={formData.familyMembers}
-                        onChange={handleInputChange}
-                        rows={4}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                        placeholder="Please list all family members with their names and ages..."
-                      />
-                    </div>
-                  </div>
+          {/* Payment Method */}
+          <div>
+            <h2 className="text-xl font-semibold mb-2">Choose Payment Method</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {['paypal', 'zelle', 'cheque'].map((method) => (
+                <button
+                  key={method}
+                  type="button"
+                  className={`border rounded-lg p-4 text-center transition ${
+                    paymentMethod === method
+                      ? 'border-orange-600 bg-orange-50'
+                      : 'border-gray-200 hover:border-orange-300'
+                  }`}
+                  onClick={() => setPaymentMethod(method as any)}
+                >
+                  <div className="text-lg font-bold capitalize">{method}</div>
+                </button>
+              ))}
+            </div>
 
-                  {/* Interests */}
-                  <div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-4">Areas of Interest</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {interestOptions.map((interest) => (
-                        <label key={interest} className="flex items-center">
-                          <input
-                            type="checkbox"
-                            checked={formData.interests.includes(interest)}
-                            onChange={() => handleInterestChange(interest)}
-                            className="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded"
-                          />
-                          <span className="ml-2 text-gray-700">{interest}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Additional Options */}
-                  <div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-4">Additional Options</h3>
-                    <div className="space-y-3">
-                      <label className="flex items-center">
-                        <input
-                          type="checkbox"
-                          name="subscribeEmail"
-                          checked={formData.subscribeEmail}
-                          onChange={handleInputChange}
-                          className="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded"
-                        />
-                        <span className="ml-2 text-gray-700">
-                          Subscribe to email updates and newsletters
-                        </span>
-                      </label>
-                      <label className="flex items-center">
-                        <input
-                          type="checkbox"
-                          name="pathsalaInterest"
-                          checked={formData.pathsalaInterest}
-                          onChange={handleInputChange}
-                          className="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded"
-                        />
-                        <span className="ml-2 text-gray-700">
-                          Interested in enrolling children in Pathsala
-                        </span>
-                      </label>
-                      <label className="flex items-center">
-                        <input
-                          type="checkbox"
-                          name="volunteerInterest"
-                          checked={formData.volunteerInterest}
-                          onChange={handleInputChange}
-                          className="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded"
-                        />
-                        <span className="ml-2 text-gray-700">
-                          Interested in volunteering for community activities
-                        </span>
-                      </label>
-                    </div>
-                  </div>
-
-                  <div className="pt-6">
-                    <button
-                      type="submit"
-                      className="w-full bg-orange-600 hover:bg-orange-700 text-white py-4 px-6 rounded-lg font-semibold text-lg transition-colors"
-                    >
-                      Submit Membership Application
-                    </button>
-                  </div>
+            {paymentMethod === 'paypal' && (
+              <div className="mt-4 border rounded p-4 bg-gray-50">
+                <form
+                  action="https://www.sandbox.paypal.com/donate"
+                  method="post"
+                  target="_blank"
+                >
+                  <input type="hidden" name="business" value="your-paypal-email@example.com" />
+                  <input type="hidden" name="currency_code" value="USD" />
+                  <input type="hidden" name="amount" value={totalWithFee.toFixed(2)} />
+                  <button className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-6 rounded">
+                    Pay with PayPal
+                  </button>
                 </form>
               </div>
-            </div>
-          </section>
-        </div>
-      </main>
+            )}
+
+            {paymentMethod === 'zelle' && (
+              <div className="mt-4 border rounded p-4 bg-gray-50 text-center">
+                <p className="font-medium text-gray-700">Scan the Zelle QR code:</p>
+                {zelleQrUrl && (
+                                <div className="relative w-[200px] h-[200px] mx-auto mt-2">
+                                  <Image
+                                    src={zelleQrUrl}
+                                    alt="Zelle QR"
+                                    fill
+                                    className="object-contain"
+                                  />
+                                </div>
+                              )}
+                <p className="text-sm text-gray-600 mt-2">or send to <strong>donate@yourdomain.org</strong></p>
+              </div>
+            )}
+
+            {paymentMethod === 'cheque' && (
+              <div className="mt-4 border rounded p-4 bg-gray-50">
+                <p>Mail your cheque to:</p>
+                <p className="mt-2 font-medium text-gray-700">
+                  Jain Center<br />1234 Jain Street<br />Your City, State ZIP
+                </p>
+              </div>
+            )}
+          </div>
+
+          <button
+            type="submit"
+            className="w-full bg-orange-600 hover:bg-orange-700 text-white py-4 rounded font-semibold text-lg flex items-center justify-center"
+          >
+            <Heart className="h-5 w-5 mr-2" />
+            Submit Membership Form
+          </button>
+        </form>
+      </div>
     </div>
   );
 };
 
-export default BecomeAMember;
+export default MembershipPage;

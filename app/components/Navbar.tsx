@@ -136,7 +136,6 @@ const Navbar: React.FC = () => {
 
   const membershipOptions = [
     { name: 'Membership', path: '/membership' },
-    { name: 'Subscribe to mailing list', path: '/membership/mailing-list' },
     { name: 'Newsletter', path: '/membership/newsletter' },
   ];
 

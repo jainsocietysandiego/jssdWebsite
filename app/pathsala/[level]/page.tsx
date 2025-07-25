@@ -3,9 +3,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { BookOpen, Clock, Users, User, Star } from 'lucide-react';
-import Navbar from '../../components/Navbar';
-import Footer from '../../components/Footer';
-import axios from 'axios';
 
 interface LevelData {
   Level: string;
@@ -22,7 +19,7 @@ interface LevelData {
 }
 
 const API_URL = 'https://script.google.com/macros/s/AKfycbyHVNzO5Wbr-OBUAD_KPKPazFsZWz4ak7LONoccChBmZnAmnINE6cUbcnmH_647G5urKw/exec';
-const FALLBACK_JSON = '/pathsalalevel.json';
+const FALLBACK_JSON = '/pathsala.json';
 const CACHE_TTL = 10 * 60 * 1000;
 
 const PathsalaLevel: React.FC = () => {
@@ -37,53 +34,49 @@ const PathsalaLevel: React.FC = () => {
   const cacheKey = `pathsala-level-${level}`;
 
   useEffect(() => {
-    const fetchFromAPI = async () => {
-      try {
-        const res = await axios.get(API_URL);
-        if (res.data?.levels) {
-          const match = res.data.levels.find((lvl: LevelData) => String(lvl.Level).trim() === level);
-          if (match) {
-            sessionStorage.setItem(cacheKey, JSON.stringify({ data: match, timestamp: Date.now() }));
-            setData(match);
-          }
-        }
-      } catch (err) {
-        console.error('Failed to fetch from API', err);
-      }
-    };
-
     const loadData = async () => {
       const cached = sessionStorage.getItem(cacheKey);
+      let shouldFetch = true;
+
       if (cached) {
         try {
-          const parsed = JSON.parse(cached);
-          if (Date.now() - parsed.timestamp < CACHE_TTL) {
-            setData(parsed.data);
+          const { data: cachedData, timestamp } = JSON.parse(cached);
+          if (Date.now() - timestamp < CACHE_TTL) {
+            setData(cachedData);
             setLoading(false);
-            fetchFromAPI(); // update in background
-            return;
+            shouldFetch = false;
           }
-        } catch (e) {
-          console.warn('Error parsing cache', e);
+        } catch {
+          // skip cache if invalid
         }
       }
 
-      // Fallback to public JSON
+      if (!data && shouldFetch) {
+        try {
+          const res = await fetch(FALLBACK_JSON);
+          const json = await res.json();
+          const found = json.levels.find((lvl: LevelData) => String(lvl.Level).trim() === level);
+          if (found) {
+            setData(found);
+          }
+        } catch {
+          console.warn('Failed to load fallback JSON.');
+        }
+        setLoading(false);
+      }
+
+      // background update
       try {
-        const fallback = await fetch(FALLBACK_JSON);
-        const json = await fallback.json();
-        const found = json.levels.find((lvl: LevelData) => String(lvl.Level).trim() === level);
-        if (found) {
-          setData(found);
-          setLoading(false);
-        } else {
-          console.warn('Level not found in fallback JSON');
+        const res = await fetch(API_URL);
+        const json = await res.json();
+        const match = json.levels.find((lvl: LevelData) => String(lvl.Level).trim() === level);
+        if (match) {
+          sessionStorage.setItem(cacheKey, JSON.stringify({ data: match, timestamp: Date.now() }));
+          if (JSON.stringify(match) !== JSON.stringify(data)) setData(match);
         }
-      } catch (e) {
-        console.error('Failed to load fallback JSON', e);
+      } catch {
+        console.warn('Failed to fetch from API');
       }
-
-      fetchFromAPI(); // update in background
     };
 
     loadData();
@@ -94,7 +87,6 @@ const PathsalaLevel: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50">
-
       <main className="pt-16">
         <div className="bg-gradient-to-r from-orange-600 to-orange-700 text-white py-20 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">Pathshala Level {data.Level}</h1>
@@ -109,7 +101,7 @@ const PathsalaLevel: React.FC = () => {
               <InfoCard title="Topics Covered" items={data['Topics Covered']} />
               <InfoCard title="Key Activities" items={data['Key Activities ']} />
               <TextCard title="Teacher's Note" text={data['Teachers Note']} />
-              <InfoCard title="Learning Outcomes" items={data['Learning Outcome']} />            
+              <InfoCard title="Learning Outcomes" items={data['Learning Outcome']} />
             </div>
 
             <div className="bg-orange-50 rounded-lg p-6 h-fit">
@@ -143,7 +135,6 @@ function OverviewCard({ data }: { data: LevelData }) {
         <OverviewItem icon={User} label="Students" value={`${data.Students} enrolled`} />
         <OverviewItem icon={BookOpen} label="Level" value={`Level ${data.Level}`} />
         <OverviewItem icon={Star} label="Fees" value={data.Fees} />
-
       </div>
     </div>
   );

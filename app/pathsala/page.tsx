@@ -14,7 +14,7 @@ interface LevelData {
   'Age Group': string;
   Duration: string;
   Students: number;
-    Fees: string;
+  Fees: string;
   'Topics Covered': string;
   'Key Activities ': string;
   'Teachers Note': string;
@@ -23,9 +23,9 @@ interface LevelData {
 
 const API_URL =
   'https://script.google.com/macros/s/AKfycbyHVNzO5Wbr-OBUAD_KPKPazFsZWz4ak7LONoccChBmZnAmnINE6cUbcnmH_647G5urKw/exec';
-const LOCAL_JSON_URL = '/pathsala.json';
+const LOCAL_JSON_PATH = '/pathsala.json';
 const CACHE_KEY = 'pathshala-api';
-const CACHE_TTL = 10 * 60 * 1000;
+const CACHE_TTL = 10 * 60 * 1000; // 10 minutes
 
 const Pathsala: React.FC = () => {
   const [levels, setLevels] = useState<LevelData[]>([]);
@@ -34,7 +34,37 @@ const Pathsala: React.FC = () => {
   const router = useRouter();
 
   useEffect(() => {
-    const fetchAndCacheFromAPI = async () => {
+    const loadData = async () => {
+      const cached = localStorage.getItem(CACHE_KEY);
+      let shouldFetch = true;
+
+      if (cached) {
+        try {
+          const { data: cachedData, timestamp } = JSON.parse(cached);
+          if (Date.now() - timestamp < CACHE_TTL) {
+            setLevels(cachedData);
+            setLoading(false);
+            shouldFetch = false;
+          }
+        } catch {
+          console.warn('Invalid cache format, skipping cache.');
+        }
+      }
+
+      if (!levels.length && shouldFetch) {
+        // Load fallback JSON
+        try {
+          const res = await fetch(LOCAL_JSON_PATH);
+          if (res.ok) {
+            const fallback = await res.json();
+            if (fallback?.levels) setLevels(fallback.levels);
+          }
+        } catch (e) {
+          console.error('❌ Failed to load fallback JSON:', e);
+        }
+      }
+
+      // Always update cache in background
       try {
         const res = await fetch(API_URL);
         const apiData = await res.json();
@@ -43,45 +73,15 @@ const Pathsala: React.FC = () => {
             CACHE_KEY,
             JSON.stringify({ data: apiData.levels, timestamp: Date.now() })
           );
-          setLevels(apiData.levels);
-        }
-      } catch (e) {
-        console.error('Failed to fetch from API:', e);
-      }
-    };
-
-    const loadData = async () => {
-      const cached = localStorage.getItem(CACHE_KEY);
-      if (cached) {
-        try {
-          const { data: cachedData, timestamp } = JSON.parse(cached);
-          if (Date.now() - timestamp < CACHE_TTL) {
-            setLevels(cachedData);
-            setLoading(false);
-            fetchAndCacheFromAPI(); // Background refresh
-            return;
+          if (JSON.stringify(apiData.levels) !== JSON.stringify(levels)) {
+            setLevels(apiData.levels);
           }
-        } catch {
-          console.warn('Corrupted cache, fallback to JSON');
-        }
-      }
-
-      // Fallback to static JSON
-      try {
-        const res = await fetch(LOCAL_JSON_URL);
-        const fallbackData = await res.json();
-        if (fallbackData?.levels) {
-          setLevels(fallbackData.levels);
-        } else {
-          setError('Fallback data invalid.');
         }
       } catch (e) {
-        console.error('Error loading local fallback JSON:', e);
-        setError('Failed to load data.');
+        console.warn('⚠️ Background fetch failed:', e);
       }
 
       setLoading(false);
-      fetchAndCacheFromAPI(); // Background refresh
     };
 
     loadData();

@@ -325,7 +325,6 @@ const Jinalay: React.FC = () => {
           </section>
         </div>
       </main>
-      <Footer />
     </div>
   );
 };

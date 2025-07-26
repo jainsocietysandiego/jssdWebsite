@@ -311,7 +311,7 @@ useEffect(() => {
               </h2>
               <div className="flex justify-center">
                 <iframe
-                  src="https://calendar.google.com/calendar/embed?src=6db58ce32d670528f394614b256b704b7af31460e88f5755f1057e7cdcdf04ac%40group.calendar.google.com&ctz=Asia%2FKolkata"
+                  src="https://calendar.google.com/calendar/embed?src=jainsocietyofsandiego%40gmail.com&ctz=Asia%2FKolkata"
                   style={{ border: 0 }}
                   width="100%"
                   height="600"

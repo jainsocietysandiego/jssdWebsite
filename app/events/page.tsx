@@ -11,8 +11,8 @@ import {
   ChevronRight,
 } from 'lucide-react';
 
-const API_KEY = 'AIzaSyB8AZVAVLsFcDaSbrraZgwRtcylsHNRCxw';
-const CALENDAR_ID = 'gamingaurav@gmail.com';
+const API_KEY = 'AIzaSyD0MBBXb6oamBJQaEe_FF7T8i0DDzx3UTg';
+const CALENDAR_ID = 'jainsocietyofsandiego@gmail.com';
 const PACIFIC_TZ = 'America/Los_Angeles';
 
 // --- Timezone helpers ---

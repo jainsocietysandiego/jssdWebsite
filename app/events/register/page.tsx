@@ -15,8 +15,8 @@ import {
 
 // CONFIG — SET YOUR GOOGLE APPSCRIPT DEPLOYMENT URL
 const SUBMIT_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyXzmrnSpc7uDjbZgYazubjNdsDC3oCwjociUcYZ1xU4i_vH6zmUx-6axkw0py1bZ6R/exec';
-const API_KEY = 'AIzaSyB8AZVAVLsFcDaSbrraZgwRtcylsHNRCxw';
-const CALENDAR_ID = 'gamingaurav@gmail.com';
+const API_KEY = 'AIzaSyD0MBBXb6oamBJQaEe_FF7T8i0DDzx3UTg';
+const CALENDAR_ID = 'jainsocietyofsandiego@gmail.com';
 
 // Util to fetch Google Calendar event details
 async function fetchEventById(eventId: string) {

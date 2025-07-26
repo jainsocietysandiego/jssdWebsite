@@ -17,11 +17,13 @@ interface CommitteeInfo {
 const GROUP_CACHE_KEY = 'navbar-groups';
 const COMMITTEES_API_URL =
   'https://script.google.com/macros/s/AKfycbyiANfsf4RIKXvBMFuDSeNpuSQ_hITNSb_WbAphTtUk-u8GKhcyfB061dLLsAS7wVXC/exec';
+const GROUP_FALLBACK_JSON = '/group.json';
+
 const LEVELS_API_URL =
   'https://script.google.com/macros/s/AKfycbyHVNzO5Wbr-OBUAD_KPKPazFsZWz4ak7LONoccChBmZnAmnINE6cUbcnmH_647G5urKw/exec';
 const LOCAL_JSON_PATH = '/pathsala.json';
 const CACHE_KEY = 'navbar-pathshala-levels';
-const CACHE_TTL = 10 * 60 * 1000; // 10 minutes
+const CACHE_TTL = 1 * 60 * 1000; // 10 minutes
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -42,14 +44,30 @@ const Navbar: React.FC = () => {
   useEffect(() => {
     const fetchCommittees = async () => {
       const cached = localStorage.getItem(GROUP_CACHE_KEY);
+      let shouldFetch = true;
+
       if (cached) {
         try {
           const { data, timestamp } = JSON.parse(cached);
           if (Date.now() - timestamp < CACHE_TTL) {
             setCommitteeList(data);
-            return;
+            shouldFetch = false;
           }
         } catch {}
+      }
+
+      if (committeeList.length === 0 && shouldFetch) {
+        try {
+          const fallback = await fetch(GROUP_FALLBACK_JSON);
+          if (fallback.ok) {
+            const fallbackData = await fallback.json();
+            if (fallbackData?.committees?.length) {
+              setCommitteeList(fallbackData.committees);
+            }
+          }
+        } catch {
+          console.warn('⚠️ Failed to load fallback group.json');
+        }
       }
 
       try {
@@ -60,7 +78,6 @@ const Navbar: React.FC = () => {
             Slug: c.Slug,
             'Committee Name': c['Committee Name'],
           }));
-
           setCommitteeList(minimalData);
           localStorage.setItem(
             GROUP_CACHE_KEY,
@@ -68,7 +85,7 @@ const Navbar: React.FC = () => {
           );
         }
       } catch (err) {
-        console.error('Failed to load committees', err);
+        console.error('❌ Failed to load committees:', err);
       }
     };
 
@@ -115,7 +132,7 @@ const Navbar: React.FC = () => {
           }
         }
       } catch {
-        console.warn('⚠️ Background fetch failed.');
+        console.warn('⚠️ Background fetch for levels failed');
       }
     };
 
@@ -130,7 +147,7 @@ const Navbar: React.FC = () => {
     { name: 'Events', path: '/events' },
     { name: 'Gallery', path: '/gallery' },
     { name: 'Membership', path: '/membership', hasDropdown: true },
-    { name: 'Groups', path: '', hasDropdown: true }, // ⬅️ no path
+    { name: 'Groups', path: '', hasDropdown: true },
     { name: 'Jinalay', path: '/jinalay' },
   ];
 
@@ -156,14 +173,12 @@ const Navbar: React.FC = () => {
         })),
       ];
     }
-
     if (itemName === 'Groups') {
       return committeeList.map((c) => ({
         name: c['Committee Name'],
         path: `/group/${c.Slug}`,
       }));
     }
-
     if (itemName === 'Membership') return membershipOptions;
     if (itemName === 'About') return aboutUsOptions;
     return [];

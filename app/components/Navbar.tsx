@@ -168,7 +168,7 @@ const Navbar: React.FC = () => {
       return [
         { name: 'Pathshala', path: '/pathsala' },
         ...pathsalaLevels.map((lvl) => ({
-          name: `Level ${lvl.Level}: ${lvl.Title}`,
+          name: `Level ${lvl.Level}}`,
           path: `/pathsala/level-${lvl.Level}`,
         })),
       ];

@@ -205,57 +205,24 @@ const EventsPage = () => {
       </section>
 
       {/* Event Calendar Grid */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Event Calendar</h2>
-            <p className="text-gray-600 max-w-3xl mx-auto">View all events in calendar format</p>
-          </div>
-          <div className="bg-white rounded-lg shadow-lg p-8">
-            <div className="flex items-center justify-between mb-8">
-              <button
-                className="flex items-center text-gray-600 hover:text-orange-600 transition-colors"
-                onClick={() => setCurrentMonth(prev => new Date(prev.getFullYear(), prev.getMonth() - 1, 1))}
-              >
-                <ChevronLeft className="h-5 w-5 mr-1" /> Previous
-              </button>
-              <h3 className="text-2xl font-bold text-gray-900">
-                {currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-              </h3>
-              <button
-                className="flex items-center text-gray-600 hover:text-orange-600 transition-colors"
-                onClick={() => setCurrentMonth(prev => new Date(prev.getFullYear(), prev.getMonth() + 1, 1))}
-              >
-                Next <ChevronRight className="h-5 w-5 ml-1" />
-              </button>
+      <section className="bg-white py-16">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+              <h2 className="text-4xl font-bold text-orange-700 mb-6">
+                Announcements & JCNC Calendar
+              </h2>
+              <div className="flex justify-center">
+                <iframe
+                  src="https://calendar.google.com/calendar/embed?src=jainsocietyofsandiego%40gmail.com&ctz=Asia%2FKolkata"
+                  style={{ border: 0 }}
+                  width="100%"
+                  height="600"
+                  frameBorder="0"
+                  scrolling="no"
+                  className="max-w-4xl w-full rounded shadow-lg"
+                ></iframe>
+              </div>
             </div>
-            <div className="grid grid-cols-7 gap-1 mb-4">
-              {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                <div key={day} className="p-3 text-center font-medium text-gray-500">{day}</div>
-              ))}
-            </div>
-            <div className="grid grid-cols-7 gap-1">
-              {daysInGrid.map((date, idx) => {
-                const isInMonth = date.getMonth() === currentMonth.getMonth();
-                const hasEvent = events.some(ev => datesMatchPacific(ev.date, date));
-                return (
-                  <div
-                    key={idx}
-                    className={[
-                      "p-3 text-center border border-gray-100 select-none",
-                      isInMonth ? "bg-white" : "bg-gray-50 text-gray-400",
-                      hasEvent ? "bg-orange-50 border-orange-200" : ""
-                    ].join(" ")}
-                  >
-                    <span className={hasEvent ? "font-bold text-orange-600" : ""}>{date.getDate()}</span>
-                    {hasEvent && <div className="w-2 h-2 bg-orange-600 rounded-full mx-auto mt-1"></div>}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      </section>
+          </section>
 
       {/* Past Events */}
       <section className="py-20 bg-white">

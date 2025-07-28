@@ -1,50 +1,46 @@
-// NOTE: Final version with conditional input fields only for categories without preset amount
-
 'use client';
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { CreditCard, DollarSign, Mail, Heart } from 'lucide-react';
-
+import { CreditCard, DollarSign, Mail, Heart, TrendingUp } from 'lucide-react';
 
 const DonatePage: React.FC = () => {
   const [selected, setSelected] = useState<Record<string, string>>({});
   const [addFees, setAddFees] = useState(true);
-  const [paymentMethod, setPaymentMethod] = useState<'paypal' | 'zelle' | 'cheque' | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState<'paypal' | 'zelle' | 'cheque' | 'stock' | null>(null);
   const [form, setForm] = useState({ name: '', email: '', phone: '', address: '' });
   const [donationOptions, setDonationOptions] = useState<any[]>([]);
-const [zelleQrUrl, setZelleQrUrl] = useState('');
-const [loading, setLoading] = useState(true);
+  const [zelleQrUrl, setZelleQrUrl] = useState('');
+  const [loading, setLoading] = useState(true);
 
-useEffect(() => {
-  const fetchData = async () => {
-    try {
-      const res = await fetch('https://script.google.com/macros/s/AKfycbxADt_M879LoY1jpgiboKGcUTl1yritzQclpwAZksu1a5la-CickuIOFlIVK94F2M4Z/exec');
-      const json = await res.json();
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await fetch('https://script.google.com/macros/s/AKfycbxADt_M879LoY1jpgiboKGcUTl1yritzQclpwAZksu1a5la-CickuIOFlIVK94F2M4Z/exec');
+        const json = await res.json();
 
-      const categories = json.content.filter((item: any) => item.Section === 'donation_category');
-      const qr = json.content.find((item: any) => item.Section === 'zelle_qr');
+        const categories = json.content.filter((item: any) => item.Section === 'donation_category');
+        const qr = json.content.find((item: any) => item.Section === 'zelle_qr');
 
-      setDonationOptions(
-        categories.map((item: any) => ({
-          id: item.ID,
-          label: item.Name,
-          amount: item.Amount ? Number(item.Amount) : undefined,
-          highlight: item.Highlight === 'TRUE',
-        }))
-      );
+        setDonationOptions(
+          categories.map((item: any) => ({
+            id: item.ID,
+            label: item.Name,
+            amount: item.Amount ? Number(item.Amount) : undefined,
+            highlight: item.Highlight === 'TRUE',
+          }))
+        );
 
-      if (qr?.ImageURL) setZelleQrUrl(qr.ImageURL);
-    } catch (err) {
-      console.error('Error fetching donation data:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+        if (qr?.ImageURL) setZelleQrUrl(qr.ImageURL);
+      } catch (err) {
+        console.error('Error fetching donation data:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  fetchData();
-}, []);
-
+    fetchData();
+  }, []);
 
   const toggleCategory = (id: string) => {
     const category = donationOptions.find((opt) => opt.id === id);
@@ -66,37 +62,36 @@ useEffect(() => {
   const totalWithFee = addFees ? baseTotal * 1.03 : baseTotal;
 
   const handleSubmit = async () => {
-  const confirmed = window.confirm("Are you sure you have completed the payment?");
-  if (!confirmed) return;
+    const confirmed = window.confirm("Are you sure you have completed the payment?");
+    if (!confirmed) return;
 
-  const payload = {
-    timestamp: new Date().toISOString(),
-    ...form,
-    selectedCategories: Object.keys(selected).join(' | '),
-    categoryAmounts: Object.entries(selected)
-      .map(([k, v]) => `${k}:${v}`)
-      .join(' | '),
-    baseTotal,
-    add3Percent: addFees,
-    finalTotal: totalWithFee.toFixed(2),
-    paymentMethod,
+    const payload = {
+      timestamp: new Date().toISOString(),
+      ...form,
+      selectedCategories: Object.keys(selected).join(' | '),
+      categoryAmounts: Object.entries(selected)
+        .map(([k, v]) => `${k}:${v}`)
+        .join(' | '),
+      baseTotal,
+      add3Percent: addFees,
+      finalTotal: totalWithFee.toFixed(2),
+      paymentMethod,
+    };
+
+    try {
+      await fetch('https://script.google.com/macros/s/AKfycbygRiXyqYnrYhSKPlaeQaP15xfhFp5aZB9Qy2JAjN-OV5-eM3LTfLwZEP5-KVscc42-vg/exec', {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      alert('Donation info recorded! Proceed with your payment method.');
+    } catch (err) {
+      console.error('Failed to record donation:', err);
+      alert('Something went wrong while recording the donation.');
+    }
   };
-
-  try {
-    await fetch('https://script.google.com/macros/s/AKfycbygRiXyqYnrYhSKPlaeQaP15xfhFp5aZB9Qy2JAjN-OV5-eM3LTfLwZEP5-KVscc42-vg/exec', {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-
-    alert('Donation info recorded! Proceed with your payment method.');
-  } catch (err) {
-    console.error('Failed to record donation:', err);
-    alert('Something went wrong while recording the donation.');
-  }
-};
-
 
   return (
     <div className="min-h-screen bg-orange-50 p-6 md:p-12">
@@ -181,8 +176,13 @@ useEffect(() => {
         {/* Payment Method */}
         <div>
           <h2 className="text-xl font-semibold mb-2">Choose Payment Method</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {['paypal', 'zelle', 'cheque'].map((method) => (
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {[
+              { method: 'paypal', icon: CreditCard },
+              { method: 'zelle', icon: DollarSign },
+              { method: 'cheque', icon: Mail },
+              { method: 'stock', icon: TrendingUp }
+            ].map(({ method, icon: Icon }) => (
               <button
                 key={method}
                 className={`border rounded-lg p-4 text-center transition ${
@@ -190,7 +190,10 @@ useEffect(() => {
                 }`}
                 onClick={() => setPaymentMethod(method as any)}
               >
-                <div className="text-lg font-bold capitalize">{method}</div>
+                <Icon className="h-8 w-8 mx-auto mb-2 text-gray-600" />
+                <div className="text-lg font-bold capitalize">
+                  {method === 'stock' ? 'Stock Transfer' : method}
+                </div>
               </button>
             ))}
           </div>
@@ -229,13 +232,66 @@ useEffect(() => {
             </div>
           )}
 
-
           {paymentMethod === 'cheque' && (
             <div className="mt-4 border rounded p-4 bg-gray-50">
-              <p>Mail your cheque to:</p>
-              <p className="mt-2 font-medium text-gray-700">
-                Jain Center<br />1234 Jain Street<br />Your City, State ZIP
+              <p className="font-medium text-gray-700 mb-2">Mail your cheque to:</p>
+              <div className="bg-white p-3 rounded border-l-4 border-orange-500">
+                <p className="font-medium text-gray-800">
+                  Jain Center<br />
+                  1234 Jain Street<br />
+                  Your City, State ZIP
+                </p>
+              </div>
+              <p className="text-sm text-gray-600 mt-2">
+                Please make cheque payable to: <strong>"Jain Center"</strong>
               </p>
+            </div>
+          )}
+
+          {paymentMethod === 'stock' && (
+            <div className="mt-4 border rounded p-4 bg-gray-50">
+              <div className="space-y-4">
+                <div>
+                  <h3 className="font-medium text-gray-700 mb-2">Stock Transfer Information</h3>
+                  <div className="bg-white p-4 rounded border-l-4 border-green-500">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <p className="font-medium text-gray-800">Brokerage Firm:</p>
+                        <p className="text-gray-600">Charles Schwab & Co.</p>
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-800">Account Name:</p>
+                        <p className="text-gray-600">Jain Center of America</p>
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-800">Account Number:</p>
+                        <p className="text-gray-600">XXXX-XXXX-XXXX</p>
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-800">DTC Number:</p>
+                        <p className="text-gray-600">0164</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="bg-blue-50 p-3 rounded border border-blue-200">
+                  <h4 className="font-medium text-blue-800 mb-2">Instructions:</h4>
+                  <ul className="text-sm text-blue-700 space-y-1">
+                    <li>• Contact your broker to initiate the stock transfer</li>
+                    <li>• Provide the above account information</li>
+                    <li>• Please notify us at <strong>donate@jaincenter.org</strong> after initiating the transfer</li>
+                    <li>• Include your name, stock symbol, and number of shares in the email</li>
+                  </ul>
+                </div>
+
+                <div className="bg-yellow-50 p-3 rounded border border-yellow-200">
+                  <p className="text-sm text-yellow-800">
+                    <strong>Note:</strong> Stock donations may provide additional tax benefits. 
+                    Please consult your tax advisor for specific guidance.
+                  </p>
+                </div>
+              </div>
             </div>
           )}
         </div>

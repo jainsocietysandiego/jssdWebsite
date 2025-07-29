@@ -6,7 +6,7 @@ import Link from "next/link";
 
 // Constants
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbzPvcWT8omIA992X5wAktnx5HFukyFoau_E-WL3WeIIVtoyoIo28OBTdaSWB_QSMQlX/exec";
+  "https://script.google.com/macros/s/AKfycbw7YLZDjEJUGfdXkXzcljCsB-Hv0qZ-b_m7xUSeBKwfwGAnemt-sqVAUw9z4L5EjkX0/exec";
 const LOCAL_JSON_PATH = "/membership.json";
 const CACHE_KEY = "membership-api";
 const CACHE_TTL = 10 * 60 * 1000; // 10 minutes

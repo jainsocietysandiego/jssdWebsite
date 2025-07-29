@@ -4,6 +4,12 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { CheckCircle, Heart } from 'lucide-react';
 
+const FETCH_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx33ldKE6dib3hJFA6xYw0ShWDzwV2hZNV-loY2l6SfOxqRGvvh9cgdPRmeufgdrWSrAw/exec';
+const SUBMIT_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx_NqV0nsolC6iX8o3pUZBJaJrdMeXJWBSAJKwQzPjS_sJ0GFBTOr87xSOQTky9gx86/exec';
+
+const CACHE_KEY = 'membership-data-cache';
+const CACHE_TTL = 10 * 60 * 1000; // 10 minutes
+
 const MembershipPage: React.FC = () => {
   const [formData, setFormData] = useState({
     fullName: '',
@@ -28,43 +34,65 @@ const MembershipPage: React.FC = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const FETCH_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx33ldKE6dib3hJFA6xYw0ShWDzwV2hZNV-loY2l6SfOxqRGvvh9cgdPRmeufgdrWSrAw/exec'; // Sheet A
-const SUBMIT_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx_NqV0nsolC6iX8o3pUZBJaJrdMeXJWBSAJKwQzPjS_sJ0GFBTOr87xSOQTky9gx86/exec'; // Sheet B
+  useEffect(() => {
+    const loadMembershipData = async () => {
+      const cached = localStorage.getItem(CACHE_KEY);
+      let shouldFetch = true;
 
-useEffect(() => {
-  const fetchData = async () => {
-    try {
-      const res = await fetch(FETCH_SCRIPT_URL);
-      const json = await res.json();
+      if (cached) {
+        try {
+          const { data: cachedData, timestamp } = JSON.parse(cached);
+          if (Date.now() - timestamp < CACHE_TTL) {
+            setMembershipTypes(cachedData.membershipTypes);
+            setZelleQrUrl(cachedData.zelleQrUrl);
+            setLoading(false);
+            shouldFetch = false;
+          }
+        } catch (err) {
+          console.error('Cache parsing error:', err);
+          localStorage.removeItem(CACHE_KEY);
+        }
+      }
 
-      const memberships = json.content.filter((item: any) => item.Section === 'membership_type');
-      const qr = json.content.find((item: any) => item.Section === 'zelle_qr');
+      if (shouldFetch) {
+        try {
+          const res = await fetch(FETCH_SCRIPT_URL);
+          if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+          const json = await res.json();
 
-      setMembershipTypes(
-        memberships.map((item: any) => ({
-          id: item.ID,
-          name: item.Name,
-          amount: Number(item.Amount),
-          description: item.Description,
-          highlight: item.Highlight === 'TRUE',
-        }))
-      );
+          const memberships = json.content.filter((item: any) => item.Section === 'membership_type');
+          const qr = json.content.find((item: any) => item.Section === 'zelle_qr');
 
-      if (qr?.ImageURL) setZelleQrUrl(qr.ImageURL);
-    } catch (err) {
-      console.error('Error fetching donation data:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+          const transformedData = {
+            membershipTypes: memberships.map((item: any) => ({
+              id: item.ID,
+              name: item.Name,
+              amount: Number(item.Amount),
+              description: item.Description,
+              highlight: item.Highlight === 'TRUE',
+            })),
+            zelleQrUrl: qr?.ImageURL || '',
+          };
 
-  fetchData();
-}, []);
+          localStorage.setItem(
+            CACHE_KEY,
+            JSON.stringify({ data: transformedData, timestamp: Date.now() })
+          );
 
+          setMembershipTypes(transformedData.membershipTypes);
+          setZelleQrUrl(transformedData.zelleQrUrl);
+          setLoading(false);
+        } catch (err) {
+          console.error('Error fetching membership data:', err);
+          setLoading(false);
+        }
+      }
+    };
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+    loadMembershipData();
+  }, []);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const target = e.target as HTMLInputElement;
     const { name, type, value, checked } = target;
 
@@ -88,38 +116,41 @@ useEffect(() => {
   const totalWithFee = addFees ? baseTotal * 1.03 : baseTotal;
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  if (!selectedPlan) {
-    alert('Please select a membership type.');
-    return;
-  }
+    e.preventDefault();
+    if (!selectedPlan) {
+      alert('Please select a membership type.');
+      return;
+    }
 
-  const payload = {
-    timestamp: new Date().toISOString(),
-    ...formData,
-    interests: formData.interests.join(', '),
-    selectedMembership: selectedPlan.name,
-    baseTotal,
-    add3Percent: addFees,
-    finalTotal: totalWithFee.toFixed(2),
-    paymentMethod,
+    const payload = {
+      timestamp: new Date().toISOString(),
+      ...formData,
+      interests: formData.interests.join(', '),
+      selectedMembership: selectedPlan.name,
+      baseTotal,
+      add3Percent: addFees,
+      finalTotal: totalWithFee.toFixed(2),
+      paymentMethod,
+    };
+
+    try {
+      await fetch(SUBMIT_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      setIsSubmitted(true);
+    } catch (error) {
+      console.error('Submission failed:', error);
+      alert('Something went wrong. Please try again.');
+    }
   };
 
-  try {
-    await fetch(SUBMIT_SCRIPT_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-
-    setIsSubmitted(true);
-  } catch (error) {
-    console.error('Submission failed:', error);
-    alert('Something went wrong. Please try again.');
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   }
-};
-
 
   if (isSubmitted) {
     return (
@@ -237,7 +268,6 @@ useEffect(() => {
                     type="checkbox"
                     checked={formData.interests.includes(interest)}
                     onChange={() => handleInterestChange(interest)}
-                    required
                     className="mr-2"
                   />
                   <span>{interest}</span>
@@ -245,7 +275,6 @@ useEffect(() => {
               ))}
             </div>
           </div>
-
 
           {/* Payment Method */}
           <div>
@@ -270,11 +299,11 @@ useEffect(() => {
             {paymentMethod === 'paypal' && (
               <div className="mt-4 border rounded p-4 bg-gray-50">
                 <form
-                  action="https://www.sandbox.paypal.com/donate"
+                  action="https://www.paypal.com/donate"
                   method="post"
                   target="_blank"
                 >
-                  <input type="hidden" name="business" value="your-paypal-email@example.com" />
+                  <input type="hidden" name="business" value="donate@yourdomain.org" />
                   <input type="hidden" name="currency_code" value="USD" />
                   <input type="hidden" name="amount" value={totalWithFee.toFixed(2)} />
                   <button className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-6 rounded">
@@ -288,15 +317,15 @@ useEffect(() => {
               <div className="mt-4 border rounded p-4 bg-gray-50 text-center">
                 <p className="font-medium text-gray-700">Scan the Zelle QR code:</p>
                 {zelleQrUrl && (
-                                <div className="relative w-[200px] h-[200px] mx-auto mt-2">
-                                  <Image
-                                    src={zelleQrUrl}
-                                    alt="Zelle QR"
-                                    fill
-                                    className="object-contain"
-                                  />
-                                </div>
-                              )}
+                  <div className="relative w-[200px] h-[200px] mx-auto mt-2">
+                    <Image
+                      src={zelleQrUrl}
+                      alt="Zelle QR"
+                      fill
+                      className="object-contain"
+                    />
+                  </div>
+                )}
                 <p className="text-sm text-gray-600 mt-2">or send to <strong>donate@yourdomain.org</strong></p>
               </div>
             )}

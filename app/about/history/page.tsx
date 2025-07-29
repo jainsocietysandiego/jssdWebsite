@@ -8,7 +8,7 @@ import Footer from "../../components/Footer";
 
 const API_URL =
   "https://script.google.com/macros/s/AKfycbyK_7X_B2nnubo_DCrsmYI93Iqff7Yo27oPTsTWKqKBp0p3zZDKqzyTgyVSMn1K0BvP/exec";
-const FALLBACK_JSON = "/about-history.json";
+const FALLBACK_JSON = "/about-history1.json";
 const CACHE_KEY = "history-data";
 const CACHE_TTL = 10 * 60 * 1000; // 10 minutes
 

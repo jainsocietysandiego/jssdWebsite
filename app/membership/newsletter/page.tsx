@@ -88,19 +88,7 @@ const NewsletterPage: React.FC = () => {
       const [curr, prev] = getCurrentAndPrevious(data);
       setCurrent(curr);
       setPrevious(prev);
-    };
-
-    const useFallback = async () => {
-      try {
-        const res = await fetch('/newsletter.json');
-        const json = await res.json();
-        if (!didCancel) {
-          applyAndSplit(json);
-          setLoading(false);
-        }
-      } catch (err) {
-        console.error('Failed to load fallback JSON', err);
-      }
+      setLoading(false);
     };
 
     const checkLocalCache = () => {
@@ -110,7 +98,6 @@ const NewsletterPage: React.FC = () => {
           const { data, timestamp } = JSON.parse(cached);
           if (Date.now() - timestamp < CACHE_TTL) {
             applyAndSplit(data);
-            setLoading(false);
             return true;
           }
         } catch {
@@ -133,11 +120,12 @@ const NewsletterPage: React.FC = () => {
         }
       } catch (e) {
         console.error("Failed to fetch from API", e);
+        setLoading(false);
       }
     };
 
     if (!checkLocalCache()) {
-      useFallback().then(() => fetchLatest());
+      fetchLatest();
     } else {
       fetchLatest(); // background refresh
     }
@@ -233,7 +221,6 @@ const NewsletterPage: React.FC = () => {
           </>
         )}
       </main>
-
     </div>
   );
 };

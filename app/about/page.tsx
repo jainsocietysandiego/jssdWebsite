@@ -133,14 +133,25 @@ const AboutPage: React.FC = () => {
           </div>
         </section>
 
-        {/* Events */}
-        <section className="py-20 bg-orange-50">
-          <div className="max-w-5xl mx-auto px-4">
-            <h2 className="text-3xl font-bold text-center text-gray-900 mb-8">Trendsetting Events</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-800 text-base md:pl-[14rem]">
-              {getList('events', 'Events').map((event, index) => (
-                <div key={index}>{event}</div>
-              ))}
+        {/* Contact Section */}
+        <section className="py-20 bg-orange-100">
+          <div className="max-w-6xl mx-auto px-4 text-gray-800">
+            <h2 className="text-3xl font-bold text-center text-orange-700 mb-12">
+              Contact Information
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <ContactCard icon={MapPin} label="Address" value={getContent('contact', 'Address')} />
+              <ContactCard icon={Clock} label="Regular Hours" value={getContent('contact', 'Regular Hours')} />
+              <ContactCard icon={Clock} label="Pathshala Hours" value={getContent('contact', 'Pathshala Hours')} />
+              <ContactCard icon={Users} label="Mailing Address" value={getContent('contact', 'Mailing Address')} />
+              <ContactCard icon={Mail} label="Event Contact" value={getContent('contact', 'Event Contact')} />
+              <div className="bg-white p-6 rounded-lg shadow text-center">
+                <Mail className="w-8 h-8 mx-auto text-orange-600 mb-2" />
+                <h3 className="font-semibold">Emails</h3>
+                {getList('contact', 'Emails').map((email, idx) => (
+                  <p key={idx}>{email}</p>
+                ))}
+              </div>
             </div>
           </div>
         </section>
@@ -186,28 +197,7 @@ const AboutPage: React.FC = () => {
           </div>
         </section>
 
-        {/* Contact Section */}
-        <section className="py-20 bg-orange-100">
-          <div className="max-w-6xl mx-auto px-4 text-gray-800">
-            <h2 className="text-3xl font-bold text-center text-orange-700 mb-12">
-              Contact Information
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <ContactCard icon={MapPin} label="Address" value={getContent('contact', 'Address')} />
-              <ContactCard icon={Clock} label="Regular Hours" value={getContent('contact', 'Regular Hours')} />
-              <ContactCard icon={Clock} label="Pathshala Hours" value={getContent('contact', 'Pathshala Hours')} />
-              <ContactCard icon={Users} label="Mailing Address" value={getContent('contact', 'Mailing Address')} />
-              <ContactCard icon={Mail} label="Event Contact" value={getContent('contact', 'Event Contact')} />
-              <div className="bg-white p-6 rounded-lg shadow text-center">
-                <Mail className="w-8 h-8 mx-auto text-orange-600 mb-2" />
-                <h3 className="font-semibold">Emails</h3>
-                {getList('contact', 'Emails').map((email, idx) => (
-                  <p key={idx}>{email}</p>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
+        
       </main>
     </div>
   );

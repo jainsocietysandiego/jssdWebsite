@@ -5,7 +5,7 @@ import Image from 'next/image';
 
 const Footer: React.FC = () => {
   return (
-    <footer className="bg-orange-50 py-12 relative">
+    <footer className="bg-orange-50 py-12 relative mt-2">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Top Section: Logo + Social Icons */}
         <div className="flex flex-col items-center space-y-4 mb-12">

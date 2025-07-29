@@ -109,7 +109,7 @@ export default function CommitteePage() {
           </h1>
         </div>
 
-        <div className="max-w-4xl mx-auto px-4 space-y-8">
+        <div className="max-w-4xl mx-auto px-4 py-4 space-y-8">
           {Object.entries(committee).map(([key, value]) => {
             if (
               EXCLUDED_KEYS.includes(key) ||
@@ -126,7 +126,7 @@ export default function CommitteePage() {
 
               return (
                 <div key={key}>
-                  <h2 className="text-xl font-semibold mb-2">{key}</h2>
+                  <h2 className="text-xl font-semibold mt-2 mb-2">{key}</h2>
                   <ul className="list-disc list-inside text-gray-700">
                     {bullets.map((point, i) => (
                       <li key={i}>{point}</li>

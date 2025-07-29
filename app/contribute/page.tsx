@@ -4,46 +4,148 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { CreditCard, DollarSign, Mail, Heart, TrendingUp } from 'lucide-react';
 
+// Constants
+const DONATION_API_URL = 'https://script.google.com/macros/s/AKfycbxADt_M879LoY1jpgiboKGcUTl1yritzQclpwAZksu1a5la-CickuIOFlIVK94F2M4Z/exec';
+const SUBMIT_API_URL = 'https://script.google.com/macros/s/AKfycbygRiXyqYnrYhSKPlaeQaP15xfhFp5aZB9Qy2JAjN-OV5-eM3LTfLwZEP5-KVscc42-vg/exec';
+const CACHE_KEY = 'donation-data-cache';
+const CACHE_TTL = 10 * 60 * 1000; // 10 minutes
+
+// Types
+interface DonationOption {
+  id: string;
+  label: string;
+  amount?: number;
+  highlight: boolean;
+}
+
+interface DonationData {
+  donationOptions: DonationOption[];
+  zelleQrUrl: string;
+}
+
+// Skeleton Component
+const DonationSkeleton = () => (
+  <div className="min-h-screen bg-orange-50 p-6 md:p-12 animate-pulse">
+    <div className="max-w-5xl mx-auto bg-white rounded-xl shadow p-8 space-y-8">
+      <div className="h-10 w-1/2 mx-auto rounded bg-orange-200" />
+      
+      {/* Categories Skeleton */}
+      <div>
+        <div className="h-6 w-1/3 mb-4 rounded bg-orange-100" />
+        <div className="grid md:grid-cols-3 gap-4">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="p-4 rounded-lg border border-gray-200">
+              <div className="h-5 w-3/4 mb-2 rounded bg-orange-100" />
+              <div className="h-4 w-1/2 rounded bg-orange-100" />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Form Skeleton */}
+      <div className="grid md:grid-cols-2 gap-4">
+        {[...Array(4)].map((_, i) => (
+          <div key={i}>
+            <div className="h-4 w-1/3 mb-2 rounded bg-orange-100" />
+            <div className="h-10 w-full rounded bg-orange-100" />
+          </div>
+        ))}
+      </div>
+
+      {/* Payment Methods Skeleton */}
+      <div>
+        <div className="h-6 w-1/4 mb-4 rounded bg-orange-100" />
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="border rounded-lg p-4 text-center">
+              <div className="h-8 w-8 mx-auto mb-2 rounded bg-orange-100" />
+              <div className="h-5 w-2/3 mx-auto rounded bg-orange-100" />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="h-12 w-full rounded bg-orange-200" />
+    </div>
+  </div>
+);
+
 const DonatePage: React.FC = () => {
+  const [data, setData] = useState<DonationData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selected, setSelected] = useState<Record<string, string>>({});
   const [addFees, setAddFees] = useState(true);
   const [paymentMethod, setPaymentMethod] = useState<'paypal' | 'zelle' | 'cheque' | 'stock' | null>(null);
   const [form, setForm] = useState({ name: '', email: '', phone: '', address: '' });
-  const [donationOptions, setDonationOptions] = useState<any[]>([]);
-  const [zelleQrUrl, setZelleQrUrl] = useState('');
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetch('https://script.google.com/macros/s/AKfycbxADt_M879LoY1jpgiboKGcUTl1yritzQclpwAZksu1a5la-CickuIOFlIVK94F2M4Z/exec');
-        const json = await res.json();
+    const loadData = async () => {
+      const cached = localStorage.getItem(CACHE_KEY);
+      let shouldFetch = true;
 
-        const categories = json.content.filter((item: any) => item.Section === 'donation_category');
-        const qr = json.content.find((item: any) => item.Section === 'zelle_qr');
+      // Check cache first
+      if (cached) {
+        try {
+          const { data: cachedData, timestamp } = JSON.parse(cached);
+          if (Date.now() - timestamp < CACHE_TTL) {
+            setData(cachedData);
+            setLoading(false);
+            shouldFetch = false;
+          }
+        } catch (error) {
+          console.error('Cache parsing error:', error);
+          localStorage.removeItem(CACHE_KEY);
+        }
+      }
 
-        setDonationOptions(
-          categories.map((item: any) => ({
-            id: item.ID,
-            label: item.Name,
-            amount: item.Amount ? Number(item.Amount) : undefined,
-            highlight: item.Highlight === 'TRUE',
-          }))
-        );
+      // Fetch fresh data
+      if (shouldFetch) {
+        try {
+          const res = await fetch(DONATION_API_URL);
+          if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+          
+          const freshData = await res.json();
+          const transformedData = transformApiData(freshData);
+          
+          // Update cache
+          localStorage.setItem(
+            CACHE_KEY,
+            JSON.stringify({ data: transformedData, timestamp: Date.now() })
+          );
 
-        if (qr?.ImageURL) setZelleQrUrl(qr.ImageURL);
-      } catch (err) {
-        console.error('Error fetching donation data:', err);
-      } finally {
-        setLoading(false);
+          setData(transformedData);
+          setLoading(false);
+          setError(null);
+        } catch (error) {
+          console.error('API fetch failed:', error);
+          setError('Failed to load donation data. Please try again.');
+          setLoading(false);
+        }
       }
     };
 
-    fetchData();
+    loadData();
   }, []);
 
+  // Transform API data to expected format
+  const transformApiData = (apiData: any): DonationData => {
+    const categories = apiData.content?.filter((item: any) => item.Section === 'donation_category') || [];
+    const qr = apiData.content?.find((item: any) => item.Section === 'zelle_qr');
+
+    return {
+      donationOptions: categories.map((item: any) => ({
+        id: item.ID,
+        label: item.Name,
+        amount: item.Amount ? Number(item.Amount) : undefined,
+        highlight: item.Highlight === 'TRUE',
+      })),
+      zelleQrUrl: qr?.ImageURL || ''
+    };
+  };
+
   const toggleCategory = (id: string) => {
-    const category = donationOptions.find((opt) => opt.id === id);
+    const category = data?.donationOptions.find((opt) => opt.id === id);
     const value = category?.amount ? String(category.amount) : '0';
     setSelected((prev) => ({ ...prev, [id]: prev[id] ? '' : value }));
   };
@@ -55,7 +157,7 @@ const DonatePage: React.FC = () => {
   const baseTotal = Object.entries(selected)
     .filter(([, val]) => val !== '')
     .reduce(
-      (sum, [key, val]) => sum + (parseFloat(val) || donationOptions.find((opt) => opt.id === key)?.amount || 0),
+      (sum, [key, val]) => sum + (parseFloat(val) || data?.donationOptions.find((opt) => opt.id === key)?.amount || 0),
       0
     );
 
@@ -79,7 +181,7 @@ const DonatePage: React.FC = () => {
     };
 
     try {
-      await fetch('https://script.google.com/macros/s/AKfycbygRiXyqYnrYhSKPlaeQaP15xfhFp5aZB9Qy2JAjN-OV5-eM3LTfLwZEP5-KVscc42-vg/exec', {
+      await fetch(SUBMIT_API_URL, {
         method: 'POST',
         mode: 'no-cors',
         headers: { 'Content-Type': 'application/json' },
@@ -93,6 +195,41 @@ const DonatePage: React.FC = () => {
     }
   };
 
+  const retryLoad = () => {
+    setLoading(true);
+    setError(null);
+    localStorage.removeItem(CACHE_KEY);
+    window.location.reload();
+  };
+
+  // Loading state
+  if (loading) {
+    return <DonationSkeleton />;
+  }
+
+  // Error state
+  if (error || !data) {
+    return (
+      <div className="min-h-screen bg-orange-50 p-6 md:p-12 flex items-center justify-center">
+        <div className="text-center bg-white p-8 rounded-xl shadow max-w-md">
+          <div className="text-red-600 mb-4">
+            <svg className="h-12 w-12 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+          </div>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">Unable to load donation options</h3>
+          <p className="text-gray-600 mb-4">{error || 'Please check your connection and try again.'}</p>
+          <button
+            onClick={retryLoad}
+            className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-2 rounded font-medium transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-orange-50 p-6 md:p-12">
       <div className="max-w-5xl mx-auto bg-white rounded-xl shadow p-8 space-y-8">
@@ -102,7 +239,7 @@ const DonatePage: React.FC = () => {
         <div>
           <h2 className="text-xl font-semibold mb-2">Please indicate category (Can select more than one)</h2>
           <div className="grid md:grid-cols-3 gap-4">
-            {donationOptions.map((opt) => (
+            {data.donationOptions.map((opt) => (
               <div
                 key={opt.id}
                 className={`p-4 rounded-lg border transition-all ${
@@ -218,10 +355,10 @@ const DonatePage: React.FC = () => {
           {paymentMethod === 'zelle' && (
             <div className="mt-4 border rounded p-4 bg-gray-50 text-center">
               <p className="font-medium text-gray-700">Scan the Zelle QR code:</p>
-              {zelleQrUrl && (
+              {data.zelleQrUrl && (
                 <div className="relative w-[200px] h-[200px] mx-auto mt-2">
                   <Image
-                    src={zelleQrUrl}
+                    src={data.zelleQrUrl}
                     alt="Zelle QR"
                     fill
                     className="object-contain"

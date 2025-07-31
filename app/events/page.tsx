@@ -136,9 +136,9 @@ const EventsPage = () => {
 
   // --- Render ---
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 pt-16">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-orange-600 to-orange-700 text-white py-20">
+      <div className="bg-gradient-to-r from-orange-600 to-orange-700 text-white h-48 sm:h-52 md:h-56 lg:h-60 flex items-center justify-center">
         <div className="max-w-7xl mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">Community Events</h1>
           <p className="text-xl opacity-90 max-w-3xl mx-auto">

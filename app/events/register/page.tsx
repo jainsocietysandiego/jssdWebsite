@@ -170,7 +170,7 @@ function RegisterPageInner({ eventId }: { eventId: string }) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-bl from-orange-50 to-amber-50 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-bl from-orange-50 to-amber-50 flex flex-col pt-16">
      
       <main className="flex-1">
         <div className="max-w-2xl mx-auto my-12">

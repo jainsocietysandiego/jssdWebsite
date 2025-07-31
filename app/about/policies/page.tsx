@@ -129,7 +129,7 @@ const PoliciesPage: React.FC = () => {
       
       <main>
         <div className="pt-16">
-          <div className="bg-gradient-to-r from-orange-600 to-orange-700 text-white py-20">
+          <div className="bg-gradient-to-r from-orange-600 to-orange-700 text-white h-48 sm:h-52 md:h-56 lg:h-60 flex items-center justify-center">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
               <h1 className="text-4xl md:text-5xl font-bold mb-6">{data.heading}</h1>
               <p className="text-xl opacity-90 max-w-3xl mx-auto">{data.description}</p>

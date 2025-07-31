@@ -134,19 +134,16 @@ const NewsletterPage: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-amber-100">
-      <main className="max-w-5xl mx-auto pt-28 px-2 pb-24">
-        <header className="mb-12">
-          <div className="bg-gradient-to-r from-orange-600 to-orange-700 text-white rounded-2xl shadow px-8 py-8 text-center border-b-4 border-amber-300">
-            <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight drop-shadow">
-              Newsletter
-            </h1>
-            <p className="mt-3 text-2xl font-medium opacity-95">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-amber-100 pt-16">
+       <section className="bg-gradient-to-r from-orange-600 to-orange-700 text-white h-48 sm:h-52 md:h-56 lg:h-60 flex items-center justify-center">
+  <div className="max-w-7xl mx-auto px-4 text-center">
+    <h1 className="text-5xl font-bold"> Newsletter</h1>
+    <p className="mt-3 text-2xl font-medium opacity-95">
               Read the latest and previous editions
             </p>
-          </div>
-        </header>
-
+  </div>
+</section>
+      <main className="max-w-5xl mx-auto pt-28 px-2 pb-24">      
         {loading ? <NewsletterSkeleton /> : (
           <>
             <section className="mb-20">

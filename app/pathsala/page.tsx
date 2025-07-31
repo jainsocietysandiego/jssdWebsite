@@ -74,7 +74,7 @@ const Pathsala: React.FC = () => {
           console.error("❌ Failed to load fallback JSON:", e);
           setTimeout(() => {
             if (isMounted && levels.length === 0) {
-              setError("Failed to load initial data.");
+              setError("Failed to load initial data");
               setLoading(false);
             }
           }, 500);

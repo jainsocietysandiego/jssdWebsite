@@ -1,30 +1,30 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { BookOpen, Users, Clock, Star } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
+import { BookOpen, Users, Clock, Star } from "lucide-react";
+import { useRouter } from "next/navigation";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 interface LevelData {
   Level: string;
   Title: string;
   Description: string;
-  'Age Group': string;
+  "Age Group": string;
   Duration: string;
   Students: number;
   Fees: string;
-  'Topics Covered': string;
-  'Key Activities ': string;
-  'Teachers Note': string;
-  'Learning Outcome': string;
+  "Topics Covered": string;
+  "Key Activities ": string;
+  "Teachers Note": string;
+  "Learning Outcome": string;
 }
 
 const API_URL =
-  'https://script.google.com/macros/s/AKfycbyHVNzO5Wbr-OBUAD_KPKPazFsZWz4ak7LONoccChBmZnAmnINE6cUbcnmH_647G5urKw/exec';
-const LOCAL_JSON_PATH = '/pathsala.json';
-const CACHE_KEY = 'pathshala-api';
+  "https://script.google.com/macros/s/AKfycbyHVNzO5Wbr-OBUAD_KPKPazFsZWz4ak7LONoccChBmZnAmnINE6cUbcnmH_647G5urKw/exec";
+const LOCAL_JSON_PATH = "/pathsala.json";
+const CACHE_KEY = "pathshala-api";
 const CACHE_TTL = 10 * 60 * 1000; // 10 minutes
 
 const Pathsala: React.FC = () => {
@@ -48,41 +48,44 @@ const Pathsala: React.FC = () => {
             setLevels(cachedData);
             setLoading(false);
             shouldFetch = false;
-            console.log('[Cache] Loaded Pathshala data from cache.');
+            console.log("[Cache] Loaded Pathshala data from cache.");
           }
         } catch {
-          console.warn('Invalid cache format, skipping cache.');
+          console.warn("Invalid cache format, skipping cache.");
         }
       }
 
       // 2. If no cache data loaded yet, try loading local fallback JSON
       if (shouldFetch && isMounted) {
         try {
-          console.time('Fallback JSON Fetch Time');
+          console.time("Fallback JSON Fetch Time");
           const res = await fetch(LOCAL_JSON_PATH);
-          if (!res.ok) throw new Error(`Fallback JSON HTTP error: ${res.status}`);
+          if (!res.ok)
+            throw new Error(`Fallback JSON HTTP error: ${res.status}`);
           const fallback = await res.json();
-          console.timeEnd('Fallback JSON Fetch Time');
+          console.timeEnd("Fallback JSON Fetch Time");
           if (fallback?.levels && isMounted) {
             setLevels(fallback.levels);
             setLoading(false);
-            console.log('[Fallback JSON] Loaded fallback pathsala.json');
+            console.log("[Fallback JSON] Loaded fallback pathsala.json");
           }
         } catch (e) {
-          console.timeEnd('Fallback JSON Fetch Time');
-          console.error('❌ Failed to load fallback JSON:', e);
-          if (isMounted) {
-            setError('Failed to load initial data.');
-            setLoading(false);
-          }
+          console.timeEnd("Fallback JSON Fetch Time");
+          console.error("❌ Failed to load fallback JSON:", e);
+          setTimeout(() => {
+            if (isMounted && levels.length === 0) {
+              setError("Failed to load initial data.");
+              setLoading(false);
+            }
+          }, 500);
         }
       }
 
       // 3. Always refresh cache and state in background with API call
       try {
-        console.time('API Fetch Time');
+        console.time("API Fetch Time");
         const res = await fetch(API_URL);
-        console.timeEnd('API Fetch Time');
+        console.timeEnd("API Fetch Time");
         if (!res.ok) throw new Error(`API HTTP error: ${res.status}`);
         const apiData = await res.json();
         if (apiData?.levels && isMounted) {
@@ -92,14 +95,14 @@ const Pathsala: React.FC = () => {
           );
           if (JSON.stringify(apiData.levels) !== JSON.stringify(levels)) {
             setLevels(apiData.levels);
-            console.log('[API] Updated Pathshala levels with fresh API data.');
+            console.log("[API] Updated Pathshala levels with fresh API data.");
           } else {
-            console.log('[API] API data is same as current state, no update.');
+            console.log("[API] API data is same as current state, no update.");
           }
         }
       } catch (e) {
-        console.timeEnd('API Fetch Time');
-        console.warn('⚠️ Background fetch failed:', e);
+        console.timeEnd("API Fetch Time");
+        console.warn("⚠️ Background fetch failed:", e);
       }
     };
 
@@ -131,7 +134,10 @@ const Pathsala: React.FC = () => {
                   <div className="h-3 bg-orange-100 rounded mb-6 animate-pulse" />
                   <div className="space-y-2 mb-6">
                     {[...Array(3)].map((__, i) => (
-                      <div key={i} className="h-4 bg-orange-150 rounded animate-pulse"></div>
+                      <div
+                        key={i}
+                        className="h-4 bg-orange-150 rounded animate-pulse"
+                      ></div>
                     ))}
                   </div>
                   <div className="h-10 bg-orange-300 rounded animate-pulse" />
@@ -166,20 +172,26 @@ const Pathsala: React.FC = () => {
         <main>
           <div className="pt-16">
             <div className="bg-gradient-to-r from-orange-600 to-orange-700 text-white py-20 text-center">
-              <h1 className="text-4xl md:text-5xl font-bold mb-6">Pathshala Program</h1>
+              <h1 className="text-4xl md:text-5xl font-bold mb-6">
+                Pathshala Program
+              </h1>
               <p className="text-xl opacity-90 max-w-3xl mx-auto">
-                Nurturing young minds with Jain values, philosophy, and cultural heritage
+                Nurturing young minds with Jain values, philosophy, and cultural
+                heritage
               </p>
             </div>
 
             <section className="py-20 bg-white">
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-16">
-                  <h2 className="text-3xl font-bold text-gray-900 mb-4">About Our Pathshala</h2>
+                  <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                    About Our Pathshala
+                  </h2>
                   <p className="text-gray-600 max-w-3xl mx-auto">
-                    Our Pathshala program provides comprehensive Jain education from childhood
-                    through young adulthood. Each level builds upon the previous, creating a strong
-                    foundation in Jain principles and practices.
+                    Our Pathshala program provides comprehensive Jain education
+                    from childhood through young adulthood. Each level builds
+                    upon the previous, creating a strong foundation in Jain
+                    principles and practices.
                   </p>
                 </div>
 
@@ -191,13 +203,19 @@ const Pathsala: React.FC = () => {
                     >
                       <div className="p-6">
                         <div className="flex items-center justify-between mb-4">
-                          <h3 className="text-2xl font-bold text-orange-600">Level {level.Level}</h3>
+                          <h3 className="text-2xl font-bold text-orange-600">
+                            Level {level.Level}
+                          </h3>
                           <div className="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm font-medium">
-                            {level['Age Group']}
+                            {level["Age Group"]}
                           </div>
                         </div>
-                        <h4 className="text-xl font-semibold text-gray-900 mb-3">{level.Title}</h4>
-                        <p className="text-gray-600 mb-4">{level.Description}</p>
+                        <h4 className="text-xl font-semibold text-gray-900 mb-3">
+                          {level.Title}
+                        </h4>
+                        <p className="text-gray-600 mb-4">
+                          {level.Description}
+                        </p>
                         <div className="space-y-2 mb-6">
                           <div className="flex items-center text-sm text-gray-500">
                             <Star className="h-4 w-4 mr-2" />
@@ -234,25 +252,27 @@ const Pathsala: React.FC = () => {
                     {[
                       {
                         icon: BookOpen,
-                        title: 'Comprehensive Curriculum',
-                        desc: 'Age-appropriate lessons on Jain philosophy, history, and practices',
+                        title: "Comprehensive Curriculum",
+                        desc: "Age-appropriate lessons on Jain philosophy, history, and practices",
                       },
                       {
                         icon: Users,
-                        title: 'Experienced Teachers',
-                        desc: 'Volunteer teachers with deep knowledge of Jain traditions',
+                        title: "Experienced Teachers",
+                        desc: "Volunteer teachers with deep knowledge of Jain traditions",
                       },
                       {
                         icon: Star,
-                        title: 'Cultural Activities',
-                        desc: 'Festivals, competitions, and cultural programs to enhance learning',
+                        title: "Cultural Activities",
+                        desc: "Festivals, competitions, and cultural programs to enhance learning",
                       },
                     ].map((item, idx) => (
                       <div key={idx} className="text-center">
                         <div className="bg-orange-600 text-white p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
                           <item.icon className="h-8 w-8" />
                         </div>
-                        <h3 className="text-xl font-bold text-gray-900 mb-2">{item.title}</h3>
+                        <h3 className="text-xl font-bold text-gray-900 mb-2">
+                          {item.title}
+                        </h3>
                         <p className="text-gray-600">{item.desc}</p>
                       </div>
                     ))}

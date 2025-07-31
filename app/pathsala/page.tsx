@@ -283,7 +283,7 @@ const Pathsala: React.FC = () => {
           </div>
         </main>
       </div>
-      <Footer />
+      
     </>
   );
 };

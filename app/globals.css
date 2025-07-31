@@ -5,3 +5,16 @@
 html {
   scroll-behavior: smooth;
 }
+
+.scrollbar-hide {
+    /* For Webkit browsers (Chrome, Safari, Edge, Opera) */
+    ::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* For Firefox */
+    scrollbar-width: none;
+
+    /* For IE and Edge (legacy) */
+    -ms-overflow-style: none;
+}

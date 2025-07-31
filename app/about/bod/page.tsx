@@ -227,7 +227,7 @@ const BODPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50">
       <main className="pt-16">
-        <section className="bg-gradient-to-r from-orange-600 to-orange-700 text-white py-20">
+       <section className="bg-gradient-to-r from-orange-600 to-orange-700 text-white h-48 sm:h-52 md:h-56 lg:h-60 flex items-center justify-center">
           <div className="max-w-7xl mx-auto px-4 text-center">
             <h1 className="text-5xl font-bold">{bannerTitle}</h1>
           </div>

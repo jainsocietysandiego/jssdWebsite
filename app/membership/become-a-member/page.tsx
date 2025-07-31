@@ -166,10 +166,13 @@ const MembershipPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-orange-50 p-6 md:p-12">
+    <div className="min-h-screen bg-orange-50 pt-16">
+       <section className="bg-gradient-to-r from-orange-600 to-orange-700 text-white h-48 sm:h-52 md:h-56 lg:h-60 flex items-center justify-center">
+  <div className="max-w-7xl mx-auto px-4 text-center">
+    <h1 className="text-5xl font-bold">Membership Registration</h1>
+  </div>
+</section>
       <div className="max-w-5xl mx-auto bg-white rounded-xl shadow-xl p-8 space-y-10">
-        <h1 className="text-3xl font-bold text-orange-700 text-center">Membership Registration</h1>
-
         {/* Membership Types */}
         <div>
           <h2 className="text-xl font-semibold mb-4">Choose a Membership Plan</h2>

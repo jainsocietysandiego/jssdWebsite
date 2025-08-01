@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { BookOpen, Users, Clock, Star, X, Utensils, Heart } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { createPortal } from "react-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
@@ -32,7 +33,13 @@ const Pathsala: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isLunchModalOpen, setIsLunchModalOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const router = useRouter();
+
+  // Handle client-side mounting
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -114,30 +121,37 @@ const Pathsala: React.FC = () => {
     };
   }, [levels]);
 
-  // Handle modal close on escape key
-  useEffect(() => {
-    const handleEscapeKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && isLunchModalOpen) {
-        setIsLunchModalOpen(false);
-      }
-    };
-
-    if (isLunchModalOpen) {
-      document.addEventListener('keydown', handleEscapeKey);
-      // Prevent body scroll when modal is open
-      document.body.style.overflow = 'hidden';
-    }
-
-    return () => {
-      document.removeEventListener('keydown', handleEscapeKey);
-      // Restore body scroll
-      document.body.style.overflow = 'unset';
-    };
-  }, [isLunchModalOpen]);
-
-  // Enhanced Lunch Modal Component
+  // Enhanced Lunch Modal Component with Portal
   const LunchModal = () => {
-    if (!isLunchModalOpen) return null;
+    // Don't render anything on server-side or if not mounted
+    if (!mounted || !isLunchModalOpen) return null;
+
+    // Handle modal close on escape key and body scroll
+    useEffect(() => {
+      if (isLunchModalOpen) {
+        const originalOverflow = document.body.style.overflow;
+        const originalPaddingRight = document.body.style.paddingRight;
+        
+        // Prevent body scroll and add padding to prevent layout shift
+        document.body.style.overflow = 'hidden';
+        document.body.style.paddingRight = '15px';
+        
+        const handleEscapeKey = (event: KeyboardEvent) => {
+          if (event.key === 'Escape') {
+            setIsLunchModalOpen(false);
+          }
+        };
+        
+        document.addEventListener('keydown', handleEscapeKey);
+        
+        return () => {
+          // Restore original styles
+          document.body.style.overflow = originalOverflow;
+          document.body.style.paddingRight = originalPaddingRight;
+          document.removeEventListener('keydown', handleEscapeKey);
+        };
+      }
+    }, [isLunchModalOpen]);
 
     // Handle backdrop click to close modal
     const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -146,13 +160,14 @@ const Pathsala: React.FC = () => {
       }
     };
 
-    return (
+    const modalContent = (
       <div 
         className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999] p-4 sm:p-6"
         onClick={handleBackdropClick}
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-title"
+        style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
       >
         <div 
           className="bg-white rounded-xl max-w-6xl w-full max-h-[90vh] overflow-y-auto shadow-xl border border-orange-100"
@@ -278,6 +293,9 @@ const Pathsala: React.FC = () => {
         </div>
       </div>
     );
+
+    // Use createPortal to render modal outside the component tree
+    return createPortal(modalContent, document.body);
   };
 
   // --- Skeleton shown while loading OR if no levels data loaded yet ---
@@ -495,7 +513,8 @@ const Pathsala: React.FC = () => {
           </div>
         </main>
       </div>
-      <LunchModal />
+      <Footer />
+      {mounted && <LunchModal />}
     </>
   );
 };

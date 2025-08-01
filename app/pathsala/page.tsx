@@ -4,9 +4,9 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { BookOpen, Users, Clock, Star, X, Utensils, Heart } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { createPortal } from "react-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import LunchModal from "../components/lunchModal"; // Import the new modal
 
 interface LevelData {
   Level: string;
@@ -33,14 +33,9 @@ const Pathsala: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isLunchModalOpen, setIsLunchModalOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const router = useRouter();
 
-  // Handle client-side mounting
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
+  // Your existing useEffect for data loading...
   useEffect(() => {
     let isMounted = true;
 
@@ -121,184 +116,7 @@ const Pathsala: React.FC = () => {
     };
   }, [levels]);
 
-  // Enhanced Lunch Modal Component with Portal
-  const LunchModal = () => {
-    // Don't render anything on server-side or if not mounted
-    if (!mounted || !isLunchModalOpen) return null;
-
-    // Handle modal close on escape key and body scroll
-    useEffect(() => {
-      if (isLunchModalOpen) {
-        const originalOverflow = document.body.style.overflow;
-        const originalPaddingRight = document.body.style.paddingRight;
-        
-        // Prevent body scroll and add padding to prevent layout shift
-        document.body.style.overflow = 'hidden';
-        document.body.style.paddingRight = '15px';
-        
-        const handleEscapeKey = (event: KeyboardEvent) => {
-          if (event.key === 'Escape') {
-            setIsLunchModalOpen(false);
-          }
-        };
-        
-        document.addEventListener('keydown', handleEscapeKey);
-        
-        return () => {
-          // Restore original styles
-          document.body.style.overflow = originalOverflow;
-          document.body.style.paddingRight = originalPaddingRight;
-          document.removeEventListener('keydown', handleEscapeKey);
-        };
-      }
-    }, [isLunchModalOpen]);
-
-    // Handle backdrop click to close modal
-    const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
-      if (e.target === e.currentTarget) {
-        setIsLunchModalOpen(false);
-      }
-    };
-
-    const modalContent = (
-      <div 
-        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999] p-4 sm:p-6"
-        onClick={handleBackdropClick}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="modal-title"
-        style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
-      >
-        <div 
-          className="bg-white rounded-xl max-w-6xl w-full max-h-[90vh] overflow-y-auto shadow-xl border border-orange-100"
-          onClick={(e) => e.stopPropagation()}
-        >
-          {/* Modal Header */}
-          <div className="flex justify-between items-center p-6 sm:p-8 border-b border-orange-100 sticky top-0 bg-white z-10">
-            <div className="flex items-center">
-              <Utensils className="h-6 w-6 sm:h-8 sm:w-8 text-orange-600 mr-3" />
-              <h2 
-                id="modal-title"
-                className="text-xl sm:text-2xl lg:text-3xl font-bold text-orange-600"
-              >
-                Sponsoring Lunches For Pathshala
-              </h2>
-            </div>
-            <button
-              onClick={() => setIsLunchModalOpen(false)}
-              className="text-gray-400 hover:text-gray-600 transition-colors p-2 hover:bg-gray-100 rounded-full flex-shrink-0"
-              aria-label="Close modal"
-            >
-              <X className="h-5 w-5 sm:h-6 sm:w-6" />
-            </button>
-          </div>
-          
-          {/* Modal Content */}
-          <div className="p-6 sm:p-8 space-y-6 sm:space-y-8">
-            <div className="space-y-4">
-              <p className="text-gray-700 text-base sm:text-lg leading-relaxed">
-                After the Pathshala session for the day is over, the Pathshala Students and their Families can enjoy the Lunch get-together.
-              </p>
-              
-              <p className="text-gray-700 text-base sm:text-lg leading-relaxed">
-                We encourage each Pathshala Student Family to sign-up atleast once during the calendar year for sponsoring the Lunch.
-              </p>
-              
-              <p className="text-gray-700 text-base sm:text-lg leading-relaxed">
-                You can sign up to sponsor lunch as part of the registration process.
-              </p>
-            </div>
-
-            {/* Sponsoring Guidelines */}
-            <div className="bg-gradient-to-r from-orange-50 to-amber-50 p-4 sm:p-6 rounded-xl border border-orange-200">
-              <h3 className="text-lg sm:text-xl font-bold text-orange-700 mb-4 sm:mb-6 flex items-center">
-                <Star className="h-5 w-5 sm:h-6 sm:w-6 mr-2" />
-                Lunch Sponsoring Guidelines
-              </h3>
-              <div className="space-y-3 sm:space-y-4">
-                <div className="flex items-start">
-                  <span className="text-orange-600 mr-3 mt-1 text-lg">•</span>
-                  <p className="text-gray-700 text-sm sm:text-base leading-relaxed">
-                    Please make sure the food served qualifies jain criteria. Following ingredients must not be used in the items served – root vegetables (e.g. onion, garlic, potatoes, carrots), egg-plant, mushrooms, eggs, gelatin and other non-vegetarian items
-                  </p>
-                </div>
-                <div className="flex items-start">
-                  <span className="text-orange-600 mr-3 mt-1 text-lg">•</span>
-                  <p className="text-gray-700 text-sm sm:text-base leading-relaxed">
-                    Please avoid using/serving green vegetables on "tithi"
-                  </p>
-                </div>
-                <div className="flex items-start">
-                  <span className="text-orange-600 mr-3 mt-1 text-lg">•</span>
-                  <p className="text-gray-700 text-sm sm:text-base leading-relaxed">
-                    Lunch is usually served at noon, so please plan on setting up lunch at around 11:45.
-                  </p>
-                </div>
-                <div className="flex items-start">
-                  <span className="text-orange-600 mr-3 mt-1 text-lg">•</span>
-                  <p className="text-gray-700 text-sm sm:text-base leading-relaxed">
-                    Please be mindful that a few pathshala students and members are vegan.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Cleanup Guidelines */}
-            <div className="bg-gradient-to-r from-amber-50 to-yellow-50 p-4 sm:p-6 rounded-xl border border-amber-200">
-              <h3 className="text-lg sm:text-xl font-bold text-amber-700 mb-4 flex items-center">
-                <Users className="h-5 w-5 sm:h-6 sm:w-6 mr-2" />
-                Guidelines for cleaning up after Lunch
-              </h3>
-              <p className="text-gray-700 text-sm sm:text-base mb-4 sm:mb-6 leading-relaxed">
-                We thank the volunteer families for helping with clean up tasks after lunch. The below is a set of guidelines to help with the tasks.
-              </p>
-              <div className="space-y-3">
-                <div className="flex items-start">
-                  <span className="text-amber-600 mr-3 font-semibold bg-amber-100 rounded-full w-6 h-6 flex items-center justify-center text-sm flex-shrink-0">1</span>
-                  <p className="text-gray-700 text-sm sm:text-base leading-relaxed">
-                    Cleaning up the dishes (loading in dishwasher).
-                  </p>
-                </div>
-                <div className="flex items-start">
-                  <span className="text-amber-600 mr-3 font-semibold bg-amber-100 rounded-full w-6 h-6 flex items-center justify-center text-sm flex-shrink-0">2</span>
-                  <p className="text-gray-700 text-sm sm:text-base leading-relaxed">
-                    If washed manually, dry them with dish cloth.
-                  </p>
-                </div>
-                <div className="flex items-start">
-                  <span className="text-amber-600 mr-3 font-semibold bg-amber-100 rounded-full w-6 h-6 flex items-center justify-center text-sm flex-shrink-0">3</span>
-                  <p className="text-gray-700 text-sm sm:text-base leading-relaxed">
-                    Do the necessary kitchen cleaning after doing dishes.
-                  </p>
-                </div>
-                <div className="flex items-start">
-                  <span className="text-amber-600 mr-3 font-semibold bg-amber-100 rounded-full w-6 h-6 flex items-center justify-center text-sm flex-shrink-0">4</span>
-                  <p className="text-gray-700 text-sm sm:text-base leading-relaxed">
-                    Vacuuming the dining hall floors, kitchen floors and surfaces.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Modal Footer */}
-            <div className="flex justify-end pt-4 border-t border-gray-100">
-              <button
-                onClick={() => setIsLunchModalOpen(false)}
-                className="px-4 sm:px-6 py-2 text-gray-600 hover:text-gray-800 font-medium rounded-lg hover:bg-gray-100 transition-colors"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-
-    // Use createPortal to render modal outside the component tree
-    return createPortal(modalContent, document.body);
-  };
-
-  // --- Skeleton shown while loading OR if no levels data loaded yet ---
+  // --- Skeleton component (same as before) ---
   const Skeleton = () => (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 animate-pulse">
       <main>
@@ -380,6 +198,7 @@ const Pathsala: React.FC = () => {
                   </p>
                 </div>
 
+                {/* Your existing levels grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
                   {levels.map((level) => (
                     <div
@@ -432,6 +251,7 @@ const Pathsala: React.FC = () => {
                   ))}
                 </div>
 
+                {/* Your existing features section */}
                 <div className="bg-orange-50 rounded-lg p-8 mb-16">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     {[
@@ -513,8 +333,12 @@ const Pathsala: React.FC = () => {
           </div>
         </main>
       </div>
-      <Footer />
-      {mounted && <LunchModal />}
+      
+      {/* Use the separated modal component */}
+      <LunchModal 
+        isOpen={isLunchModalOpen} 
+        onClose={() => setIsLunchModalOpen(false)} 
+      />
     </>
   );
 };

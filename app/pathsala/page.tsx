@@ -318,7 +318,7 @@ const Pathsala: React.FC = () => {
                       
                       <button
                         onClick={() => {
-                          window.open('/contribute', '_blank');
+                          router.push('/contribute');
                         }}
                         className="group flex items-center justify-center px-6 py-3 bg-white border-2 border-green-600 text-green-600 rounded-xl font-semibold hover:bg-green-600 hover:text-white transition-all duration-300 shadow-sm hover:shadow-md flex-1"
                       >

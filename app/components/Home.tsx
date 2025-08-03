@@ -184,11 +184,7 @@ const Home: React.FC = () => {
       <main>
         <div className="pt-16">
           {/* Header */}
-          <div className="bg-gradient-to-r from-orange-600 to-orange-700 text-white text-center py-6">
-            <h1 className="text-3xl md:text-4xl font-bold">
-              {data.headerTitle || ""}
-            </h1>
-          </div>
+          
 
           {/* Enhanced Hero Carousel */}
           <section className="relative h-screen overflow-hidden">

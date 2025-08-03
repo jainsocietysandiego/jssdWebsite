@@ -292,7 +292,7 @@ const MembershipPage: React.FC = () => {
                 'Religious Events', 'Community Service', 'Cultural Programs',
                 'Educational Activities', 'Pathsala Teaching', 'Event Planning',
                 'Fundraising', 'Youth Programs', 'Senior Activities', 'Wellness Programs',
-              ].map(interest => (
+              ].map((interest) => (
                 <label key={interest} className="flex items-center">
                   <input
                     type="checkbox"

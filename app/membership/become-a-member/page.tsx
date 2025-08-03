@@ -10,6 +10,8 @@ const SUBMIT_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxG4jWKMhoZIU
 const CACHE_KEY = 'membership-data-cache';
 const CACHE_TTL = 10 * 60 * 1000; // 10 minutes
 
+type PaymentMethod = 'paypal' | 'zelle' | 'cheque' | 'stock';
+
 const MembershipPage: React.FC = () => {
   const [formData, setFormData] = useState({
     fullName: '',
@@ -29,14 +31,12 @@ const MembershipPage: React.FC = () => {
   const [membershipTypes, setMembershipTypes] = useState<any[]>([]);
   const [selectedMembership, setSelectedMembership] = useState<string>('');
   const [addFees, setAddFees] = useState(true);
-  const [paymentMethod, setPaymentMethod] = useState<'paypal' | 'zelle' | 'cheque' | 'stock' | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(null);
   const [paymentReference, setPaymentReference] = useState('');
   const [zelleQrUrl, setZelleQrUrl] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [loading, setLoading] = useState(true);
-  console.log(paymentReference);
 
-  // Fetch + cache membership data on mount
   useEffect(() => {
     const loadMembershipData = async () => {
       const cached = localStorage.getItem(CACHE_KEY);
@@ -51,11 +51,10 @@ const MembershipPage: React.FC = () => {
             setLoading(false);
             shouldFetch = false;
           }
-        } catch (err) {
+        } catch {
           localStorage.removeItem(CACHE_KEY);
         }
       }
-
       if (shouldFetch) {
         try {
           const res = await fetch(FETCH_SCRIPT_URL);
@@ -81,7 +80,7 @@ const MembershipPage: React.FC = () => {
           setMembershipTypes(transformedData.membershipTypes);
           setZelleQrUrl(transformedData.zelleQrUrl);
           setLoading(false);
-        } catch (err) {
+        } catch {
           setLoading(false);
         }
       }
@@ -89,7 +88,6 @@ const MembershipPage: React.FC = () => {
     loadMembershipData();
   }, []);
 
-  // Handle input changes
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const target = e.target as HTMLInputElement;
     const { name, type, value, checked } = target;
@@ -108,35 +106,32 @@ const MembershipPage: React.FC = () => {
     }));
   };
 
-  // Payment Reference label logic
-  const getPaymentRefLabel = () => {
-    if (paymentMethod === 'zelle') return 'Zelle T Id';
-    if (paymentMethod === 'cheque') return 'Cheque No';
-    if (paymentMethod === 'stock') return 'Stock Transfer No';
-    return '';
-  };
+  function getPaymentRefLabel(pm: PaymentMethod | null): string {
+    switch (pm) {
+      case 'zelle': return 'Zelle T Id';
+      case 'cheque': return 'Cheque No';
+      case 'stock': return 'Stock Transfer No';
+      default: return '';
+    }
+  }
 
-  // Plan & amount logic
   const selectedPlan = membershipTypes.find(m => m.id === selectedMembership);
   const baseTotal = selectedPlan?.amount || 0;
   const totalWithFee = addFees ? baseTotal * 1.03 : baseTotal;
 
-  // Form submit
+  // ---- FIXED TYPE-SAFE SUBMISSION LOGIC ----
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedPlan) {
       alert('Please select a membership type.');
       return;
     }
-    if (!paymentMethod) {
+    if (paymentMethod === null) {
       alert('Please select a payment method.');
       return;
     }
-    if (
-      paymentMethod !== 'paypal' &&
-      !paymentReference.trim()
-    ) {
-      alert(`Please enter ${getPaymentRefLabel()}.`);
+    if ((paymentMethod === 'zelle' || paymentMethod === 'cheque' || paymentMethod === 'stock') && !paymentReference.trim()) {
+      alert(`Please enter ${getPaymentRefLabel(paymentMethod)}.`);
       return;
     }
 
@@ -151,8 +146,6 @@ const MembershipPage: React.FC = () => {
       paymentMethod,
       paymentReference,
     };
-    console.log('Submitting payload:', payload);
-
     try {
       await fetch(SUBMIT_SCRIPT_URL, {
         method: 'POST',
@@ -161,19 +154,24 @@ const MembershipPage: React.FC = () => {
         body: JSON.stringify(payload),
       });
       setIsSubmitted(true);
-    } catch (error) {
+    } catch {
       alert('Something went wrong. Please try again.');
     }
   };
 
-  // Validation for enabling the submit button:
+  // ---- FIXED TYPE-SAFE CAN SUBMIT LOGIC ----
   const canSubmit =
-    selectedPlan &&
-    Object.entries(formData).every(([k, v]) =>
-      typeof v === 'boolean' ? true : v !== ''
+    !!selectedPlan &&
+    Object.entries(formData).every(
+      ([k, v]) => typeof v === 'boolean' ? true : v !== ''
     ) &&
-    paymentMethod &&
-    (paymentMethod === 'paypal' || paymentReference.trim() !== '');
+    paymentMethod !== null &&
+    (
+      paymentMethod === 'paypal' ||
+      (paymentMethod === 'zelle' || paymentMethod === 'cheque' || paymentMethod === 'stock')
+        ? paymentReference.trim() !== ''
+        : true
+    );
 
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
@@ -292,7 +290,7 @@ const MembershipPage: React.FC = () => {
                 'Religious Events', 'Community Service', 'Cultural Programs',
                 'Educational Activities', 'Pathsala Teaching', 'Event Planning',
                 'Fundraising', 'Youth Programs', 'Senior Activities', 'Wellness Programs',
-              ].map((interest) => (
+              ].map(interest => (
                 <label key={interest} className="flex items-center">
                   <input
                     type="checkbox"
@@ -310,7 +308,7 @@ const MembershipPage: React.FC = () => {
           <div>
             <h2 className="text-xl font-semibold mb-2">Choose Payment Method</h2>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              {['paypal', 'zelle', 'cheque', 'stock'].map((method) => (
+              {(['paypal', 'zelle', 'cheque', 'stock'] as PaymentMethod[]).map((method) => (
                 <button
                   key={method}
                   type="button"
@@ -320,8 +318,8 @@ const MembershipPage: React.FC = () => {
                       : 'border-gray-200 hover:border-orange-300'
                   }`}
                   onClick={() => {
-                    setPaymentMethod(method as any);
-                    setPaymentReference(''); // Reset when changing method
+                    setPaymentMethod(method);
+                    setPaymentReference('');
                   }}
                 >
                   <div className="text-lg font-bold capitalize">{method}</div>
@@ -329,21 +327,21 @@ const MembershipPage: React.FC = () => {
               ))}
             </div>
 
-            {/* Conditional Reference Field */}
+            {/* Reference Field */}
             {paymentMethod && (
               <div className="mt-4">
                 {paymentMethod === 'paypal' ? (
                   <div className="text-gray-600">No additional information needed for Paypal.</div>
                 ) : (
                   <div>
-                    <label className="block text-sm font-medium mb-1">{getPaymentRefLabel()} <span className="text-red-500">*</span></label>
+                    <label className="block text-sm font-medium mb-1">{getPaymentRefLabel(paymentMethod)} <span className="text-red-500">*</span></label>
                     <input
                       type="text"
                       value={paymentReference}
                       onChange={e => setPaymentReference(e.target.value)}
-                      required={paymentMethod !== 'paypal'}
+                      required={paymentMethod === 'zelle' || paymentMethod === 'cheque' || paymentMethod === 'stock'}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
-                      placeholder={`Enter ${getPaymentRefLabel()}`}
+                      placeholder={`Enter ${getPaymentRefLabel(paymentMethod)}`}
                     />
                   </div>
                 )}
@@ -381,7 +379,9 @@ const MembershipPage: React.FC = () => {
                     />
                   </div>
                 )}
-                <p className="text-sm text-gray-600 mt-2">or send to <strong>donate@yourdomain.org</strong></p>
+                <p className="text-sm text-gray-600 mt-2">
+                  or send to <strong>donate@yourdomain.org</strong>
+                </p>
               </div>
             )}
 
@@ -389,7 +389,7 @@ const MembershipPage: React.FC = () => {
               <div className="mt-4 border rounded p-4 bg-gray-50">
                 <p>Mail your cheque to:</p>
                 <p className="mt-2 font-medium text-gray-700">
-                    Jain Center<br />1234 Jain Street<br />Your City, State ZIP
+                  Jain Center<br />1234 Jain Street<br />Your City, State ZIP
                 </p>
               </div>
             )}
@@ -397,7 +397,8 @@ const MembershipPage: React.FC = () => {
             {paymentMethod === 'stock' && (
               <div className="mt-4 border rounded p-4 bg-gray-50">
                 <p>
-                  Please enter your Stock Transfer No above after completing your stock donation. For transfer instructions, contact <a href="mailto:donate@yourdomain.org" className="underline text-orange-700">donate@yourdomain.org</a>.
+                  Please enter your Stock Transfer No above after completing your stock donation. For transfer instructions, contact{' '}
+                  <a href="mailto:donate@yourdomain.org" className="underline text-orange-700">donate@yourdomain.org</a>.
                 </p>
               </div>
             )}

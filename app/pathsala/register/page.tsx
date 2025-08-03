@@ -1,15 +1,13 @@
 'use client';
-
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { CheckCircle, Heart } from 'lucide-react';
 
-// External endpoints
+// Endpoints
 const LEVELS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyHVNzO5Wbr-OBUAD_KPKPazFsZWz4ak7LONoccChBmZnAmnINE6cUbcnmH_647G5urKw/exec';
 const ZELLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzIHxb91BTRhLhjOr4an8hcgHBzjOOFWRDPiJgGMlfDEpxGA3yksX0RGjwqE3luzNNDlw/exec';
-const SUBMIT_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwI3rHapQJgBJg1vV-DX6qSAeeMFnhjqx1GmVulizdSIPMZoikv3Vl5KvL5qJbcshfr/exec';
+const SUBMIT_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwmQV4RCUlqxdsjAmSHjHBT-k16BhnC9IZwPhSrwpbrSmIvfjNCXD1QNrUZpoNdlN7r/exec';
 
-// Helper for localStorage cache
 const cacheFetch = async (key: string, fetcher: () => Promise<any>, maxAgeMs = 15 * 60 * 1000) => {
   const now = Date.now();
   try {
@@ -22,26 +20,26 @@ const cacheFetch = async (key: string, fetcher: () => Promise<any>, maxAgeMs = 1
     localStorage.setItem(key, JSON.stringify({ timestamp: now, data }));
     return data;
   } catch {
-    // Fallback: just fetch
     return await fetcher();
   }
 };
 
 const Skeleton = ({ height = 38, className = '' }) => (
-  <div className={`bg-gray-200 rounded animate-pulse mb-2 ${className}`}
-       style={{ height, marginBottom: 8 }} />
+  <div className={`bg-gray-200 rounded animate-pulse mb-2 ${className}`} style={{ height, marginBottom: 8 }} />
 );
+
+type PaymentMethod = 'paypal' | 'zelle' | 'cheque' | 'stock' | null;
 
 const PathshalaRegister: React.FC = () => {
   const [levels, setLevels] = useState<any[]>([]);
   const [selectedLevel, setSelectedLevel] = useState<string>('');
   const [addFees, setAddFees] = useState(true);
-  const [paymentMethod, setPaymentMethod] = useState<'paypal' | 'zelle' | 'cheque' | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(null);
+  const [paymentReference, setPaymentReference] = useState('');
   const [zelleQrUrl, setZelleQrUrl] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Father & Mother contact split!
   const [formData, setFormData] = useState({
     studentName: '',
     studentAge: '',
@@ -57,28 +55,22 @@ const PathshalaRegister: React.FC = () => {
     zipCode: '',
   });
 
-  // --- USER EXPERIENCE: Skeleton and Caching ---
   useEffect(() => {
     async function fetchAll() {
       setLoading(true);
       try {
-        // Levels with cache (~15 min)
         const levelsRes = await cacheFetch('jc_levels_cache', async () => {
           const res = await fetch(LEVELS_SCRIPT_URL);
           return (await res.json()).levels;
         });
         setLevels(levelsRes || []);
-
-        // Zelle QR with cache (~1 hour)
         const qrRes = await cacheFetch('jc_zelleqr_cache', async () => {
           const res = await fetch(ZELLE_SCRIPT_URL);
           return (await res.json()).content;
         }, 60 * 60 * 1000);
-        const zelleItem =
-          (qrRes || []).find((i: any) => String(i.Section || '').toLowerCase() === 'zelle_qr');
+        const zelleItem = (qrRes || []).find((i: any) => String(i.Section || '').toLowerCase() === 'zelle_qr');
         if (zelleItem && zelleItem.ImageURL) setZelleQrUrl(zelleItem.ImageURL);
       } catch (e) {
-        // fallback: just show no data
         setLevels([]);
       } finally {
         setLoading(false);
@@ -95,29 +87,56 @@ const PathshalaRegister: React.FC = () => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  // Custom validation for unique emails/phones (father ≠ mother)
-  const validateEmailsPhones = () => {
-    if (
-      !formData.fatherEmail || !formData.motherEmail ||
-      !formData.fatherPhone || !formData.motherPhone
-    ) return false;
-    if (formData.fatherEmail === formData.motherEmail) return false;
-    if (formData.fatherPhone === formData.motherPhone) return false;
-    return true;
-  };
+  // Instead of requiring both, just require at least one parent contact
+  const hasParentContact =
+    !!formData.fatherEmail.trim() || !!formData.fatherPhone.trim() ||
+    !!formData.motherEmail.trim() || !!formData.motherPhone.trim();
+
+  // Payment reference label per method
+  function getPaymentRefLabel(pm: PaymentMethod): string {
+    switch (pm) {
+      case 'zelle': return 'Zelle T Id';
+      case 'cheque': return 'Cheque No';
+      case 'stock': return 'Stock Transfer No';
+      default: return '';
+    }
+  }
+
+  // Only essential fields for canSubmit
+  const canSubmit =
+    !!formData.studentName.trim() &&
+    !!selectedLevel &&
+    hasParentContact &&
+    paymentMethod !== null &&
+    (
+      paymentMethod === 'paypal' ||
+      (['zelle', 'cheque', 'stock'].includes(paymentMethod || '') ? paymentReference.trim() !== '' : true)
+    );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!formData.studentName.trim()) {
+      alert('Student Name is required.');
+      return;
+    }
     if (!selectedLevel) {
       alert('Please select a Pathshala level.');
       return;
     }
-    if (!formData.studentName) {
-      alert('Please fill Student Name');
+    if (!hasParentContact) {
+      alert('Please provide at least one parent email or phone.');
       return;
     }
-    if (!validateEmailsPhones()) {
-      alert('Father and mother must have different email and phone numbers, and all must be filled.');
+    if (paymentMethod === null) {
+      alert('Please select a payment method.');
+      return;
+    }
+    if (
+      (paymentMethod === 'zelle' || paymentMethod === 'cheque' || paymentMethod === 'stock') &&
+      !paymentReference.trim()
+    ) {
+      alert(`Please enter ${getPaymentRefLabel(paymentMethod)}.`);
       return;
     }
     const payload = {
@@ -130,6 +149,7 @@ const PathshalaRegister: React.FC = () => {
       add3Percent: addFees,
       finalTotal: totalWithFee.toFixed(2),
       paymentMethod,
+      paymentReference,
     };
     try {
       await fetch(SUBMIT_SCRIPT_URL, {
@@ -144,7 +164,6 @@ const PathshalaRegister: React.FC = () => {
     }
   };
 
-  // --- SKELETON LOADING UI ---
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-orange-50 p-6">
@@ -161,7 +180,6 @@ const PathshalaRegister: React.FC = () => {
       </div>
     );
   }
-  // --- SUCCESS UI ---
   if (isSubmitted) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-orange-50 p-6">
@@ -175,7 +193,6 @@ const PathshalaRegister: React.FC = () => {
     );
   }
 
-  // --- MAIN FORM UI ---
   return (
     <div className="min-h-screen bg-orange-50 p-6 md:p-12">
       <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-xl p-8 space-y-10">
@@ -184,9 +201,10 @@ const PathshalaRegister: React.FC = () => {
           {/* Student Info */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1">Student Name</label>
+              <label className="block text-sm font-medium mb-1">Student Name <span className="text-red-500">*</span></label>
               <input type="text" name="studentName" value={formData.studentName}
-                onChange={handleInputChange} required
+                onChange={handleInputChange}
+                required
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg" />
             </div>
             <div>
@@ -196,7 +214,7 @@ const PathshalaRegister: React.FC = () => {
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg" />
             </div>
           </div>
-          {/* Father & Mother Info */}
+          {/* Father & Mother Info (no required except validation for at least one) */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-1">Father's Name</label>
@@ -207,13 +225,13 @@ const PathshalaRegister: React.FC = () => {
             <div>
               <label className="block text-sm font-medium mb-1">Father's Email</label>
               <input type="email" name="fatherEmail" value={formData.fatherEmail}
-                onChange={handleInputChange} required
+                onChange={handleInputChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg" />
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Father's Phone</label>
               <input type="tel" name="fatherPhone" value={formData.fatherPhone}
-                onChange={handleInputChange} required
+                onChange={handleInputChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg" />
             </div>
             <div>
@@ -225,13 +243,13 @@ const PathshalaRegister: React.FC = () => {
             <div>
               <label className="block text-sm font-medium mb-1">Mother's Email</label>
               <input type="email" name="motherEmail" value={formData.motherEmail}
-                onChange={handleInputChange} required
+                onChange={handleInputChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg" />
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Mother's Phone</label>
               <input type="tel" name="motherPhone" value={formData.motherPhone}
-                onChange={handleInputChange} required
+                onChange={handleInputChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg" />
             </div>
           </div>
@@ -264,7 +282,7 @@ const PathshalaRegister: React.FC = () => {
           </div>
           {/* Level Selection */}
           <div>
-            <label className="block text-lg font-semibold mb-2">Select Pathshala Level</label>
+            <label className="block text-lg font-semibold mb-2">Select Pathshala Level <span className="text-red-500">*</span></label>
             <select
               className="w-full border px-4 py-2 rounded-lg"
               value={selectedLevel}
@@ -300,21 +318,39 @@ const PathshalaRegister: React.FC = () => {
               Total: <span className="text-red-600">${totalWithFee.toFixed(2)}</span>
             </div>
           </div>
-          {/* Payment Method */}
+          {/* Payment Method + Reference */}
           <div>
-            <h2 className="text-xl font-semibold mb-2">Choose Payment Method</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {['paypal', 'zelle', 'cheque'].map((method) => (
+            <h2 className="text-xl font-semibold mb-2">Choose Payment Method <span className="text-red-500">*</span></h2>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              {['paypal', 'zelle', 'cheque', 'stock'].map((method) => (
                 <button
                   key={method}
                   type="button"
                   className={`border rounded-lg p-4 text-center transition ${paymentMethod === method ? 'border-orange-600 bg-orange-50' : 'border-gray-200 hover:border-orange-300'}`}
-                  onClick={() => setPaymentMethod(method as any)}
-                >
+                  onClick={() => {
+                    setPaymentMethod(method as PaymentMethod);
+                    setPaymentReference('');
+                  }}>
                   <div className="text-lg font-bold capitalize">{method}</div>
                 </button>
               ))}
             </div>
+            {paymentMethod && paymentMethod !== 'paypal' && (
+              <div className="mt-4">
+                <label className="block text-sm font-medium mb-1">
+                  {getPaymentRefLabel(paymentMethod)} <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={paymentReference}
+                  onChange={e => setPaymentReference(e.target.value)}
+                  required={paymentMethod === 'zelle' || paymentMethod === 'cheque' || paymentMethod === 'stock'}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                  placeholder={`Enter ${getPaymentRefLabel(paymentMethod)}`}
+                />
+              </div>
+            )}
+            {/* Payment details */}
             {paymentMethod === 'zelle' && (
               <div className="mt-4 border rounded p-4 bg-gray-50 text-center">
                 <p className="font-medium text-gray-700">Scan the Zelle QR code:</p>
@@ -349,11 +385,19 @@ const PathshalaRegister: React.FC = () => {
                 </p>
               </div>
             )}
+            {paymentMethod === 'stock' && (
+              <div className="mt-4 border rounded p-4 bg-gray-50">
+                <p>
+                  Please enter your Stock Transfer No above after completing your stock donation. For transfer instructions, contact <a href="mailto:donate@yourdomain.org" className="underline text-orange-700">donate@yourdomain.org</a>.
+                </p>
+              </div>
+            )}
           </div>
-          {/* Submit */}
           <button
             type="submit"
-            className="w-full bg-orange-600 hover:bg-orange-700 text-white py-4 rounded font-semibold text-lg flex items-center justify-center mt-6"
+            disabled={!canSubmit}
+            className={`w-full bg-orange-600 hover:bg-orange-700 text-white py-4 rounded font-semibold text-lg flex items-center justify-center mt-6
+              ${!canSubmit ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             <Heart className="h-5 w-5 mr-2" />
             Submit Pathshala Registration

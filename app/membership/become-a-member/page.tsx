@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { CheckCircle, Heart } from 'lucide-react';
 
 const FETCH_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx33ldKE6dib3hJFA6xYw0ShWDzwV2hZNV-loY2l6SfOxqRGvvh9cgdPRmeufgdrWSrAw/exec';
-const SUBMIT_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx_NqV0nsolC6iX8o3pUZBJaJrdMeXJWBSAJKwQzPjS_sJ0GFBTOr87xSOQTky9gx86/exec';
+const SUBMIT_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxG4jWKMhoZIUQN6DYwh4KhXDEN1W1Al79dmLGC46rb8GZvBe_ZzprMJrUHAoS0kO9X/exec';
 
 const CACHE_KEY = 'membership-data-cache';
 const CACHE_TTL = 10 * 60 * 1000; // 10 minutes
@@ -29,11 +29,14 @@ const MembershipPage: React.FC = () => {
   const [membershipTypes, setMembershipTypes] = useState<any[]>([]);
   const [selectedMembership, setSelectedMembership] = useState<string>('');
   const [addFees, setAddFees] = useState(true);
-  const [paymentMethod, setPaymentMethod] = useState<'paypal' | 'zelle' | 'cheque' | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState<'paypal' | 'zelle' | 'cheque' | 'stock' | null>(null);
+  const [paymentReference, setPaymentReference] = useState('');
   const [zelleQrUrl, setZelleQrUrl] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [loading, setLoading] = useState(true);
+  console.log(paymentReference);
 
+  // Fetch + cache membership data on mount
   useEffect(() => {
     const loadMembershipData = async () => {
       const cached = localStorage.getItem(CACHE_KEY);
@@ -49,7 +52,6 @@ const MembershipPage: React.FC = () => {
             shouldFetch = false;
           }
         } catch (err) {
-          console.error('Cache parsing error:', err);
           localStorage.removeItem(CACHE_KEY);
         }
       }
@@ -74,51 +76,67 @@ const MembershipPage: React.FC = () => {
             zelleQrUrl: qr?.ImageURL || '',
           };
 
-          localStorage.setItem(
-            CACHE_KEY,
-            JSON.stringify({ data: transformedData, timestamp: Date.now() })
-          );
+          localStorage.setItem(CACHE_KEY, JSON.stringify({ data: transformedData, timestamp: Date.now() }));
 
           setMembershipTypes(transformedData.membershipTypes);
           setZelleQrUrl(transformedData.zelleQrUrl);
           setLoading(false);
         } catch (err) {
-          console.error('Error fetching membership data:', err);
           setLoading(false);
         }
       }
     };
-
     loadMembershipData();
   }, []);
 
+  // Handle input changes
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const target = e.target as HTMLInputElement;
     const { name, type, value, checked } = target;
-
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
     }));
   };
 
   const handleInterestChange = (interest: string) => {
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
       interests: prev.interests.includes(interest)
-        ? prev.interests.filter((i) => i !== interest)
+        ? prev.interests.filter(i => i !== interest)
         : [...prev.interests, interest],
     }));
   };
 
-  const selectedPlan = membershipTypes.find((m) => m.id === selectedMembership);
+  // Payment Reference label logic
+  const getPaymentRefLabel = () => {
+    if (paymentMethod === 'zelle') return 'Zelle T Id';
+    if (paymentMethod === 'cheque') return 'Cheque No';
+    if (paymentMethod === 'stock') return 'Stock Transfer No';
+    return '';
+  };
+
+  // Plan & amount logic
+  const selectedPlan = membershipTypes.find(m => m.id === selectedMembership);
   const baseTotal = selectedPlan?.amount || 0;
   const totalWithFee = addFees ? baseTotal * 1.03 : baseTotal;
 
+  // Form submit
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedPlan) {
       alert('Please select a membership type.');
+      return;
+    }
+    if (!paymentMethod) {
+      alert('Please select a payment method.');
+      return;
+    }
+    if (
+      paymentMethod !== 'paypal' &&
+      !paymentReference.trim()
+    ) {
+      alert(`Please enter ${getPaymentRefLabel()}.`);
       return;
     }
 
@@ -131,7 +149,9 @@ const MembershipPage: React.FC = () => {
       add3Percent: addFees,
       finalTotal: totalWithFee.toFixed(2),
       paymentMethod,
+      paymentReference,
     };
+    console.log('Submitting payload:', payload);
 
     try {
       await fetch(SUBMIT_SCRIPT_URL, {
@@ -140,13 +160,20 @@ const MembershipPage: React.FC = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
-
       setIsSubmitted(true);
     } catch (error) {
-      console.error('Submission failed:', error);
       alert('Something went wrong. Please try again.');
     }
   };
+
+  // Validation for enabling the submit button:
+  const canSubmit =
+    selectedPlan &&
+    Object.entries(formData).every(([k, v]) =>
+      typeof v === 'boolean' ? true : v !== ''
+    ) &&
+    paymentMethod &&
+    (paymentMethod === 'paypal' || paymentReference.trim() !== '');
 
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
@@ -167,17 +194,17 @@ const MembershipPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-orange-50 pt-16">
-       <section className="bg-gradient-to-r from-orange-600 to-orange-700 text-white h-48 sm:h-52 md:h-56 lg:h-60 flex items-center justify-center">
-  <div className="max-w-7xl mx-auto px-4 text-center">
-    <h1 className="text-5xl font-bold">Membership Registration</h1>
-  </div>
-</section>
+      <section className="bg-gradient-to-r from-orange-600 to-orange-700 text-white h-48 sm:h-52 md:h-56 lg:h-60 flex items-center justify-center">
+        <div className="max-w-7xl mx-auto px-4 text-center">
+          <h1 className="text-5xl font-bold">Membership Registration</h1>
+        </div>
+      </section>
       <div className="max-w-5xl mx-auto bg-white rounded-xl shadow-xl p-8 space-y-10">
         {/* Membership Types */}
         <div>
           <h2 className="text-xl font-semibold mb-4">Choose a Membership Plan</h2>
           <div className="grid md:grid-cols-3 gap-4">
-            {membershipTypes.map((type) => (
+            {membershipTypes.map(type => (
               <label
                 key={type.id}
                 className={`p-4 rounded-lg border transition-all cursor-pointer ${
@@ -265,7 +292,7 @@ const MembershipPage: React.FC = () => {
                 'Religious Events', 'Community Service', 'Cultural Programs',
                 'Educational Activities', 'Pathsala Teaching', 'Event Planning',
                 'Fundraising', 'Youth Programs', 'Senior Activities', 'Wellness Programs',
-              ].map((interest) => (
+              ].map(interest => (
                 <label key={interest} className="flex items-center">
                   <input
                     type="checkbox"
@@ -282,8 +309,8 @@ const MembershipPage: React.FC = () => {
           {/* Payment Method */}
           <div>
             <h2 className="text-xl font-semibold mb-2">Choose Payment Method</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {['paypal', 'zelle', 'cheque'].map((method) => (
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              {['paypal', 'zelle', 'cheque', 'stock'].map((method) => (
                 <button
                   key={method}
                   type="button"
@@ -292,13 +319,38 @@ const MembershipPage: React.FC = () => {
                       ? 'border-orange-600 bg-orange-50'
                       : 'border-gray-200 hover:border-orange-300'
                   }`}
-                  onClick={() => setPaymentMethod(method as any)}
+                  onClick={() => {
+                    setPaymentMethod(method as any);
+                    setPaymentReference(''); // Reset when changing method
+                  }}
                 >
                   <div className="text-lg font-bold capitalize">{method}</div>
                 </button>
               ))}
             </div>
 
+            {/* Conditional Reference Field */}
+            {paymentMethod && (
+              <div className="mt-4">
+                {paymentMethod === 'paypal' ? (
+                  <div className="text-gray-600">No additional information needed for Paypal.</div>
+                ) : (
+                  <div>
+                    <label className="block text-sm font-medium mb-1">{getPaymentRefLabel()} <span className="text-red-500">*</span></label>
+                    <input
+                      type="text"
+                      value={paymentReference}
+                      onChange={e => setPaymentReference(e.target.value)}
+                      required={paymentMethod !== 'paypal'}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                      placeholder={`Enter ${getPaymentRefLabel()}`}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Payment method-specific info */}
             {paymentMethod === 'paypal' && (
               <div className="mt-4 border rounded p-4 bg-gray-50">
                 <form
@@ -337,7 +389,15 @@ const MembershipPage: React.FC = () => {
               <div className="mt-4 border rounded p-4 bg-gray-50">
                 <p>Mail your cheque to:</p>
                 <p className="mt-2 font-medium text-gray-700">
-                  Jain Center<br />1234 Jain Street<br />Your City, State ZIP
+                    Jain Center<br />1234 Jain Street<br />Your City, State ZIP
+                </p>
+              </div>
+            )}
+
+            {paymentMethod === 'stock' && (
+              <div className="mt-4 border rounded p-4 bg-gray-50">
+                <p>
+                  Please enter your Stock Transfer No above after completing your stock donation. For transfer instructions, contact <a href="mailto:donate@yourdomain.org" className="underline text-orange-700">donate@yourdomain.org</a>.
                 </p>
               </div>
             )}
@@ -345,10 +405,12 @@ const MembershipPage: React.FC = () => {
 
           <button
             type="submit"
-            className="w-full bg-orange-600 hover:bg-orange-700 text-white py-4 rounded font-semibold text-lg flex items-center justify-center"
+            disabled={!canSubmit}
+            className={`w-full bg-orange-600 hover:bg-orange-700 text-white py-4 rounded font-semibold text-lg flex items-center justify-center
+              ${!canSubmit ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             <Heart className="h-5 w-5 mr-2" />
-            Submit Membership Form
+            Confirm Details
           </button>
         </form>
       </div>

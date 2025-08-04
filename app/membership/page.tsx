@@ -64,12 +64,11 @@ const Membership = () => {
 
   if (!data) return <MembershipSkeleton />;
 
-  // ─── render ────────────────────────────────────────────────────
-  return (
+ return (
     <div className="min-h-screen bg-brand-light">
       <main className="pt-[14vh]">
 
-        {/* ── HERO ── */}
+        {/* ── HERO WITH CTA ON TOP``` */}
         <section className="relative flex items-center justify-center
                             h-56 sm:h-64 md:h-72 lg:h-80 overflow-hidden">
           <Image
@@ -80,19 +79,20 @@ const Membership = () => {
             quality={85}
             className="object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/60" />
+          
           <div className="relative z-10 text-center px-4">
             <h1 className="font-bold text-brand-light
-                           text-3xl sm:text-4xl md:text-5xl
-                           drop-shadow-[0_0_10px_rgb(255_255_255_/_50%)]">
-              {data.heroSection.heading}
+                           text-3xl sm:text-4xl md:text-5xl mb-4
+                           drop-shadow-[0_0_10px_rgb(255_255_255_/_50%)]
+                           [text-shadow:_0_0_10px_rgb(255_255_255_/_50%),_0_0_20px_rgb(255_255_255_/_30%),_0_0_40px_rgb(255_255_255_/_20%)]">
+            Become a Member
             </h1>
-            <p className="mt-2 max-w-3xl mx-auto text-brand-light/90
+            <p className="mt-2 max-w-3xl mx-auto text-brand-light/90 mb-8
                           text-sm sm:text-base md:text-lg text-justify">
               {data.heroSection.subHeading}
             </p>
-            <Link href="/membership/become-a-member" className="inline-block mt-6">
-              <button className="btn-primary rounded-xl px-6 py-3 text-sm md:text-base">
+            <Link href="/membership/become-a-member">
+              <button className="bg-brand-light hover:bg-brand-white text-brand-dark hover:text-accent md:px-12 py-4 rounded-xl font-bold text-lg md:text-xl transition-all duration-300 hover:scale-105 shadow-lg">
                 {data.heroSection.buttonText}
               </button>
             </Link>
@@ -112,7 +112,7 @@ const Membership = () => {
             <div className="space-y-6">
               {data.benefits.map((b: any, i: number) => (
                 <div key={i} className="bg-brand-light p-6 rounded-xl shadow-soft text-left flex gap-4">
-                  <img src="/hand-icon.png" alt="" className="w-12 h-12 shrink-0" />
+                  <img src="/hand-icon.png" alt="" className="w-12 h-14 " />
                   <div>
                     <h3 className="font-semibold text-brand-dark mb-1">{b.title}</h3>
                     <p className="text-brand-dark/80 text-sm md:text-base text-justify">{b.description}</p>
@@ -157,7 +157,7 @@ const Membership = () => {
 
         {/* ── RULES ── */}
         <section className="py-16 bg-brand-white">
-          <div className="max-w-4xl mx-auto px-4 text-center">
+          <div className="max-w-6xl mx-auto px-4 text-center">
             <h2 className="text-accent font-bold text-2xl sm:text-3xl md:text-4xl mb-8">
               {data.ruleTitle}
             </h2>

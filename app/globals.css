@@ -1,20 +1,79 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&family=Lexend:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Global styles */
 html {
   scroll-behavior: smooth;
 }
 
+/* Font families */
+html, body {
+  font-family: 'Lexend', sans-serif;
+}
+
+/* Outfit for titles and headings */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Outfit', sans-serif;
+}
+
+/* Outfit for navigation */
+nav {
+  font-family: 'Outfit', sans-serif;
+}
+
+/* Lexend for body text and content */
+p, div, span, a, li, td, th {
+  font-family: 'Lexend', sans-serif;
+}
+
+/* Hide scrollbar globally */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* For Firefox */
+html {
+  scrollbar-width: none;
+}
+
+/* For IE and Edge (legacy) */
+html {
+  -ms-overflow-style: none;
+}
+
+/* Utility class for hiding scrollbars on specific elements */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
 .scrollbar-hide {
-    /* For Webkit browsers (Chrome, Safari, Edge, Opera) */
-    ::-webkit-scrollbar {
-        display: none;
-    }
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
 
-    /* For Firefox */
-    scrollbar-width: none;
+/* Additional scrollbar hiding for any container */
+*::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
 
-    /* For IE and Edge (legacy) */
-    -ms-overflow-style: none;
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+/* Ensure smooth scrolling works */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }

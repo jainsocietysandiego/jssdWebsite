@@ -132,54 +132,64 @@ const HistoryPage: React.FC = () => {
   if (loading) return <HistorySkeleton />;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50">
-      <main className="pt-16">
-        <section className="bg-gradient-to-r from-orange-600 to-orange-700 text-white h-48 sm:h-52 md:h-56 lg:h-60 flex items-center justify-center">
-          <div className="max-w-7xl mx-auto px-4 text-center">
-            <h1 className="text-5xl font-bold">
-              {getContent("banner", "Title") || "Our History"}
-            </h1>
-          </div>
-        </section>
+  <div className="min-h-screen bg-brand-light">
+    <main className="pt-[14vh]">
 
-        <section className="py-12 bg-white border border-shadow-md border-colour-gray rounded-xl">
-          <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-start gap-8">
-            <div className="flex-1 space-y-6 text-gray-800 text-lg leading-relaxed text-justify">
-              {getParagraphs().map((para, idx) => (
-                <p key={idx}>{para}</p>
-              ))}
-            </div>
-            <div className="w-full md:w-1/2 flex items-center justify-center relative h-[400px] mt-12">
-              <div className="relative w-[90%] h-[90%]">
-                <Image
-                  src={getImageUrl("description")}
-                  alt="History"
-                  fill
-                  className="rounded-lg shadow-md object-cover ml-16"
-                />
-              </div>
-            </div>
-          </div>
-        </section>
+      <section className="relative flex items-center justify-center
+                          h-48 sm:h-56 md:h-64 lg:h-72 overflow-hidden">
+        <Image
+          src="/images/hero-banner.jpg"          // keep this banner everywhere
+          alt="History banner background"
+          fill
+          priority
+          quality={85}
+          className="object-cover"
+        />
+        <h1 className="relative z-10 font-bold text-brand-light
+                       text-3xl sm:text-4xl md:text-5xl drop-shadow-[0_0_10px_rgb(255_255_255_/_50%)]">
+          {getContent('banner','Title') || 'Our History'}
+        </h1>
+      </section>
 
-        <section className="py-8 bg-orange-50">
-          <div className="max-w-5xl mx-auto px-4 space-y-10">
-            {getPhases().map((phase, idx) => (
-              <div key={idx}>
-                <h3 className="text-xl font-bold text-orange-700 mb-2">
-                  {phase.Label}
-                </h3>
-                <p className="text-gray-700 text-base leading-relaxed">
-                  {phase.Content}
-                </p>
-              </div>
+      <section className="py-16 bg-brand-white">
+        <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row gap-10 items-center">
+          {/* text */}
+          <div className="flex-1 space-y-6 text-gray-700 leading-relaxed">
+            {getParagraphs().map((p,i)=>(
+              <p key={i} className="text-justify text-base md:text-lg">{p}</p>
             ))}
           </div>
-        </section>
-        <div className="w-full h-[100px] bg-white"></div>
-      </main>
-    </div>
-  );
+
+          {/* image */}
+          <div className="w-full md:w-1/2 relative h-80 md:h-[400px]">
+            <Image
+              src={getImageUrl('description')}
+              alt="JSSD history"
+              fill
+              className="rounded-xl shadow-soft object-cover"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* ───────── PHASES / TIMELINE ───────── */}
+      <section className="py-12 bg-white border-t border-orange-200">
+        <div className="max-w-6xl mx-auto px-4 space-y-10">
+          {getPhases().map((ph,i)=>(
+            <div key={i} className="space-y-2">
+              <h3 className="text-accent font-bold text-lg md:text-xl">{ph.Label}</h3>
+              <p className="text-brand-dark text-justify text-sm md:text-base leading-relaxed">
+                {ph.Content}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+    </main>
+  </div>
+);
+
 };
 
 export default HistoryPage;

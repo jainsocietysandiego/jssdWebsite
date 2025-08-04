@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import LunchModal from "../components/lunchModal";
+import Image from "next/image";
 
 interface LevelData {
   Level: string;
@@ -184,9 +185,32 @@ const Pathsala: React.FC = () => {
 
   // Simple loading component, can customize per your design
   const Loading = () => (
-    <div className="min-h-screen flex items-center justify-center bg-orange-50">
-      <div className="text-orange-600">Loading...</div>
+    <div className="min-h-screen bg-brand-light flex items-center justify-center">
+    <div className="text-center">
+      <div className="relative">
+        {/* Animated rings */}
+        <div className="w-16 md:w-24 h-16 md:h-24 mx-auto mb-6 md:mb-8 relative">
+          <div className="absolute inset-0 border-4 border-[rgba(234,88,12,0.1)] rounded-full"></div>
+          <div className="absolute inset-2 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
+          <div className="absolute inset-4 border-4 border-brand-dark/30 border-r-transparent rounded-full animate-spin-reverse"></div>
+          <div className="absolute inset-6 w-8 md:w-12 h-8 md:h-12 bg-accent rounded-full flex items-center justify-center animate-pulse">
+            <div className="w-4 md:w-6 h-4 md:h-6 bg-white rounded-full"></div>
+          </div>
+        </div>
+        
+        {/* Loading text */}
+        <h3 className="text-lg md:text-xl font-semibold text-brand-dark mb-2">Jai Jinendra</h3>
+        <p className="text-sm md:text-base text-accent animate-pulse">Ahimsa Parmo Dharma</p>
+        
+        {/* Animated dots */}
+        <div className="flex justify-center space-x-1 mt-4">
+          <div className="w-2 h-2 bg-accent rounded-full animate-bounce" style={{animationDelay: '0ms'}}></div>
+          <div className="w-2 h-2 bg-accent rounded-full animate-bounce" style={{animationDelay: '150ms'}}></div>
+          <div className="w-2 h-2 bg-accent rounded-full animate-bounce" style={{animationDelay: '300ms'}}></div>
+        </div>
+      </div>
     </div>
+  </div>
   );
 
   if (hasError) {
@@ -214,175 +238,190 @@ const Pathsala: React.FC = () => {
 
   if (isLoading || !levels.length) return <Loading />;
 
-  return (
-    <>
-      <Navbar />
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50">
-        <main>
-          <div className="pt-16">
-            <div className="bg-gradient-to-r from-orange-600 to-orange-700 text-white py-20 text-center h-52">
-              <h1 className="text-5xl font-bold">Pathala Program</h1>
-              <p className="mt-2 max-w-3xl mx-auto text-xl">
-                Nurturing young minds with Jain values, philosophy, and cultural
-                heritage
+ return (
+  <>
+    <Navbar />
+    <div className="min-h-screen bg-brand-light">
+      <main>
+        <div className="pt-[14vh]">
+          {/* Hero Section */}
+          <section className="relative flex items-center justify-center
+                              h-48 sm:h-56 md:h-64 lg:h-72 overflow-hidden">
+            <Image
+              src="/images/hero-banner.jpg"
+              alt="Pathshala Program"
+              fill
+              priority
+              quality={85}
+              className="object-cover"
+            />
+            <div className="relative z-10 text-center px-4">
+              <h1 className="font-bold text-brand-light text-3xl sm:text-4xl md:text-5xl
+                             drop-shadow-[0_0_10px_rgb(255_255_255_/_50%)]">
+                Pathshala Program
+              </h1>
+              <p className="mt-2 max-w-3xl mx-auto text-white text-sm sm:text-base md:text-lg text-center">
+                Nurturing young minds with Jain values, philosophy, and cultural heritage
               </p>
             </div>
+          </section>
 
-             <section className="py-20 bg-white">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="text-center mb-16">
-                  <h2 className="text-3xl font-bold text-gray-900 mb-4">
-                    About Our Pathshala
-                  </h2>
-                  <p className="text-gray-600 max-w-3xl mx-auto">
-                    Our Pathshala program provides comprehensive Jain education
-                    from childhood through young adulthood. Each level builds
-                    upon the previous, creating a strong foundation in Jain
-                    principles and practices.
-                  </p>
-                </div>
+          <section className="py-16 md:py-20 bg-brand-white">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="text-center mb-12 md:mb-16">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-brand-dark mb-4">
+                  About Our Pathshala
+                </h2>
+                <p className="text-brand-dark/80 max-w-4xl mx-auto text-sm md:text-base text-center">
+                  Our Pathshala program provides comprehensive Jain education
+                  from childhood through young adulthood. Each level builds
+                  upon the previous, creating a strong foundation in Jain
+                  principles and practices.
+                </p>
+              </div>
 
-                {/* Your existing levels grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-                  {levels.map((level) => (
-                    <div
-                      key={level.Level}
-                      className="bg-white rounded-lg shadow-lg border border-orange-100 hover:shadow-xl transition-shadow"
-                    >
-                      <div className="p-6">
-                        <div className="flex items-center justify-between mb-4">
-                          <h3 className="text-2xl font-bold text-orange-600">
-                            Level {level.Level}
-                          </h3>
-                          <div className="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm font-medium">
-                            {level["Age Group"]}
-                          </div>
+              {/* Your existing levels grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+                {levels.map((level) => (
+                  <div
+                    key={level.Level}
+                    className="bg-brand-white rounded-xl shadow-soft border-soft hover:shadow-lg transition-shadow"
+                  >
+                    <div className="p-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-xl md:text-2xl font-bold text-accent">
+                          Level {level.Level}
+                        </h3>
+                        <div className="bg-[rgba(234,88,12,0.1)] text-accent px-3 py-1 rounded-full text-xs md:text-sm font-medium">
+                          {level["Age Group"]}
                         </div>
-                        <h4 className="text-xl font-semibold text-gray-900 mb-3">
-                          {level.Title}
-                        </h4>
-                        <p className="text-gray-600 mb-4">
-                          {level.Description}
-                        </p>
-                        <div className="space-y-2 mb-6">
-                          <div className="flex items-center text-sm text-gray-500">
-                            <Star className="h-4 w-4 mr-2" />
-                            <span>Fees: {level.Fees}</span>
-                          </div>
-                          <div className="flex items-center text-sm text-gray-500">
-                            <Clock className="h-4 w-4 mr-2" />
-                            <span>{level.Duration} per session</span>
-                          </div>
-                          <div className="flex items-center text-sm text-gray-500">
-                            <Users className="h-4 w-4 mr-2" />
-                            <span>{level.Students} students enrolled</span>
-                          </div>
-                        </div>
-                        <button
-                          onClick={() => {
-                            sessionStorage.setItem(
-                              `pathsala-level-${level.Level}`,
-                              JSON.stringify(level)
-                            );
-                            router.push(`/pathsala/level-${level.Level}`);
-                          }}
-                          className="w-full bg-orange-600 hover:bg-orange-700 text-white py-2 px-4 rounded-lg font-medium transition-colors"
-                        >
-                          View Details
-                        </button>
                       </div>
+                      <h4 className="text-lg md:text-xl font-semibold text-brand-dark mb-3">
+                        {level.Title}
+                      </h4>
+                      <p className="text-brand-dark/80 mb-4 text-sm md:text-base text-justify">
+                        {level.Description}
+                      </p>
+                      <div className="space-y-2 mb-6">
+                        <div className="flex items-center text-xs md:text-sm text-brand-dark/70">
+                          <Star className="h-4 w-4 mr-2" />
+                          <span>Fees: {level.Fees}</span>
+                        </div>
+                        <div className="flex items-center text-xs md:text-sm text-brand-dark/70">
+                          <Clock className="h-4 w-4 mr-2" />
+                          <span>{level.Duration} per session</span>
+                        </div>
+                        <div className="flex items-center text-xs md:text-sm text-brand-dark/70">
+                          <Users className="h-4 w-4 mr-2" />
+                          <span>{level.Students} students enrolled</span>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => {
+                          sessionStorage.setItem(
+                            `pathsala-level-${level.Level}`,
+                            JSON.stringify(level)
+                          );
+                          router.push(`/pathsala/level-${level.Level}`);
+                        }}
+                        className="w-full bg-accent hover:bg-accent-hov text-brand-light py-2 px-4 rounded-xl font-medium transition-colors text-sm md:text-base"
+                      >
+                        View Details
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Your existing features section */}
+              <div className="bg-brand-light rounded-xl p-6 md:p-8 mb-16">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  {[
+                    {
+                      icon: BookOpen,
+                      title: "Comprehensive Curriculum",
+                      desc: "Age-appropriate lessons on Jain philosophy, history, and practices",
+                    },
+                    {
+                      icon: Users,
+                      title: "Experienced Teachers",
+                      desc: "Volunteer teachers with deep knowledge of Jain traditions",
+                    },
+                    {
+                      icon: Star,
+                      title: "Cultural Activities",
+                      desc: "Festivals, competitions, and cultural programs to enhance learning",
+                    },
+                  ].map((item, idx) => (
+                    <div key={idx} className="text-center">
+                      <div className="bg-accent text-brand-light p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                        <item.icon className="h-8 w-8" />
+                      </div>
+                      <h3 className="text-lg md:text-xl font-bold text-brand-dark mb-2">
+                        {item.title}
+                      </h3>
+                      <p className="text-gray-700 text-sm md:text-md text-center">{item.desc}</p>
                     </div>
                   ))}
                 </div>
+              </div>
 
-                {/* Your existing features section */}
-                <div className="bg-orange-50 rounded-lg p-8 mb-16">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    {[
-                      {
-                        icon: BookOpen,
-                        title: "Comprehensive Curriculum",
-                        desc: "Age-appropriate lessons on Jain philosophy, history, and practices",
-                      },
-                      {
-                        icon: Users,
-                        title: "Experienced Teachers",
-                        desc: "Volunteer teachers with deep knowledge of Jain traditions",
-                      },
-                      {
-                        icon: Star,
-                        title: "Cultural Activities",
-                        desc: "Festivals, competitions, and cultural programs to enhance learning",
-                      },
-                    ].map((item, idx) => (
-                      <div key={idx} className="text-center">
-                        <div className="bg-orange-600 text-white p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                          <item.icon className="h-8 w-8" />
-                        </div>
-                        <h3 className="text-xl font-bold text-gray-900 mb-2">
-                          {item.title}
-                        </h3>
-                        <p className="text-gray-600">{item.desc}</p>
+              {/* Enhanced Pathshala Lunch Section */}
+              <div className="bg-brand-light rounded-xl p-6 md:p-8 border-soft shadow-soft">
+                <div className="flex flex-col lg:flex-row items-center lg:items-start justify-between">
+                  <div className="lg:w-2/3">
+                    <div className="flex items-center mb-6">
+                      <div className="bg-[rgba(234,88,12,0.1)] p-3 rounded-full mr-4">
+                        <Utensils className="h-8 w-8 text-accent" />
                       </div>
-                    ))}
+                      <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-accent">
+                        {lunchContent.lunch_heading}
+                      </h2>
+                    </div>
+                    <p className="text-brand-dark text-base md:text-md leading-relaxed mb-4 text-justify">
+                      {lunchContent.lunch_intro}
+                    </p>
+                    <p className="text-brand-dark/80 text-sm md:text-md text-justify">
+                      {lunchContent.lunch_call}
+                    </p>
                   </div>
-                </div>
-
-                {/* Enhanced Pathshala Lunch Section */}
-                <div className="bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl p-8 border border-orange-200 shadow-sm">
-                  <div className="flex flex-col lg:flex-row items-center lg:items-start justify-between">
-                    <div className="lg:w-2/3">
-                      <div className="flex items-center mb-6">
-                        <div className="bg-orange-100 p-3 rounded-full mr-4">
-                          <Utensils className="h-8 w-8 text-orange-600" />
-                        </div>
-                        <h2 className="text-4xl font-bold text-orange-700">
-                          {lunchContent.lunch_heading}
-                        </h2>
-                      </div>
-                      <p className="text-gray-700 text-lg leading-relaxed mb-4">
-                        {lunchContent.lunch_intro}
-                      </p>
-                      <p className="text-gray-600 text-base">
-                        {lunchContent.lunch_call}
-                      </p>
-                    </div>
+                  
+                  <div className="lg:w-1/3 flex flex-row gap-4 w-full lg:w-auto lg:self-center mt-6 lg:mt-0">
+                    <button
+                      onClick={() => setIsLunchModalOpen(true)}
+                      className="group flex items-center justify-center px-4 md:px-6 py-3 bg-brand-white border-2 border-accent text-accent rounded-xl font-semibold hover:bg-accent hover:text-brand-light transition-all duration-300 shadow-soft hover:shadow-lg flex-1 text-sm md:text-base"
+                    >
+                      <BookOpen className="h-5 w-5 mr-2 group-hover:scale-110 transition-transform" />
+                      {lunchContent.button_one ?? "Know More"}
+                    </button>
                     
-                    <div className="lg:w-1/3 flex flex-row gap-4 w-full lg:w-auto lg:self-center mt-6 lg:mt-0">
-                      <button
-                        onClick={() => setIsLunchModalOpen(true)}
-                        className="group flex items-center justify-center px-6 py-3 bg-white border-2 border-orange-600 text-orange-600 rounded-xl font-semibold hover:bg-orange-600 hover:text-white transition-all duration-300 shadow-sm hover:shadow-md flex-1"
-                      >
-                        <BookOpen className="h-5 w-5 mr-2 group-hover:scale-110 transition-transform" />
-                        {lunchContent.button_one ?? "Know More"}
-                      </button>
-                      
-                      <button
-                        onClick={() => {
-                          router.push('/pathsala/lunch-donation');
-                        }}
-                        className="group flex items-center justify-center px-6 py-3 bg-white border-2 border-green-600 text-green-600 rounded-xl font-semibold hover:bg-green-600 hover:text-white transition-all duration-300 shadow-sm hover:shadow-md flex-1"
-                      >
-                        <Heart className="h-5 w-5 mr-2 group-hover:scale-110 transition-transform" />
-                        {lunchContent.button_two ?? "Donate"}
-                      </button>
-                    </div>
+                    <button
+                      onClick={() => {
+                        router.push('/pathsala/lunch-donation');
+                      }}
+                      className="group flex items-center justify-center px-4 md:px-6 py-3 bg-brand-white border-2 border-green-600 text-green-600 rounded-xl font-semibold hover:bg-green-600 hover:text-brand-light transition-all duration-300 shadow-soft hover:shadow-lg flex-1 text-sm md:text-base"
+                    >
+                      <Heart className="h-5 w-5 mr-2 group-hover:scale-110 transition-transform" />
+                      {lunchContent.button_two ?? "Donate"}
+                    </button>
                   </div>
                 </div>
               </div>
-            </section>
-          </div>
-        </main>
-      </div>
-      
-      {/* Use the separated modal component */}
-      <LunchModal 
-        isOpen={isLunchModalOpen} 
-        onClose={() => setIsLunchModalOpen(false)} 
-        lunch={lunchContent}
-      />
-    </>
-  );
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+    
+    {/* Use the separated modal component */}
+    <LunchModal 
+      isOpen={isLunchModalOpen} 
+      onClose={() => setIsLunchModalOpen(false)} 
+      lunch={lunchContent}
+    />
+  </>
+);
+
 };
 
 export default Pathsala;

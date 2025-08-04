@@ -9,6 +9,36 @@ const API_URL =
 const CACHE_KEY = "homepage-api";
 const CACHE_TTL = 1 * 60 * 1000; // 1 minute
 
+// Beautiful Loading Component
+const BeautifulLoader = () => (
+  <div className="min-h-screen bg-brand-light flex items-center justify-center">
+    <div className="text-center">
+      <div className="relative">
+        {/* Animated rings */}
+        <div className="w-16 md:w-24 h-16 md:h-24 mx-auto mb-6 md:mb-8 relative">
+          <div className="absolute inset-0 border-4 border-accent/20 rounded-full"></div>
+          <div className="absolute inset-2 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
+          <div className="absolute inset-4 border-4 border-brand-dark/30 border-r-transparent rounded-full animate-spin-reverse"></div>
+          <div className="absolute inset-6 w-8 md:w-12 h-8 md:h-12 bg-accent rounded-full flex items-center justify-center animate-pulse">
+            <div className="w-4 md:w-6 h-4 md:h-6 bg-white rounded-full"></div>
+          </div>
+        </div>
+        
+        {/* Loading text */}
+        <h3 className="text-lg md:text-xl font-semibold text-brand-dark mb-2">Jai Jinendra</h3>
+        <p className="text-sm md:text-base text-accent animate-pulse">Ahimsa Parmo Dharma</p>
+        
+        {/* Animated dots */}
+        <div className="flex justify-center space-x-1 mt-4">
+          <div className="w-2 h-2 bg-accent rounded-full animate-bounce" style={{animationDelay: '0ms'}}></div>
+          <div className="w-2 h-2 bg-accent rounded-full animate-bounce" style={{animationDelay: '150ms'}}></div>
+          <div className="w-2 h-2 bg-accent rounded-full animate-bounce" style={{animationDelay: '300ms'}}></div>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
 const Home: React.FC = () => {
   const [data, setData] = useState<any>(null);
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -58,7 +88,6 @@ const Home: React.FC = () => {
             shouldFetch = false;
           }
         } catch {
-          // corrupted cache
           console.log("Cache corrupted, will fetch fresh data");
         }
       }
@@ -88,7 +117,6 @@ const Home: React.FC = () => {
               CACHE_KEY,
               JSON.stringify({ data: liveData, timestamp: Date.now() })
             );
-            
           })
           .catch((error) => {
             console.error("Failed to fetch live data:", error);
@@ -98,8 +126,6 @@ const Home: React.FC = () => {
 
     loadData();
   }, []);
-
- 
 
   // Preload slide images
   useEffect(() => {
@@ -176,16 +202,12 @@ const Home: React.FC = () => {
     form.reset();
   };
 
-  if (!data)
-    return <div className="min-h-screen bg-orange-100">Loading...</div>;
+  if (!data) return <BeautifulLoader />;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50">
+    <div className="min-h-screen bg-brand-light">
       <main>
         <div className="pt-[14vh]">
-          {/* Header */}
-          
-
           {/* Enhanced Hero Carousel */}
           <section className="relative h-screen overflow-hidden">
             {/* Carousel Container */}
@@ -205,36 +227,36 @@ const Home: React.FC = () => {
                     className="w-full h-full object-cover"
                     loading={i === 0 ? "eager" : "lazy"}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/50"></div>
+                  <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/30 to-black/60"></div>
                 </div>
               ))}
             </div>
 
             {/* Content Overlay */}
             <div className="relative z-20 flex items-center justify-center h-full">
-              <div className="text-center text-white px-4 max-w-4xl">
-                <h2 className="text-4xl md:text-6xl font-bold mb-6 animate-fade-in">
+              <div className="text-center text-brand-light px-4 max-w-5xl">
+                <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold mb-6 md:mb-8 animate-fade-in drop-shadow-2xl">
                   {data.heroHeading || ""}
                 </h2>
-                <p className="text-xl md:text-2xl mb-8 animate-fade-in-delay">
+                <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl mb-8 md:mb-12 animate-fade-in-delay drop-shadow-lg font-light text-center">
                   {data.heroTagline || ""}
                 </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-delay-2">
+                <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center animate-fade-in-delay-2">
                   <button
                     onClick={scrollToAbout}
-                    className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-3 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center hover:scale-105 hover:shadow-lg"
+                    className="btn-primary flex items-center justify-center text-sm md:text-lg px-6 md:px-10 py-3 md:py-4 rounded-xl"
                   >
-                    Learn More <ArrowDown className="ml-2 h-5 w-5" />
+                    Learn More <ArrowDown className="ml-2 md:ml-3 h-4 w-4 md:h-6 md:w-6" />
                   </button>
                   <a
                     href="/membership"
-                    className="bg-transparent border-2 border-white hover:bg-white hover:text-orange-600 text-white px-8 py-3 rounded-lg font-semibold transition-all duration-300 hover:scale-105 hover:shadow-lg"
+                    className="bg-white/10 backdrop-blur-md border-2 border-white/30 hover:bg-white hover:text-brand-dark text-brand-light px-6 md:px-10 py-3 md:py-4 rounded-xl font-semibold transition-all duration-300 hover:scale-105 shadow-soft text-sm md:text-lg"
                   >
                     Become a JSSD Member
                   </a>
                   <a
                     href="/contribute"
-                    className="bg-amber-600 hover:bg-amber-700 text-white px-8 py-3 rounded-lg font-semibold transition-all duration-300 hover:scale-105 hover:shadow-lg"
+                    className="bg-brand-dark hover:bg-brand-dark/90 text-brand-light px-6 md:px-10 py-3 md:py-4 rounded-xl font-semibold transition-all duration-300 hover:scale-105 shadow-soft text-sm md:text-lg"
                   >
                     Make a Donation
                   </a>
@@ -247,32 +269,32 @@ const Home: React.FC = () => {
               <>
                 <button
                   onClick={handlePrevSlide}
-                  className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/40 backdrop-blur-sm text-white p-3 rounded-full transition-all duration-300 hover:scale-110 z-30"
+                  className="absolute left-2 md:left-6 top-1/2 transform -translate-y-1/2 bg-white/15 hover:bg-white/25 backdrop-blur-md text-brand-light p-2 md:p-4 rounded-full transition-all duration-300 hover:scale-110 z-30 shadow-soft border border-white/20"
                   aria-label="Previous slide"
                 >
-                  <ChevronLeft className="h-6 w-6" />
+                  <ChevronLeft className="h-4 w-4 md:h-7 md:w-7" />
                 </button>
                 <button
                   onClick={handleNextSlide}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/40 backdrop-blur-sm text-white p-3 rounded-full transition-all duration-300 hover:scale-110 z-30"
+                  className="absolute right-2 md:right-6 top-1/2 transform -translate-y-1/2 bg-white/15 hover:bg-white/25 backdrop-blur-md text-brand-light p-2 md:p-4 rounded-full transition-all duration-300 hover:scale-110 z-30 shadow-soft border border-white/20"
                   aria-label="Next slide"
                 >
-                  <ChevronRight className="h-6 w-6" />
+                  <ChevronRight className="h-4 w-4 md:h-7 md:w-7" />
                 </button>
               </>
             )}
 
-            {/* Dot Indicators */}
+            {/* Enhanced Dot Indicators */}
             {data.slides && Array.isArray(data.slides) && data.slides.length > 1 && (
-              <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-3 z-30">
+              <div className="absolute bottom-6 md:bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2 md:space-x-4 z-30">
                 {data.slides.map((_: any, index: number) => (
                   <button
                     key={`dot-${index}`}
                     onClick={() => handleDotClick(index)}
-                    className={`w-3 h-3 rounded-full transition-all duration-300 transform hover:scale-125 ${
+                    className={`w-3 h-3 md:w-4 md:h-4 rounded-full transition-all duration-300 transform hover:scale-125 border-2 ${
                       index === currentSlide 
-                        ? "bg-white shadow-lg scale-125" 
-                        : "bg-white/60 hover:bg-white/80"
+                        ? "bg-white border-white shadow-soft scale-125" 
+                        : "bg-white/40 border-white/60 hover:bg-white/70"
                     }`}
                     aria-label={`Go to slide ${index + 1}`}
                   />
@@ -280,70 +302,74 @@ const Home: React.FC = () => {
               </div>
             )}
 
-            {/* Progress bar for auto-advance */}
+            {/* Progress bar */}
             {data.slides && Array.isArray(data.slides) && data.slides.length > 1 && (
               <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20 z-30">
                 <div 
                   key={`progress-${currentSlide}`}
-                  className="h-full bg-orange-500 animate-progress"
+                  className="h-full bg-accent animate-progress"
                 />
               </div>
             )}
           </section>
 
           {/* About Section */}
-          <section id="about" className="py-20 bg-white">
+          <section id="about" className="py-16 md:py-20 bg-brand-white">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="text-center mb-16">
-                <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              <div className="text-center mb-12 md:mb-16">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-accent mb-4">
                   {data.aboutHeading || ""}
                 </h2>
-                <div className="w-24 h-1 bg-orange-600 mx-auto mb-8"></div>
+                <div className="w-16 md:w-24 h-1 bg-accent mx-auto mb-8 rounded-full"></div>
               </div>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-center">
                 <div className="space-y-6">
-                  <p className="text-lg text-gray-700 leading-relaxed">
+                  <p className="text-base md:text-lg text-brand-dark leading-relaxed text-justify">
                     {data.aboutDescription || ""}
                   </p>
+                  
                   {data.aboutQuote && (
-                    <div className="bg-orange-50 p-6 rounded-lg border-l-4 border-orange-600">
-                      <blockquote className="text-lg italic text-gray-800">
-                        {data.aboutQuote}
+                    <div className="bg-brand-light p-4 md:p-6 rounded-xl border-l-4 border-accent shadow-soft">
+                      <blockquote className="text-base md:text-lg italic text-brand-dark font-medium text-justify">
+                        "{data.aboutQuote}"
                       </blockquote>
                     </div>
                   )}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
                     {data.stats && Array.isArray(data.stats) && data.stats.map((stat: any, i: number) => (
                       <div
                         key={i}
-                        className="text-center p-6 bg-gray-50 rounded-lg"
+                        className="text-center p-4 md:p-6 bg-brand-light rounded-xl shadow-soft border-soft hover:shadow-lg transition-all duration-300 hover:scale-105"
                       >
-                        <h3 className="text-2xl font-bold text-orange-600 mb-2">
+                        <h3 className="text-xl md:text-2xl font-bold text-accent mb-2">
                           {stat.number || ""}
                         </h3>
-                        <p className="text-gray-600">{stat.label || ""}</p>
+                        <p className="text-sm md:text-base text-brand-dark font-medium">{stat.label || ""}</p>
                       </div>
                     ))}
                   </div>
                 </div>
+                
                 {/* Our Mission Box*/}
                 <div className="relative lg:top-[-78px] md:top-[-20px] sm:top-0">
-                  <div className="bg-gradient-to-r from-orange-400 to-amber-400 p-8 rounded-lg shadow-lg">
-                    <h3 className="text-2xl font-bold text-white mb-6">
+                  <div className="bg-brand-dark p-6 md:p-8 rounded-2xl shadow-soft hover:shadow-lg transition-all duration-300">
+                    <h3 className="text-xl md:text-2xl font-bold text-brand-light mb-4 md:mb-6">
                       {data.missionHeading || ""}
                     </h3>
-                    <ul className="space-y-3 text-white">
+                    <ul className="space-y-3 text-brand-light">
                       {data.missionPoints && Array.isArray(data.missionPoints) && data.missionPoints
                         .slice(0, 10)
                         .map((point: string, idx: number) => (
-                          <li key={idx} className="flex items-start">
-                            <span className="w-2 h-2 bg-white rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                            <span>{point}</span>
+                          <li key={idx} className="flex items-start group">
+                            <span className="w-2 h-2 bg-brand-light rounded-full mt-2 mr-3 flex-shrink-0 group-hover:scale-125 transition-transform duration-300"></span>
+                            <span className="text-sm md:text-base text-justify">{point}</span>
                           </li>
                         ))}
                     </ul>
                     {data.missionPoints && Array.isArray(data.missionPoints) && data.missionPoints.length > 10 && (
-                      <p className="text-red-100 text-sm mt-4">
+                      <p className="text-brand-light/80 text-xs md:text-sm mt-4 text-justify">
                         Note: Only showing first 10 mission points.
                       </p>
                     )}
@@ -354,17 +380,17 @@ const Home: React.FC = () => {
           </section>
 
           {/* Calendar & Announcements */}
-          <section className="bg-white py-16">
+          <section className="bg-brand-light py-12 md:py-16">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="grid grid-cols-1 lg:grid-cols-10 gap-6">
                 {/* Google Calendar - Left Column (70% width) */}
                 <div className="lg:col-span-7 space-y-6">
                   <div className="text-center lg:text-left">
-                    <h2 className="text-2xl lg:text-3xl font-bold text-orange-700 mb-4">
+                    <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-accent mb-4">
                       JSSD Calendar
                     </h2>
                   </div>
-                  <div className="bg-gray-50 rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+                  <div className="bg-brand-white rounded-2xl shadow-soft border-soft overflow-hidden hover:shadow-lg transition-shadow duration-300">
                     <iframe
                       src="https://calendar.google.com/calendar/embed?src=jainsocietyofsandiego%40gmail.com&ctz=Asia%2FKolkata"
                       style={{ border: 0 }}
@@ -372,8 +398,8 @@ const Home: React.FC = () => {
                       height="600"
                       frameBorder="0"
                       scrolling="no"
-                      className="w-full rounded-xl"
-                      title="JCNC Calendar"
+                      className="w-full rounded-2xl"
+                      title="JSSD Calendar"
                     ></iframe>
                   </div>
                 </div>
@@ -381,19 +407,19 @@ const Home: React.FC = () => {
                 {/* Announcements - Right Column (30% width) */}
                 <div className="lg:col-span-3 space-y-4">
                   <div className="text-center lg:text-left">
-                    <h2 className="text-2xl lg:text-3xl font-bold text-orange-700 mb-5">
+                    <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-accent mb-5">
                       {data.announcementsHeading || "Latest Announcements"}
                     </h2>
                   </div>
-                                                                       
-                  <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl shadow-lg border border-orange-200 p-4 h-[600px] overflow-y-auto scrollbar-hide">
-                    {/* WhatsApp Button - Update this part */}
+                  
+                  <div className="bg-brand-white rounded-2xl shadow-soft border-soft p-4 h-[600px] overflow-y-auto scrollbar-hide">
+                    {/* WhatsApp Button */}
                     <div className="mb-4 p-2">
                       <a   
-                        href={data.whatsappLink }
+                        href={data.whatsappLink}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2 shadow-sm hover:shadow-md text-sm"
+                        className="w-full bg-green-600 hover:bg-green-700 text-brand-light font-medium py-2.5 px-4 rounded-xl transition-all duration-300 flex items-center justify-center space-x-2 shadow-soft hover:shadow-lg hover:scale-105 text-xs md:text-sm"
                       >
                         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488"/>
@@ -407,32 +433,28 @@ const Home: React.FC = () => {
                         {data.announcements.map((announcement: any, index: number) => (
                           <div
                             key={index}
-                            className="bg-white rounded-lg p-3 shadow-sm border border-orange-100 hover:shadow-md transition-shadow duration-200"
+                            className="bg-brand-light rounded-xl p-3 shadow-soft border-soft hover:shadow-lg transition-all duration-300 hover:scale-105"
                           >
-                            <h3 className="text-base font-semibold text-orange-700 mb-2 leading-tight">
+                            <h3 className="text-sm md:text-base font-semibold text-accent mb-2 leading-tight">
                               {announcement.title || announcement.Title || `Announcement ${index + 1}`}
                             </h3>
-                            <p className="text-sm text-gray-700 leading-relaxed">
+                            <p className="text-xs md:text-sm text-brand-dark leading-relaxed text-justify">
                               {announcement.content || announcement.Content || announcement.description || announcement.Description || 'No content available'}
                             </p>
                           </div>
                         ))}
-                                               
                       </div>
                     ) : (
                       <div className="flex flex-col items-center justify-center h-full">
                         <div className="text-center mb-6">
-                          <div className="text-orange-300 mb-4">
-                            <svg className="w-12 h-12 mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                          <div className="w-12 md:w-16 h-12 md:h-16 mx-auto mb-4 bg-accent/10 rounded-full flex items-center justify-center">
+                            <svg className="w-6 md:w-8 h-6 md:h-8 text-accent" fill="currentColor" viewBox="0 0 20 20">
                               <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
                           </div>
-                          <h3 className="text-base font-medium text-gray-600 mb-2">No Announcements</h3>
-                          <p className="text-sm text-gray-500">Check back later for updates.</p>
-                                                  
+                          <h3 className="text-sm md:text-base font-medium text-accent mb-2">No Announcements</h3>
+                          <p className="text-xs md:text-sm text-brand-dark text-justify">Check back later for updates.</p>
                         </div>
-                        
-                        
                       </div>
                     )}
                   </div>
@@ -442,104 +464,134 @@ const Home: React.FC = () => {
           </section>
 
           {/* Feedback */}
-          <section id='feedback' className="bg-orange-50 py-16">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-8 items-center">
-              <div>
-                <h2 className="text-4xl font-bold text-orange-700 mb-4">
-                  {data.feedbackHeading || ""}
-                </h2>
-              </div>
-              <div>
-                <form onSubmit={handleFeedbackSubmit} className="space-y-4">
-                  <input
-                    type="text"
-                    name="name"
-                    placeholder="Your Name*"
-                    required
-                    className="w-full border border-gray-300 rounded px-4 py-2"
-                  />
-                  <input
-                    type="email"
-                    name="email"
-                    placeholder="Your Email*"
-                    required
-                    className="w-full border border-gray-300 rounded px-4 py-2"
-                  />
-                  <select
-                    name="category"
-                    required
-                    className="w-full border border-gray-300 rounded px-4 py-2"
-                  >
-                    <option value="">--Please choose an option--</option>
-                    <option>Any</option>
-                    <option>Religious</option>
-                    <option>Cultural</option>
-                    <option>Education</option>
-                    <option>Facilities</option>
-                    <option>Technology</option>
-                    <option>Rental</option>
-                    <option>Public Relation</option>
-                    <option>Finance</option>
-                    <option>Kitchen</option>
-                    <option>Library</option>
-                    <option>Other</option>
-                  </select>
-                  <textarea
-                    name="message"
-                    placeholder="Message"
-                    rows={4}
-                    required
-                    className="w-full border border-gray-300 rounded px-4 py-2"
-                  ></textarea>
-                  <button
-                    type="submit"
-                    className="w-full bg-orange-700 text-white py-2 rounded hover:bg-orange-800 transition-colors"
-                  >
-                    Send
-                  </button>
-                </form>
+          <section id='feedback' className="bg-brand-white py-12 md:py-16">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+                <div className="text-center md:text-left">
+                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-accent mb-4 md:mb-6">
+                    {data.feedbackHeading || ""}
+                  </h2>
+                  <p className="text-base md:text-lg text-brand-dark leading-relaxed text-justify">
+                    We'd love to hear from you! Share your thoughts, suggestions, or questions with us.
+                  </p>
+                </div>
+                
+                <div className="bg-brand-light p-6 md:p-8 rounded-2xl shadow-soft">
+                  <form onSubmit={handleFeedbackSubmit} className="space-y-4 md:space-y-6">
+                    <input
+                      type="text"
+                      name="name"
+                      placeholder="Your Name*"
+                      required
+                      className="w-full border-soft rounded-xl px-4 md:px-6 py-3 md:py-4 text-sm md:text-base text-brand-dark bg-brand-white focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all duration-300 shadow-soft"
+                    />
+                    <input
+                      type="email"
+                      name="email"
+                      placeholder="Your Email*"
+                      required
+                      className="w-full border-soft rounded-xl px-4 md:px-6 py-3 md:py-4 text-sm md:text-base text-brand-dark bg-brand-white focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all duration-300 shadow-soft"
+                    />
+                    <select
+                      name="category"
+                      required
+                      className="w-full border-soft rounded-xl px-4 md:px-6 py-3 md:py-4 text-sm md:text-base text-brand-dark bg-brand-white focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all duration-300 shadow-soft"
+                    >
+                      <option value="">--Please choose an option--</option>
+                      <option>Any</option>
+                      <option>Religious</option>
+                      <option>Cultural</option>
+                      <option>Education</option>
+                      <option>Facilities</option>
+                      <option>Technology</option>
+                      <option>Rental</option>
+                      <option>Public Relation</option>
+                      <option>Finance</option>
+                      <option>Kitchen</option>
+                      <option>Library</option>
+                      <option>Other</option>
+                    </select>
+                    <textarea
+                      name="message"
+                      placeholder="Your Message*"
+                      rows={4}
+                      required
+                      className="w-full border-soft rounded-xl px-4 md:px-6 py-3 md:py-4 text-sm md:text-base text-brand-dark bg-brand-white focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all duration-300 shadow-soft resize-none"
+                    ></textarea>
+                    <button
+                      type="submit"
+                      className="w-full btn-primary text-sm md:text-lg py-3 md:py-4 rounded-xl"
+                    >
+                      Send Message
+                    </button>
+                  </form>
+                </div>
               </div>
             </div>
           </section>
 
           {/* CTA */}
-          <section className="py-10 bg-gradient-to-r from-orange-600 to-orange-700 text-white">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-              <h2 className="text-4xl font-bold mb-6">{data.ctaHeading || ""}</h2>
-              <p className="text-xl mb-8 opacity-90">{data.ctaTagline || ""}</p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <section className="py-12 md:py-16 bg-brand-dark text-brand-light relative overflow-hidden">
+            {/* Decorative background elements */}
+            <div className="absolute inset-0 opacity-5">
+              <div className="absolute top-10 left-10 w-32 h-32 bg-brand-light rounded-full blur-3xl"></div>
+              <div className="absolute bottom-10 right-10 w-48 h-48 bg-brand-light rounded-full blur-3xl"></div>
+            </div>
+            
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-6 md:mb-8">{data.ctaHeading || ""}</h2>
+              <p className="text-base sm:text-lg md:text-xl lg:text-2xl mb-8 md:mb-12 opacity-90 font-light max-w-3xl mx-auto text-justify">{data.ctaTagline || ""}</p>
+              
+              <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center">
                 <a
                   href="/membership"
-                  className="bg-transparent border-2 border-white hover:bg-white hover:text-orange-600 text-white px-8 py-3 rounded-lg font-semibold transition-colors"
+                  className="bg-transparent border-2 border-brand-light hover:bg-brand-light hover:text-brand-dark text-brand-light px-6 md:px-10 py-3 md:py-4 rounded-xl font-semibold transition-all duration-300 hover:scale-105 shadow-soft text-sm md:text-lg"
                 >
                   Become a Member
                 </a>
                 <a
                   href="/events"
-                  className="bg-transparent border-2 border-white hover:bg-white hover:text-orange-600 text-white px-8 py-3 rounded-lg font-semibold transition-colors"
+                  className="bg-transparent border-2 border-brand-light hover:bg-brand-light hover:text-brand-dark text-brand-light px-6 md:px-10 py-3 md:py-4 rounded-xl font-semibold transition-all duration-300 hover:scale-105 shadow-soft text-sm md:text-lg"
                 >
                   View Events
                 </a>
-                <button onClick={() => setShowMailingModal(true)} className="bg-transparent border-2 border-white hover:bg-white hover:text-orange-600 text-white px-8 py-3 rounded-lg font-semibold transition-colors">Add to Mailing List</button>
+                <button 
+                  onClick={() => setShowMailingModal(true)} 
+                  className="bg-transparent border-2 border-brand-light hover:bg-brand-light hover:text-brand-dark text-brand-light px-6 md:px-10 py-3 md:py-4 rounded-xl font-semibold transition-all duration-300 hover:scale-105 shadow-soft text-sm md:text-lg"
+                >
+                  Join Mailing List
+                </button>
               </div>
             </div>
           </section>
+
+          {/* Enhanced Modal */}
           {showMailingModal && (
-          <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl relative">
-              <button onClick={() => setShowMailingModal(false)} className="absolute top-4 right-4 text-gray-600 text-2xl font-bold hover:text-black">×</button>
-              <MailingListForm />
+            <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+              <div className="bg-brand-white rounded-2xl shadow-soft w-full max-w-3xl relative">
+                <button 
+                  onClick={() => setShowMailingModal(false)} 
+                  className="absolute top-4 md:top-6 right-4 md:right-6 text-brand-dark/60 hover:text-brand-dark transition-colors text-2xl md:text-3xl font-bold w-10 md:w-12 h-10 md:h-12 flex items-center justify-center rounded-full hover:bg-brand-light/50"
+                >
+                  ×
+                </button>
+                <MailingListForm />
+              </div>
             </div>
-          </div>
-        )}
+          )}
         </div>
       </main>
 
-      {/* Add custom CSS for animations */}
+      {/* Enhanced Custom CSS */}
       <style jsx>{`
         @keyframes progress {
           from { width: 0%; }
           to { width: 100%; }
+        }
+        
+        @keyframes spin-reverse {
+          from { transform: rotate(360deg); }
+          to { transform: rotate(0deg); }
         }
         
         .animate-progress {
@@ -547,22 +599,26 @@ const Home: React.FC = () => {
           animation: progress 5s linear;
         }
         
+        .animate-spin-reverse {
+          animation: spin-reverse 2s linear infinite;
+        }
+        
         .animate-fade-in {
-          animation: fadeIn 1s ease-in-out;
+          animation: fadeIn 1.2s ease-in-out;
         }
         
         .animate-fade-in-delay {
-          animation: fadeIn 1s ease-in-out 0.3s both;
+          animation: fadeIn 1.2s ease-in-out 0.4s both;
         }
         
         .animate-fade-in-delay-2 {
-          animation: fadeIn 1s ease-in-out 0.6s both;
+          animation: fadeIn 1.2s ease-in-out 0.8s both;
         }
         
         @keyframes fadeIn {
           from {
             opacity: 0;
-            transform: translateY(20px);
+            transform: translateY(30px);
           }
           to {
             opacity: 1;

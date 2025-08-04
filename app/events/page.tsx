@@ -10,6 +10,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
+import Image from 'next/image';
 
 const API_KEY = 'AIzaSyD0MBBXb6oamBJQaEe_FF7T8i0DDzx3UTg';
 const CALENDAR_ID = 'jainsocietyofsandiego@gmail.com';
@@ -32,6 +33,7 @@ function extractPacificParts(dateStr: string) {
   const d = new Date(dateStr);
   return { year: d.getFullYear(), month: d.getMonth(), day: d.getDate() };
 }
+
 function datesMatchPacific(ev: string, cell: Date) {
   const p = extractPacificParts(ev);
   return (
@@ -40,10 +42,12 @@ function datesMatchPacific(ev: string, cell: Date) {
     p.day === cell.getDate()
   );
 }
+
 function pacificDateFromString(dateStr: string) {
   const p = extractPacificParts(dateStr);
   return new Date(p.year, p.month, p.day);
 }
+
 function pacificDisplayLabel(dateStr: string, isAllDay: boolean) {
   if (isAllDay) {
     const utc = new Date(dateStr + 'T00:00:00Z');
@@ -136,63 +140,86 @@ const EventsPage = () => {
 
   // --- Render ---
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 pt-16">
+    <div className="min-h-screen bg-brand-light pt-[14vh]">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-orange-600 to-orange-700 text-white h-48 sm:h-52 md:h-56 lg:h-60 flex items-center justify-center">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">Community Events</h1>
-          <p className="text-xl opacity-90 max-w-3xl mx-auto">
+      <section className="relative flex items-center justify-center
+                          h-48 sm:h-56 md:h-64 lg:h-72 overflow-hidden">
+        <Image
+          src="/images/hero-banner.jpg"
+          alt="Community events"
+          fill
+          priority
+          quality={85}
+          className="object-cover"
+        />
+        
+        <div className="relative z-10 max-w-7xl mx-auto px-4 text-center">
+          <h1 className="font-bold text-brand-light
+                         text-3xl sm:text-4xl md:text-5xl
+                         drop-shadow-[0_0_10px_rgb(255_255_255_/_50%)]">
+            Community Events
+          </h1>
+          <p className="mt-2 max-w-3xl mx-auto text-white
+                        text-sm sm:text-base md:text-lg text-justify">
             Join us for spiritual celebrations, educational programs, and community gatherings
           </p>
         </div>
-      </div>
+      </section>
 
       {/* Upcoming Events */}
-      <section className="py-20 bg-white">
+      <section className="py-16 bg-brand-white">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Upcoming Events</h2>
-            <p className="text-gray-600 max-w-3xl mx-auto">Don't miss these exciting events happening in our community</p>
+          <div className="text-center mb-12">
+            <h2 className="text-accent font-bold text-2xl sm:text-3xl md:text-4xl mb-2">
+              Upcoming Events
+            </h2>
+            <p className="text-brand-dark max-w-3xl mx-auto text-sm md:text-base text-center">
+              Don't miss these exciting events happening in our community
+            </p>
           </div>
           {loading ? (
-            <div>Loading events...</div>
+            <div className="text-center text-brand-dark">Loading events...</div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {upcomingEvents.length === 0 && (
-                <div className="col-span-2 text-center text-gray-400">No upcoming events.</div>
+                <div className="col-span-2 text-center text-brand-dark/60">No upcoming events.</div>
               )}
               {upcomingEvents
                 .sort((a, b) => pacificDateFromString(a.date).getTime() - pacificDateFromString(b.date).getTime())
                 .map(e => (
                   <div
                     key={e.id}
-                    className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-6"
+                    className="bg-brand-light rounded-xl shadow-soft hover:shadow-lg transition-shadow p-6"
                   >
                     <div className="flex items-start justify-between mb-4">
                       <div>
-                        <h3 className="text-xl font-semibold text-gray-900 mb-2">{e.title}</h3>
-                        <div className="flex items-center text-gray-600 mb-2">
+                        <h3 className="text-lg md:text-xl font-semibold text-accent mb-2">{e.title}</h3>
+                        <div className="flex items-center text-brand-dark/70 mb-2">
                           <Calendar className="h-4 w-4 mr-2" />
-                          <span>{pacificDisplayLabel(e.date, e.isAllDay)}</span>
+                          <span className="text-sm md:text-base">{pacificDisplayLabel(e.date, e.isAllDay)}</span>
                         </div>
-                        <div className="flex items-center text-gray-600 mb-2">
+                        <div className="flex items-center text-brand-dark/70 mb-2">
                           <Clock className="h-4 w-4 mr-2" />
-                          <span>{e.time}</span>
+                          <span className="text-sm md:text-base">{e.time}</span>
                         </div>
                         {e.location && (
-                          <div className="flex items-center text-gray-600 mb-2">
+                          <div className="flex items-center text-brand-dark/70 mb-2">
                             <MapPin className="h-4 w-4 mr-2" />
-                            <span>{e.location}</span>
+                            <span className="text-sm md:text-base">{e.location}</span>
                           </div>
                         )}
                       </div>
                       <span className={`px-3 py-1 rounded-full text-xs font-medium ${eventBadge()} mb-2`}>Calendar</span>
                     </div>
-                    <p className="text-gray-600 mb-4">{e.description}</p>
+                    <p className="text-brand-dark/80 mb-4 text-sm md:text-base text-justify">{e.description}</p>
                     <div className="flex space-x-3">
                       <button
                         onClick={() => router.push(`/events/register?event=${e.id}`)}
-                        className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                        style={{
+                          backgroundColor: 'var(--color-accent)',
+                          color: 'var(--color-text-light)'
+                        }}
+                        className="hover:bg-accent-hov px-4 py-2 rounded-xl font-medium transition-colors text-sm md:text-base"
                       >
                         Register
                       </button>
@@ -205,66 +232,68 @@ const EventsPage = () => {
       </section>
 
       {/* Event Calendar Grid */}
-      <section className="bg-white py-16">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-              <h2 className="text-4xl font-bold text-orange-700 mb-6">
-                Announcements & JCNC Calendar
-              </h2>
-              <div className="flex justify-center">
-                <iframe
-                  src="https://calendar.google.com/calendar/embed?src=jainsocietyofsandiego%40gmail.com&ctz=Asia%2FKolkata"
-                  style={{ border: 0 }}
-                  width="100%"
-                  height="600"
-                  frameBorder="0"
-                  scrolling="no"
-                  className="max-w-4xl w-full rounded shadow-lg"
-                ></iframe>
-              </div>
-            </div>
-          </section>
+      <section className="py-12 bg-brand-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-accent font-bold text-2xl sm:text-3xl md:text-4xl mb-8">
+            Announcements & JSSD Calendar
+          </h2>
+          <div className="flex justify-center">
+            <iframe
+              src="https://calendar.google.com/calendar/embed?src=jainsocietyofsandiego%40gmail.com&ctz=Asia%2FKolkata"
+              style={{ border: 0 }}
+              width="100%"
+              height="600"
+              frameBorder="0"
+              scrolling="no"
+              className="max-w-4xl w-full rounded-xl shadow-soft"
+            ></iframe>
+          </div>
+        </div>
+      </section>
 
       {/* Past Events */}
-      <section className="py-20 bg-white">
+      <section className="py-16 bg-brand-white">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Past Events</h2>
-            <p className="text-gray-600 max-w-3xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-accent font-bold text-2xl sm:text-3xl md:text-4xl mb-2">
+              Past Events
+            </h2>
+            <p className="text-brand-dark max-w-3xl mx-auto text-sm md:text-base text-center">
               Relive the memories from our previous community gatherings
             </p>
           </div>
           {loading ? (
-            <div>Loading events...</div>
+            <div className="text-center text-brand-dark">Loading events...</div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {pastEvents.length === 0 && (
-                <div className="col-span-2 text-center text-gray-400">No past events.</div>
+                <div className="col-span-2 text-center text-brand-dark/60">No past events.</div>
               )}
               {pastEvents
                 .sort((a, b) => pacificDateFromString(b.date).getTime() - pacificDateFromString(a.date).getTime())
                 .map(e => (
-                  <div key={e.id} className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-6">
+                  <div key={e.id} className="bg-brand-light rounded-xl shadow-soft hover:shadow-lg transition-shadow p-6">
                     <div className="flex items-start justify-between mb-4">
                       <div>
-                        <h3 className="text-xl font-semibold text-gray-900 mb-2">{e.title}</h3>
-                        <div className="flex items-center text-gray-600 mb-2">
+                        <h3 className="text-lg md:text-xl font-semibold text-accent mb-2">{e.title}</h3>
+                        <div className="flex items-center text-brand-dark/70 mb-2">
                           <Calendar className="h-4 w-4 mr-2" />
-                          <span>{pacificDisplayLabel(e.date, e.isAllDay)}</span>
+                          <span className="text-sm md:text-base">{pacificDisplayLabel(e.date, e.isAllDay)}</span>
                         </div>
-                        <div className="flex items-center text-gray-600 mb-2">
+                        <div className="flex items-center text-brand-dark/70 mb-2">
                           <Clock className="h-4 w-4 mr-2" />
-                          <span>{e.time}</span>
+                          <span className="text-sm md:text-base">{e.time}</span>
                         </div>
                         {e.location && (
-                          <div className="flex items-center text-gray-600 mb-2">
+                          <div className="flex items-center text-brand-dark/70 mb-2">
                             <MapPin className="h-4 w-4 mr-2" />
-                            <span>{e.location}</span>
+                            <span className="text-sm md:text-base">{e.location}</span>
                           </div>
                         )}
                       </div>
                       <span className={`px-3 py-1 rounded-full text-xs font-medium ${eventBadge()} mb-2`}>Calendar</span>
                     </div>
-                    <p className="text-gray-600 mb-4">{e.description}</p>
+                    <p className="text-brand-dark/80 mb-4 text-sm md:text-base text-justify">{e.description}</p>
                   </div>
                 ))}
             </div>

@@ -1,8 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import Navbar from '../../components/Navbar';
-import Footer from '../../components/Footer';
+import Image from 'next/image';
 
 type PolicyItem = { title: string; link: string };
 
@@ -125,31 +124,52 @@ const PoliciesPage: React.FC = () => {
   if (!data) return <PolicySkeleton />;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50">
-      
-      <main>
-        <div className="pt-16">
-          <div className="bg-gradient-to-r from-orange-600 to-orange-700 text-white h-48 sm:h-52 md:h-56 lg:h-60 flex items-center justify-center">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-              <h1 className="text-4xl md:text-5xl font-bold mb-6">{data.heading}</h1>
-              <p className="text-xl opacity-90 max-w-3xl mx-auto">{data.description}</p>
-            </div>
-          </div>
+  <div className="min-h-screen bg-brand-light">
+    <main className="pt-[14vh]">
 
-          <section className="py-20 bg-white">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <PolicyList title="General Documents" items={data.general} />
-                <PolicyList title="BOD Documents" items={data.bod} />
-                <PolicyList title="Religious Programs" items={data.religious} />
-              </div>
-            </div>
-          </section>
+      <section className="relative flex items-center justify-center
+                          h-64 sm:h-72 md:h-80 lg:h-96 xl:h-[28rem] overflow-hidden">
+        <Image
+          src="/images/hero-banner.jpg"
+          alt="Hero banner background"
+          fill
+          priority
+          quality={85}
+          className="object-cover"
+        />
+
+        <div className="relative z-10 px-4 text-center">
+          <h1 className="font-bold text-brand-light
+                         text-3xl sm:text-4xl md:text-5xl lg:text-6xl
+                         drop-shadow-[0_0_10px_rgb(255_255_255_/_50%)]
+                         [text-shadow:_0_0_10px_rgb(255_255_255_/_40%),_0_0_25px_rgb(255_255_255_/_25%)]">
+            {data.heading}
+          </h1>
+
+          <p className="mt-4 max-w-2xl mx-auto text-center
+                        text-xs md:text-xl text-brand-light">
+            {data.description}
+          </p>
         </div>
-      </main>
+      </section>
 
-    </div>
-  );
+      <section className="py-16 md:py-20 bg-brand-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+            {/* each PolicyList returns a card */}
+            <PolicyList title="General Documents"   items={data.general}   />
+            <PolicyList title="BOD Documents"       items={data.bod}       />
+            <PolicyList title="Religious Programs"  items={data.religious} />
+
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+);
+
 };
 
 export default PoliciesPage;

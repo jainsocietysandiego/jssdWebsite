@@ -1,195 +1,179 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
-import Link from "next/link";
 
-// Constants
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+
+// ─── constants ─────────────────────────────────────────────────────
 const API_URL =
   "https://script.google.com/macros/s/AKfycbw7YLZDjEJUGfdXkXzcljCsB-Hv0qZ-b_m7xUSeBKwfwGAnemt-sqVAUw9z4L5EjkX0/exec";
 const LOCAL_JSON_PATH = "/membership.json";
 const CACHE_KEY = "membership-api";
-const CACHE_TTL = 10 * 60 * 1000; // 10 minutes
+const CACHE_TTL = 10 * 60 * 1_000; // 10 min
 
-// Skeleton Component
+// ─── skeleton ──────────────────────────────────────────────────────
 const MembershipSkeleton = () => (
-  <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 animate-pulse">
-    <div className="pt-16">
-      <div className="bg-gradient-to-r from-orange-600 to-orange-700 text-center py-6">
-        <div className="h-10 w-1/2 mx-auto rounded bg-orange-300" />
+  <div className="min-h-screen bg-brand-light animate-pulse">
+    <div className="pt-[14vh] space-y-8">
+      <div className="h-48 bg-brand-dark/20" />
+      <div className="h-6 w-1/2 bg-brand-dark/10 rounded mx-auto" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-6xl mx-auto px-4">
+        {[...Array(3)].map((_, i) => (
+          <div key={i} className="h-48 bg-brand-dark/5 rounded-xl" />
+        ))}
       </div>
-      <section className="relative h-screen overflow-hidden">
-        <div className="absolute inset-0 bg-gray-200" />
-        <div className="relative z-10 flex items-center justify-center h-full">
-          <div className="text-center px-4 max-w-4xl w-full">
-            <div className="h-12 md:h-20 w-3/4 mx-auto mb-6 rounded bg-orange-200" />
-            <div className="h-6 w-1/2 mx-auto mb-8 rounded bg-orange-100" />
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <div className="h-10 w-36 rounded bg-orange-200" />
-              <div className="h-10 w-44 rounded bg-orange-200" />
-              <div className="h-10 w-52 rounded bg-orange-200" />
-            </div>
-          </div>
-        </div>
-      </section>
-      <section className="py-16 px-4 text-center bg-gray-50">
-        <div className="h-10 w-1/2 mx-auto rounded bg-orange-100 mb-4" />
-        <div className="h-6 w-1/4 mx-auto mb-6 rounded bg-orange-200" />
-        <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 justify-center">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="bg-white rounded-lg p-6 shadow w-full max-w-xs mx-auto">
-              <div className="h-12 w-12 rounded-full bg-orange-200 mx-auto mb-4" />
-              <div className="h-6 w-3/4 mx-auto mb-2 rounded bg-orange-300" />
-              <div className="h-4 w-2/3 mx-auto rounded bg-orange-300" />
-            </div>
-          ))}
-        </div>
-      </section>
     </div>
   </div>
 );
 
-// Main Component
+// ─── component ─────────────────────────────────────────────────────
 const Membership = () => {
   const [data, setData] = useState<any>(null);
 
   useEffect(() => {
-    const loadData = async () => {
+    const load = async () => {
+      /* 1️⃣ try cache */
       const cached = localStorage.getItem(CACHE_KEY);
-      let shouldFetch = true;
-
       if (cached) {
         try {
-          const { data: cachedData, timestamp } = JSON.parse(cached);
-          if (Date.now() - timestamp < CACHE_TTL) {
-            setData(cachedData);
-            shouldFetch = false;
-          }
-        } catch {
-          // Invalid JSON, skip cache
-        }
+          const { data: d, timestamp } = JSON.parse(cached);
+          if (Date.now() - timestamp < CACHE_TTL) setData(d);
+        } catch {/* ignore */}
       }
 
-      if (!data && shouldFetch) {
-        // Load from local JSON as fallback
+      /* 2️⃣ fallback json (if nothing yet) */
+      if (!data) {
         try {
           const res = await fetch(LOCAL_JSON_PATH);
-          if (res.ok) {
-            const fallbackData = await res.json();
-            setData(fallbackData);
-          }
-        } catch {
-          console.error("Failed to load fallback JSON.");
-        }
+          if (res.ok) setData(await res.json());
+        } catch {/* ignore */}
       }
 
-      // Always fetch in background to update cache
+      /* 3️⃣ background refresh */
       try {
-        const res = await fetch(API_URL);
-        const freshData = await res.json();
+        const fresh = await (await fetch(API_URL)).json();
         localStorage.setItem(
           CACHE_KEY,
-          JSON.stringify({ data: freshData, timestamp: Date.now() })
+          JSON.stringify({ data: fresh, timestamp: Date.now() })
         );
-        if (JSON.stringify(freshData) !== JSON.stringify(data)) {
-          setData(freshData);
-        }
-      } catch {
-        console.warn("Background fetch failed");
-      }
+        setData(fresh);
+      } catch {/* ignore */}
     };
-
-    loadData();
+    load();
   }, []);
 
   if (!data) return <MembershipSkeleton />;
 
+  // ─── render ────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen">
-      <main className="pt-32">
-        {/* Hero Section */}
-        <section className="w-full mb-4">
-          <img
-            src="/Membership-banner.jpg"
-            alt="Membership Hero"
-            className="w-full h-[550px]"
+    <div className="min-h-screen bg-brand-light">
+      <main className="pt-[14vh]">
+
+        {/* ── HERO ── */}
+        <section className="relative flex items-center justify-center
+                            h-56 sm:h-64 md:h-72 lg:h-80 overflow-hidden">
+          <Image
+            src="/images/hero-banner.jpg"
+            alt="Membership hero"
+            fill
+            priority
+            quality={85}
+            className="object-cover"
           />
-          <div className="mt-10 flex ml-40">
-            <Link href="/membership/become-a-member">
-              <button className="text-lg font-semibold border-2 border-red-600 bg-red-700 text-white px-6 py-2 rounded hover:bg-white hover:text-red-600 hover:border-red-600 transition">
+          <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/60" />
+          <div className="relative z-10 text-center px-4">
+            <h1 className="font-bold text-brand-light
+                           text-3xl sm:text-4xl md:text-5xl
+                           drop-shadow-[0_0_10px_rgb(255_255_255_/_50%)]">
+              {data.heroSection.heading}
+            </h1>
+            <p className="mt-2 max-w-3xl mx-auto text-brand-light/90
+                          text-sm sm:text-base md:text-lg text-justify">
+              {data.heroSection.subHeading}
+            </p>
+            <Link href="/membership/become-a-member" className="inline-block mt-6">
+              <button className="btn-primary rounded-xl px-6 py-3 text-sm md:text-base">
                 {data.heroSection.buttonText}
               </button>
             </Link>
           </div>
         </section>
 
-        {/* Benefits */}
-        <section className="py-16 px-4 text-center bg-gray-50">
-          <h2 className="text-4xl font-bold mb-4">{data.benefitsTitle.mainTitle}</h2>
-          <p className="text-gray-600 mb-10">{data.benefitsTitle.subTitle}</p>
-          <div className="max-w-4xl mx-auto space-y-4">
-            {data.benefits.map((benefit: any, index: number) => (
-              <div
-                key={index}
-                className="flex items-start bg-white rounded-lg p-4 shadow text-left"
-              >
-                <div className="flex-shrink-0 mr-4">
-                  <img src="/hand-icon.png" alt="Benefit Icon" className="w-12 h-12" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold">{benefit.title}</h3>
-                  <p className="text-gray-700">{benefit.description}</p>
-                  {benefit.subpoints && (
-                    <ul className="list-disc list-inside text-gray-700 mt-2">
-                      {benefit.subpoints.map((point: string, i: number) => (
-                        <li key={i}>{point}</li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Membership Types */}
-        <section className="py-8 px-4 text-center bg-white">
-          <h2 className="text-4xl font-bold mb-4">{data.membershipTypesTitle.mainTitle}</h2>
-          <p className="text-gray-600 mb-10">{data.membershipTypesTitle.subTitle}</p>
-          <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 justify-center">
-            {data.membershipTypes.map((type: any, index: number) => (
-              <div
-                key={index}
-                className="bg-white border rounded-lg p-8 shadow w-full max-w-xs mx-auto"
-              >
-                <h3 className="text-2xl font-semibold mb-2">{type.title}</h3>
-                <p className="text-gray-700 mb-4">{type.coverage}</p>
-                <div className="text-3xl font-bold text-red-600 mb-6">${type.price}</div>
-                <Link href="/membership/become-a-member">
-                  <button className="w-full bg-red-600 text-white py-2 px-4 rounded hover:bg-white hover:text-red-600 hover:border hover:border-red-600 transition">
-                    Join Now
-                  </button>
-                </Link>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Rules Section */}
-        <section className="py-16 px-4 bg-gray-50 flex flex-col items-center">
-          <h2 className="text-4xl font-bold mb-4">{data.ruleTitle}</h2>
-          <div className="max-w-2xl mx-auto space-y-6 text-left">
-            {data.membershipRules.map((rule: string, index: number) => (
-              <p key={index} className="text-gray-700">{rule}</p>
-            ))}
-            <p className="text-lg font-semibold mt-6">{data.note}</p>
-            <ul className="list-decimal list-inside text-gray-700 mt-2">
-              <li>{data.noteRule.noteRule1}</li>
-              <li>{data.noteRule.noteRule2}</li>
-            </ul>
-            <p className="text-gray-700 mt-6">
-              {data.query} <span className="text-red-600">{data.contactEmail}</span>
+        {/* ── BENEFITS ── */}
+        <section className="py-16 bg-brand-white">
+          <div className="max-w-6xl mx-auto px-4 text-center">
+            <h2 className="text-accent font-bold text-2xl sm:text-3xl md:text-4xl mb-4">
+              {data.benefitsTitle.mainTitle}
+            </h2>
+            <p className="text-brand-dark mb-10 text-sm md:text-base">
+              {data.benefitsTitle.subTitle}
             </p>
+
+            <div className="space-y-6">
+              {data.benefits.map((b: any, i: number) => (
+                <div key={i} className="bg-brand-light p-6 rounded-xl shadow-soft text-left flex gap-4">
+                  <img src="/hand-icon.png" alt="" className="w-12 h-12 shrink-0" />
+                  <div>
+                    <h3 className="font-semibold text-brand-dark mb-1">{b.title}</h3>
+                    <p className="text-brand-dark/80 text-sm md:text-base text-justify">{b.description}</p>
+                    {b.subpoints && (
+                      <ul className="list-disc list-inside mt-2 text-brand-dark/80 text-sm md:text-base space-y-1">
+                        {b.subpoints.map((p: string, j: number) => <li key={j}>{p}</li>)}
+                      </ul>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── MEMBERSHIP TYPES ── */}
+        <section className="py-16 bg-brand-light">
+          <div className="max-w-7xl mx-auto px-4 text-center">
+            <h2 className="text-accent font-bold text-2xl sm:text-3xl md:text-4xl mb-4">
+              {data.membershipTypesTitle.mainTitle}
+            </h2>
+            <p className="text-brand-dark mb-10 text-sm md:text-base">
+              {data.membershipTypesTitle.subTitle}
+            </p>
+
+            <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+              {data.membershipTypes.map((t: any, i: number) => (
+                <div key={i} className="bg-brand-white p-8 rounded-xl shadow-soft border-soft flex flex-col">
+                  <h3 className="text-brand-dark font-semibold text-xl mb-1">{t.title}</h3>
+                  <p className="text-brand-dark/80 text-sm mb-4">{t.coverage}</p>
+                  <div className="text-3xl font-bold text-accent mb-6">${t.price}</div>
+                  <Link href="/membership/become-a-member" className="mt-auto">
+                    <button className="w-full bg-transparent border-2 border-accent hover:bg-accent hover:text-brand-light text-accent px-4 py-2 rounded-xl transition-colors font-semibold text-sm">
+                      Join Now
+                    </button>
+                  </Link>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── RULES ── */}
+        <section className="py-16 bg-brand-white">
+          <div className="max-w-4xl mx-auto px-4 text-center">
+            <h2 className="text-accent font-bold text-2xl sm:text-3xl md:text-4xl mb-8">
+              {data.ruleTitle}
+            </h2>
+            <div className="space-y-4 text-justify text-brand-dark text-sm md:text-base">
+              {data.membershipRules.map((r: string, i: number) => <p key={i}>{r}</p>)}
+
+              <p className="font-semibold mt-6">{data.note}</p>
+              <ol className="list-decimal list-inside space-y-1">
+                <li>{data.noteRule.noteRule1}</li>
+                <li>{data.noteRule.noteRule2}</li>
+              </ol>
+
+              <p className="mt-6">
+                {data.query} <span className="text-accent">{data.contactEmail}</span>
+              </p>
+            </div>
           </div>
         </section>
       </main>

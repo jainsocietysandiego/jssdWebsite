@@ -2,14 +2,14 @@
 
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
 import { Mail, Clock, MapPin, Users } from 'lucide-react';
+import Image from 'next/image';
 
-const API_URL = 'https://script.google.com/macros/s/AKfycby4gsDwefTyRV7yzdlw0LFgNe0ROpWfi97Y_hnlODDtJa8CuO2QyLqqumv5CSCk8roLTg/exec';
+const API_URL =
+  'https://script.google.com/macros/s/AKfycby4gsDwefTyRV7yzdlw0LFgNe0ROpWfi97Y_hnlODDtJa8CuO2QyLqqumv5CSCk8roLTg/exec';
 const FALLBACK_URL = '/AboutPage.json';
 const CACHE_KEY = 'about-page-data';
-const CACHE_TTL = 10 * 60 * 1000;
+const CACHE_TTL = 10 * 60 * 1_000;   // 10 min
 
 interface SheetEntry {
   Section: string;
@@ -18,29 +18,15 @@ interface SheetEntry {
 }
 
 const AboutSkeleton = () => (
-  <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 animate-pulse">
-    <div className="pt-16">
-      <section className="bg-gradient-to-r from-orange-600 to-orange-700 text-white py-20 text-center">
-        <div className="h-10 w-1/2 mx-auto rounded bg-orange-300 mb-4" />
-      </section>
-      <section className="py-20 bg-white grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-7xl mx-auto px-4">
-        <div className="space-y-4">
-          {[...Array(3)].map((_, i) => (
-            <div key={i} className="h-4 w-full bg-orange-100 rounded" />
-          ))}
-        </div>
-        <div className="h-64 w-full bg-orange-200 rounded" />
-      </section>
-      <section className="py-20 bg-orange-50">
-        <div className="max-w-5xl mx-auto space-y-4">
-          <div className="h-6 w-1/2 bg-orange-200 mx-auto rounded" />
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="h-4 w-full bg-orange-100 rounded" />
-          ))}
-        </div>
+  <div className="min-h-screen bg-brand-light animate-pulse">
+    <div className="pt-16 space-y-8">
+      <section className="h-64 bg-brand-dark/20" />
+      <section className="max-w-7xl mx-auto px-4">
+        <div className="h-4 w-full bg-brand-dark/10 mb-2 rounded" />
+        <div className="h-4 w-5/6 bg-brand-dark/10 mb-2 rounded" />
+        <div className="h-4 w-2/3 bg-brand-dark/10 rounded" />
       </section>
     </div>
-    <Footer />
   </div>
 );
 
@@ -48,19 +34,19 @@ const AboutPage: React.FC = () => {
   const [data, setData] = useState<SheetEntry[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const getContent = (section: string, label: string) =>
-    data.find(entry => entry.Section === section && entry.Label === label)?.Content || '';
+  /* ---------- helpers ---------- */
+  const getContent = (s: string, l: string) =>
+    data.find(e => e.Section === s && e.Label === l)?.Content || '';
 
-  const getList = (section: string, label: string) =>
-    getContent(section, label).split(',').map(item => item.trim()).filter(Boolean);
+  const getList = (s: string, l: string) =>
+    getContent(s, l).split(',').map(t => t.trim()).filter(Boolean);
 
-  const getParagraphs = (section: string, label: string) =>
-    getContent(section, label).split(/\n\s*\n/).filter(Boolean);
+  const getParagraphs = (s: string, l: string) =>
+    getContent(s, l).split(/\n\s*\n/).filter(Boolean);
 
+  /* ---------- load data ---------- */
   useEffect(() => {
-    const loadData = async () => {
-      let shouldFetch = true;
-
+    const load = async () => {
       try {
         const cached = localStorage.getItem(CACHE_KEY);
         if (cached) {
@@ -68,127 +54,145 @@ const AboutPage: React.FC = () => {
           if (Date.now() - timestamp < CACHE_TTL) {
             setData(cachedData);
             setLoading(false);
-            shouldFetch = false;
           }
         }
 
-        if (shouldFetch) {
+        if (loading) {
           const res = await fetch(FALLBACK_URL);
           if (res.ok) {
-            const fallbackJson = await res.json();
-            setData(fallbackJson.content);
+            const json = await res.json();
+            setData(json.content);
+            setLoading(false);
           }
-          setLoading(false);
         }
 
-        // Background fetch
-        axios
-          .get(API_URL)
-          .then(res => {
-            if (res.data?.content) {
-              setData(res.data.content);
-              localStorage.setItem(CACHE_KEY, JSON.stringify({
-                data: res.data.content,
-                timestamp: Date.now()
-              }));
-            }
-          })
-          .catch(err => console.error('Background fetch failed', err));
-      } catch (err) {
-        console.error('Data loading failed:', err);
+        // background refresh
+        axios.get(API_URL).then(res => {
+          if (res.data?.content) {
+            setData(res.data.content);
+            localStorage.setItem(
+              CACHE_KEY,
+              JSON.stringify({ data: res.data.content, timestamp: Date.now() })
+            );
+          }
+        }).catch(() => {/* ignore */});
+      } catch {
         setLoading(false);
       }
     };
-
-    loadData();
+    load();
   }, []);
 
   if (loading) return <AboutSkeleton />;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50">
-      <main className="pt-16">
-        {/* Hero Banner */}
-        <section className="bg-gradient-to-r from-orange-600 to-orange-700 text-white h-48 sm:h-52 md:h-56 lg:h-60 flex items-center justify-center">
-          <div className="max-w-7xl mx-auto px-4 text-center">
-            <h1 className="text-5xl font-bold">{getContent('hero', 'Title')}</h1>
-          </div>
+    <div className="min-h-screen bg-brand-light">
+      <main className="pt-[14vh]">
+
+        <section className="relative flex items-center justify-center
+                            h-64 sm:h-72 md:h-80 lg:h-96 xl:h-[28rem] overflow-hidden">
+          <Image
+            src="/images/hero-banner.jpg"
+            alt="Hero banner background"
+            fill
+            priority
+            quality={85}
+            className="object-cover"
+          />
+          <h1 className="relative z-10 px-4 text-center font-bold text-brand-light
+                         text-3xl sm:text-4xl md:text-5xl lg:text-6xl
+                         drop-shadow-[0_0_10px_rgb(255_255_255_/_50%)]
+                         [text-shadow:_0_0_10px_rgb(255_255_255_/_40%),_0_0_25px_rgb(255_255_255_/_25%)]">
+            {getContent('hero', 'Title')}
+          </h1>
         </section>
 
-        {/* Two Column Section */}
-        <section className="py-20 bg-white">
-          <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6 text-gray-700 text-lg">
-              {getParagraphs('hero', 'Description').map((para, idx) => (
-                <p key={idx}>{para}</p>
+        <section className="py-16 md:py-20 bg-brand-white">
+          <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+            {/* text */}
+            <div className="space-y-6 text-gray-700 leading-relaxed">
+              {getParagraphs('hero', 'Description').map((p, i) => (
+                <p key={i} className="text-justify text-base md:text-lg">{p}</p>
               ))}
             </div>
-            <div className="rounded-lg shadow-md overflow-hidden">
+            {/* image */}
+            <div className="rounded-xl shadow-soft overflow-hidden">
               <img
                 src={getContent('hero', 'Image URL')}
-                alt="About Image"
-                className="w-full h-64 object-cover"
+                alt="About JSSD"
+                className="w-full h-full object-cover"
               />
             </div>
           </div>
         </section>
 
-        {/* Contact Section */}
-        <section className="py-20 bg-orange-100">
-          <div className="max-w-6xl mx-auto px-4 text-gray-800">
-            <h2 className="text-3xl font-bold text-center text-orange-700 mb-12">
+        {/* CONTACT INFO ----------------------------------------------- */}
+        <section className="py-16 bg-brand-light">
+          <div className="max-w-6xl mx-auto px-4">
+            <h2 className="text-center text-accent font-bold text-2xl sm:text-3xl mb-10">
               Contact Information
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <ContactCard icon={MapPin} label="Address" value={getContent('contact', 'Address')} />
-              <ContactCard icon={Clock} label="Regular Hours" value={getContent('contact', 'Regular Hours')} />
-              <ContactCard icon={Clock} label="Pathshala Hours" value={getContent('contact', 'Pathshala Hours')} />
-              <ContactCard icon={Users} label="Mailing Address" value={getContent('contact', 'Mailing Address')} />
-              <ContactCard icon={Mail} label="Event Contact" value={getContent('contact', 'Event Contact')} />
-              <div className="bg-white p-6 rounded-lg shadow text-center">
-                <Mail className="w-8 h-8 mx-auto text-orange-600 mb-2" />
-                <h3 className="font-semibold">Emails</h3>
-                {getList('contact', 'Emails').map((email, idx) => (
-                  <p key={idx}>{email}</p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <ContactCard icon={MapPin}  label="Address"          value={getContent('contact', 'Address')} />
+              <ContactCard icon={Clock}   label="Regular Hours"    value={getContent('contact', 'Regular Hours')} />
+              <ContactCard icon={Clock}   label="Pathshala Hours"  value={getContent('contact', 'Pathshala Hours')} />
+              <ContactCard icon={Users}   label="Mailing Address"  value={getContent('contact', 'Mailing Address')} />
+              <ContactCard icon={Mail}    label="Event Contact"    value={getContent('contact', 'Event Contact')} />
+
+              {/* e-mails */}
+              <div className="bg-brand-white p-6 rounded-xl shadow-soft text-center border-soft">
+                <Mail className="w-7 h-7 mx-auto text-accent mb-3" />
+                <h3 className="font-semibold mb-1">Emails</h3>
+                {getList('contact', 'Emails').map((e, i) => (
+                  <p key={i} className="break-words text-sm">{e}</p>
                 ))}
               </div>
             </div>
           </div>
         </section>
 
-        {/* Organizational Structure */}
-        <section className="py-20 bg-white">
+        {/* ORG STRUCTURE ---------------------------------------------- */}
+        <section className="py-16 bg-brand-white">
           <div className="max-w-7xl mx-auto px-4 space-y-12">
-            <div className="text-center">
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">Organizational Structure</h2>
-              <p className="text-gray-600 max-w-3xl mx-auto">
+            <header className="text-center space-y-4">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-brand-dark">
+                Organizational Structure
+              </h2>
+              <p className="text-brand-dark max-w-3xl mx-auto text-justify">
                 JSSD is governed by a constitution and managed by dedicated volunteers elected by our members.
               </p>
-            </div>
+            </header>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="bg-orange-50 p-8 rounded-lg shadow">
-                <h3 className="text-2xl font-bold text-orange-600 mb-6">Executive Committee</h3>
+              {/* Executive */}
+              <div className="bg-brand-light p-8 rounded-2xl shadow-soft">
+                <h3 className="text-xl md:text-2xl font-bold text-accent mb-6">
+                  Executive Committee
+                </h3>
                 <div className="space-y-4">
-                  {getList('org_structure', 'Executive Roles').map((role, idx) => (
-                    <div key={idx} className="flex justify-between items-center border-b pb-2">
-                      <span className="font-semibold">{role}</span>
-                      <span className="text-gray-600">2-year term</span>
+                  {getList('org_structure', 'Executive Roles').map((r, i) => (
+                    <div key={i} className="flex justify-between border-b border-dashed border-accent/30 pb-2">
+                      <span className="font-semibold">{r}</span>
+                      <span className="text-brand-dark/70 text-sm">2-year term</span>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div className="bg-orange-50 p-8 rounded-lg shadow">
-                <h3 className="text-2xl font-bold text-orange-600 mb-6">Trustee Committee</h3>
-                <p className="text-gray-700 mb-4">
+              {/* Trustees */}
+              <div className="bg-brand-light p-8 rounded-2xl shadow-soft">
+                <h3 className="text-xl md:text-2xl font-bold text-accent mb-6">
+                  Trustee Committee
+                </h3>
+                <p className="text-brand-dark mb-4 text-justify">
                   Provides oversight and guidance to ensure JSSD operates in line with its mission.
                 </p>
-                <div className="bg-white p-4 rounded-lg border">
-                  <h4 className="font-semibold text-orange-800 mb-2">Key Responsibilities:</h4>
-                  <ul className="list-disc list-inside text-gray-700 space-y-1">
-                    {getList('org_structure', 'Trustee Duties').map((item, idx) => (
-                      <li key={idx}>{item}</li>
+                <div className="bg-brand-white p-5 rounded-xl border-soft">
+                  <h4 className="font-semibold text-accent mb-3">Key Responsibilities:</h4>
+                  <ul className="list-disc list-inside space-y-1 text-brand-dark text-sm md:text-base">
+                    {getList('org_structure', 'Trustee Duties').map((d, i) => (
+                      <li key={i}>{d}</li>
                     ))}
                   </ul>
                 </div>
@@ -196,13 +200,12 @@ const AboutPage: React.FC = () => {
             </div>
           </div>
         </section>
-
-        
       </main>
     </div>
   );
 };
 
+/* ------------- small card component ------------- */
 const ContactCard = ({
   icon: Icon,
   label,
@@ -212,10 +215,10 @@ const ContactCard = ({
   label: string;
   value: string;
 }) => (
-  <div className="bg-white p-6 rounded-lg shadow text-center">
-    <Icon className="w-8 h-8 mx-auto text-orange-600 mb-2" />
+  <div className="bg-brand-white p-6 rounded-xl shadow-soft text-center border-soft space-y-1 break-words">
+    <Icon className="w-7 h-7 mx-auto text-accent mb-2" />
     <h3 className="font-semibold">{label}</h3>
-    <p>{value}</p>
+    <p className="text-sm">{value}</p>
   </div>
 );
 

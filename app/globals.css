@@ -1,79 +1,78 @@
+/* --------------  FONTS  -------------- */
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&family=Lexend:wght@100;200;300;400;500;600;700;800;900&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Global styles */
-html {
-  scroll-behavior: smooth;
+/* --------------  COLOUR TOKENS  -------------- */
+:root {
+  /* primary background palette */
+  --color-bg-dark : #C2410C;   /* darkest brand section */
+  --color-bg-light: #FFF7ED;   /* soft tint */
+  --color-bg-white: #FFFFFF;   /* pure white */
+
+  /* supporting colours */
+  --color-text-dark : #111827; /* body text on light bg  */
+  --color-text-light: #FFFFFF; /* text on dark bg        */
+  --color-accent    : #EA580C; /* buttons / links        */
+  --color-accent-hov: #B45309; /* accent hover state     */
+  --color-border    : rgba(0,0,0,0.08);
+  --shadow-soft     : 0 2px 4px rgba(0,0,0,0.06);
 }
 
-/* Font families */
-html, body {
-  font-family: 'Lexend', sans-serif;
-}
+/* --------------  GLOBAL STYLES  -------------- */
+html { scroll-behavior: smooth; }
 
-/* Outfit for titles and headings */
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Outfit', sans-serif;
-}
+html, body { font-family: 'Lexend', sans-serif; }
 
-/* Outfit for navigation */
-nav {
-  font-family: 'Outfit', sans-serif;
-}
+h1, h2, h3, h4, h5, h6,
+nav            { font-family: 'Outfit', sans-serif; }
 
-/* Lexend for body text and content */
 p, div, span, a, li, td, th {
   font-family: 'Lexend', sans-serif;
 }
 
-/* Hide scrollbar globally */
+/* Hide scrollbars everywhere (keeps your previous rules) */
 html::-webkit-scrollbar,
-body::-webkit-scrollbar {
-  display: none;
-  width: 0;
-  height: 0;
+body::-webkit-scrollbar,
+.scrollbar-hide::-webkit-scrollbar,
+*::-webkit-scrollbar { display:none; width:0; height:0; }
+html,
+.scrollbar-hide,
+* { scrollbar-width:none; -ms-overflow-style:none; }
+
+/* --------------  OPTIONAL HELPER CLASSES -------------- */
+/* Backgrounds */
+.bg-brand-dark  { background-color: var(--color-bg-dark);  }
+.bg-brand-light { background-color: var(--color-bg-light); }
+.bg-brand-white { background-color: var(--color-bg-white); }
+.text-accent { color: var(--color-accent); }
+
+/* Text colours */
+.text-brand-dark  { color: var(--color-text-dark);  }
+.text-brand-light { color: var(--color-text-light); }
+
+/* Accent buttons (use if you like) */
+.btn-primary {
+  background-color: var(--color-accent);
+  color: var(--color-text-light);
+  padding: 0.75rem 2rem;        /* ≈ px-8 py-3 */
+  border-radius: 0.5rem;        /* rounded-lg  */
+  font-weight: 600;
+  transition: background-color 0.25s, transform 0.25s, box-shadow 0.25s;
+  box-shadow: var(--shadow-soft);
+}
+.btn-primary:hover {
+  background-color: var(--color-accent-hov);
+  transform: scale(1.05);
 }
 
-/* For Firefox */
-html {
-  scrollbar-width: none;
-}
+/* Soft borders & shadows */
+.border-soft { border: 1px solid var(--color-border); }
+.shadow-soft { box-shadow: var(--shadow-soft); }
 
-/* For IE and Edge (legacy) */
-html {
-  -ms-overflow-style: none;
-}
-
-/* Utility class for hiding scrollbars on specific elements */
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-  width: 0;
-  height: 0;
-}
-
-.scrollbar-hide {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-/* Additional scrollbar hiding for any container */
-*::-webkit-scrollbar {
-  display: none;
-  width: 0;
-  height: 0;
-}
-
-* {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-/* Ensure smooth scrolling works */
+/* --------------  PREFER SMOOTH SCROLL -------------- */
 @media (prefers-reduced-motion: no-preference) {
-  html {
-    scroll-behavior: smooth;
-  }
+  html { scroll-behavior: smooth; }
 }

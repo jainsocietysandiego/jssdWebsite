@@ -1,7 +1,6 @@
 'use client';
 import React, { useState, useEffect } from "react";
-import Navbar from '../../components/Navbar';
-import Footer from '../../components/Footer';
+import Image from "next/image";
 
 // -------------------- TYPES --------------------
 type Newsletter = {
@@ -66,11 +65,11 @@ function getCurrentAndPrevious(newsletters: Newsletter[]): [Newsletter | null, N
 
 const NewsletterSkeleton = () => (
   <div className="py-32 min-h-[60vh] flex flex-col items-center gap-10 animate-pulse">
-    <div className="bg-orange-100 h-14 w-80 rounded-lg" />
-    <div className="bg-orange-200 h-10 w-3/4 max-w-lg rounded-lg" />
-    <div className="bg-orange-50 h-[420px] w-full max-w-3xl rounded-2xl" />
-    <div className="bg-orange-100 h-10 w-48 rounded" />
-    <div className="bg-orange-50 h-28 w-full max-w-xl rounded-xl" />
+    <div className="bg-brand-dark/10 h-14 w-80 rounded-lg" />
+    <div className="bg-brand-dark/20 h-10 w-3/4 max-w-lg rounded-lg" />
+    <div className="bg-brand-light h-[420px] w-full max-w-3xl rounded-2xl" />
+    <div className="bg-brand-dark/10 h-10 w-48 rounded" />
+    <div className="bg-brand-light h-28 w-full max-w-xl rounded-xl" />
   </div>
 );
 
@@ -134,39 +133,53 @@ const NewsletterPage: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-amber-100 pt-16">
-       <section className="bg-gradient-to-r from-orange-600 to-orange-700 text-white h-48 sm:h-52 md:h-56 lg:h-60 flex items-center justify-center">
-  <div className="max-w-7xl mx-auto px-4 text-center">
-    <h1 className="text-5xl font-bold"> Newsletter</h1>
-    <p className="mt-3 text-2xl font-medium opacity-95">
-              Read the latest and previous editions
-            </p>
-  </div>
-</section>
-      <main className="max-w-5xl mx-auto pt-28 px-2 pb-24">      
+    <div className="min-h-screen bg-brand-light pt-[14vh]">
+      <section className="relative flex items-center justify-center
+                          h-48 sm:h-56 md:h-64 lg:h-72 overflow-hidden">
+        <Image
+          src="/images/hero-banner.jpg"
+          alt="Newsletter hero"
+          fill
+          priority
+          quality={85}
+          className="object-cover"
+        />
+        
+        <div className="relative z-10 max-w-7xl mx-auto px-4 text-center">
+          <h1 className="font-bold text-brand-light text-3xl sm:text-4xl md:text-5xl
+                         drop-shadow-[0_0_10px_rgb(255_255_255_/_50%)]">
+            Newsletter
+          </h1>
+          <p className="mt-2 text-white text-sm sm:text-base md:text-lg">
+            Read the latest and previous editions
+          </p>
+        </div>
+      </section>
+
+      <main className="max-w-5xl mx-auto pt-20 px-2 pb-24">      
         {loading ? <NewsletterSkeleton /> : (
           <>
             <section className="mb-20">
-              <div className="text-2xl font-bold text-amber-700 mb-5 tracking-wide">
+              <div className="text-xl md:text-2xl font-bold text-accent mb-5">
                 Present Newsletter
               </div>
               {!current ? (
-                <div className="rounded-2xl bg-orange-100 py-14 text-center text-gray-500 text-2xl font-semibold shadow-lg">
+                <div className="rounded-2xl bg-brand-light py-14 text-center text-brand-dark/60 text-lg md:text-2xl font-semibold shadow-soft">
                   No newsletter available for this month.
                 </div>
               ) : (
-                <div className="p-8 bg-white/90 rounded-3xl shadow-2xl">
-                  <div className="font-extrabold text-3xl md:text-4xl text-orange-900 text-center mb-2 tracking-tight drop-shadow">
+                <div className="p-6 md:p-8 bg-brand-white rounded-3xl shadow-soft">
+                  <div className="font-extrabold text-2xl md:text-3xl lg:text-4xl text-brand-dark text-center mb-2">
                     {current['PDF File Name']}
                   </div>
-                  <div className="text-xl mb-3 text-center text-orange-700 font-semibold">
+                  <div className="text-lg md:text-xl mb-3 text-center text-accent font-semibold">
                     {current.Month}
                   </div>
                   <div className="flex flex-col items-center mt-2 mb-4">
                     <iframe
                       src={toPreviewUrl(current['Newsletter URL (PDF)'])}
                       title={current['PDF File Name']}
-                      className="rounded-lg border shadow-lg"
+                      className="rounded-xl border-soft shadow-soft"
                       width="100%"
                       height="700"
                       style={{ minHeight: 700, maxWidth: 1100 }}
@@ -175,7 +188,7 @@ const NewsletterPage: React.FC = () => {
                   </div>
                   <div className="text-center mt-3">
                     <a
-                      className="text-orange-700 font-bold underline text-lg"
+                      className="text-accent font-bold underline text-sm md:text-lg"
                       href={toPreviewUrl(current['Newsletter URL (PDF)'])}
                       rel="noopener noreferrer"
                       target="_blank"
@@ -188,27 +201,27 @@ const NewsletterPage: React.FC = () => {
             </section>
 
             <section>
-              <div className="text-2xl font-bold text-amber-700 mb-5 tracking-wide">
+              <div className="text-xl md:text-2xl font-bold text-accent mb-5">
                 Previous Newsletters
               </div>
-              <ul className="space-y-7">
+              <ul className="space-y-6">
                 {previous.length === 0 &&
-                  <li className="text-gray-400 text-xl font-medium px-3">No previous newsletters yet.</li>}
+                  <li className="text-brand-dark/60 text-base md:text-xl px-3">No previous newsletters yet.</li>}
                 {previous.map(n => (
                   <li
                     key={n.Month + n.Date}
-                    className="flex flex-col sm:flex-row sm:items-center gap-2 bg-white/85 rounded-xl shadow-md px-6 py-4 border-l-4 border-orange-300 hover:scale-[1.013] transition"
+                    className="flex flex-col sm:flex-row sm:items-center gap-2 bg-brand-white rounded-xl shadow-soft px-6 py-4 border-l-4 border-accent hover:scale-[1.013] transition"
                   >
                     <a
                       href={toPreviewUrl(n['Newsletter URL (PDF)'])}
-                      className="text-orange-700 underline text-xl md:text-2xl font-bold truncate"
+                      className="text-accent underline text-lg md:text-xl lg:text-2xl font-bold truncate"
                       target="_blank"
                       rel="noopener noreferrer"
                       title={n['PDF File Name']}
                     >
                       {n['PDF File Name']}
                     </a>
-                    <span className="ml-2 text-gray-500 text-lg font-medium">
+                    <span className="ml-2 text-brand-dark/70 text-sm md:text-lg font-medium">
                       ({n.Month})
                     </span>
                   </li>

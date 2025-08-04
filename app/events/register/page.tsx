@@ -48,7 +48,7 @@ function FloatingLabelInput(props: {
   return (
     <div className="relative mt-3">
       {props.icon ? (
-        <div className="absolute top-1/2 left-3 -translate-y-1/2 text-orange-600">{props.icon}</div>
+        <div className="absolute top-1/2 left-3 -translate-y-1/2 text-accent">{props.icon}</div>
       ) : null}
       <input
         name={props.name}
@@ -58,21 +58,22 @@ function FloatingLabelInput(props: {
         required={props.required ?? true}
         autoComplete={props.autoComplete ?? 'off'}
         placeholder=" "
-        className="w-full px-11 py-3 rounded border border-gray-300 focus:border-orange-500 outline-none bg-gray-50 text-gray-800 text-base peer transition"
+        className="w-full px-11 py-3 rounded-xl border-soft focus:border-accent outline-none  text-brand-dark text-sm md:text-base peer transition-all duration-300 focus:ring-2 focus:ring-accent/20"
       />
       <label
         htmlFor={props.name}
-        className="absolute left-11 top-[0.6rem] text-gray-400 pointer-events-none
-                   peer-focus:-top-3 peer-focus:text-xs peer-focus:text-orange-700
-                   bg-white px-1 duration-300 transform -translate-y-[0.8rem]
-                   peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400
-                   peer-placeholder-shown:-translate-y-1/2"
+        className="absolute left-11 top-[0.6rem] text-brand-dark/60 pointer-events-none
+                   peer-focus:-top-3 peer-focus:text-xs peer-focus:text-accent
+                   bg-brand-white px-1 duration-300 transform -translate-y-[0.8rem]
+                   peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-placeholder-shown:text-brand-dark/60
+                   peer-placeholder-shown:-translate-y-1/2 md:peer-placeholder-shown:text-base"
       >
         {props.label}
       </label>
     </div>
   );
 }
+
 
 // --- The actual register page, wrapped in Suspense boundary for Next.js 14+ ---
 function RegisterPageInner({ eventId }: { eventId: string }) {
@@ -135,140 +136,171 @@ function RegisterPageInner({ eventId }: { eventId: string }) {
   }
 
   if (success) {
-    return (
-      <div className="min-h-screen flex flex-col items-center bg-gradient-to-br from-orange-50 to-amber-50">
-    
-        <div className="flex-grow flex items-center justify-center animate-fade-in">
-          <div className="bg-white rounded-xl shadow-2xl px-10 py-12 max-w-md text-center">
-            <div className="flex justify-center mb-5">
-              <svg className="h-16 w-16 text-green-500" fill="none" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="12" fill="#e6fce7"/>
-                <path d="M8 13l3 3 5-5" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </div>
-            <h2 className="text-2xl font-bold text-green-600 mb-2">Registration Successful!</h2>
-            <p className="text-gray-700 mb-2">
-              Thank you for registering for <span className="font-semibold text-orange-700">{eventData?.title}</span>.
-            </p>
-            <p className="text-gray-500 text-sm">You’ll receive a confirmation email soon.</p>
-          </div>
-        </div>
-       
-        <style jsx global>{`
-          @keyframes fade-in { from { opacity:0; transform: translateY(40px);} to { opacity:1; transform:none; } }
-          .animate-fade-in { animation: fade-in .7s cubic-bezier(.22,.7,.53,1.15); }
-        `}</style>
-      </div>
-    );
-  }
-
-  if (loading) {
-    return <div className="min-h-screen flex items-center justify-center font-medium text-orange-700">Loading event...</div>;
-  }
-  if (!eventData) {
-    return <div className="min-h-screen flex items-center justify-center font-medium text-red-700">Event not found.</div>;
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-bl from-orange-50 to-amber-50 flex flex-col pt-16">
-     
-      <main className="flex-1">
-        <div className="max-w-2xl mx-auto my-12">
-          <div className="bg-white shadow-xl rounded-3xl overflow-hidden animate-fade-in">
-            {/* Event banner */}
-            <div className="bg-gradient-to-br from-orange-600 to-orange-400 text-white px-8 py-6 flex flex-col gap-2 border-b-4 border-orange-700">
-              <div className="flex items-center gap-3">
-                <Calendar className="w-6 h-6" />
-                <div>
-                  <div className="font-semibold text-lg">{eventData.title}</div>
-                  <div className="flex items-center gap-1 text-sm mt-0.5">
-                    <MapPin className="h-4 w-4 mr-1" />
-                    <span>{eventData.location || '—'}</span>
-                  </div>
-                </div>
-              </div>
-              {eventData.description &&
-                <div className="mt-2 ml-7 text-sm text-orange-900/80 italic">{eventData.description}</div>}
-            </div>
-            {/* Registration Form */}
-            <form onSubmit={handleSubmit} className="p-8 bg-white space-y-5">
-              <div className="text-xl font-bold text-orange-700 text-center mb-6">Event Registration</div>
-              <FloatingLabelInput
-                icon={<User />}
-                name="name"
-                value={form.name}
-                onChange={handleChange}
-                type="text"
-                label="Full Name"
-              />
-              <FloatingLabelInput
-                icon={<Mail />}
-                name="email"
-                value={form.email}
-                onChange={handleChange}
-                type="email"
-                label="Email"
-              />
-              <FloatingLabelInput
-                icon={<Phone />}
-                name="phone"
-                value={form.phone}
-                onChange={handleChange}
-                type="tel"
-                label="Phone Number"
-                autoComplete="tel"
-              />
-              <FloatingLabelInput
-                icon={<Home />}
-                name="address"
-                value={form.address}
-                onChange={handleChange}
-                type="text"
-                label="Address"
-              />
-              <div className="flex flex-col md:flex-row gap-4">
-                <FloatingLabelInput
-                  icon={<Users />}
-                  name="state"
-                  value={form.state}
-                  onChange={handleChange}
-                  type="text"
-                  label="State"
-                />
-                <FloatingLabelInput
-                  icon={<Hash />}
-                  name="zip"
-                  value={form.zip}
-                  onChange={handleChange}
-                  type="text"
-                  label="ZIP Code"
-                />
-              </div>
-              <button
-                type="submit"
-                disabled={submitting}
-                className={`mt-6 w-full py-3 rounded-xl bg-gradient-to-r from-orange-600 to-amber-500 font-bold text-white shadow-md hover:shadow-xl hover:from-orange-700 hover:to-amber-600 transition text-lg tracking-wide flex items-center justify-center ${submitting ? 'opacity-60 cursor-not-allowed' : ''}`}
-              >
-                {submitting && (
-                  <svg className="animate-spin h-6 w-6 mr-2 text-white" viewBox="0 0 24 24">
-                    <circle className="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/>
-                    <path className="opacity-70" fill="currentColor"
-                          d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
-                  </svg>
-                )}
-                {submitting ? "Submitting..." : "Register"}
-              </button>
-            </form>
+    <div className="min-h-screen flex flex-col items-center bg-brand-light">
+      <div className="flex-grow flex items-center justify-center animate-fade-in">
+        <div className="bg-brand-white rounded-xl shadow-soft px-8 md:px-10 py-10 md:py-12 max-w-md text-center">
+          <div className="flex justify-center mb-5">
+            <svg className="h-16 w-16 text-green-500" fill="none" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="12" fill="#e6fce7"/>
+              <path d="M8 13l3 3 5-5" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
           </div>
+          <h2 className="text-xl md:text-2xl font-bold text-green-600 mb-2">Registration Successful!</h2>
+          <p className="text-brand-dark mb-2 text-sm md:text-base text-justify">
+            Thank you for registering for <span className="font-semibold text-accent">{eventData?.title}</span>.
+          </p>
+          <p className="text-brand-dark/70 text-xs md:text-sm">You'll receive a confirmation email soon.</p>
         </div>
-      </main>
-      
+      </div>
+     
       <style jsx global>{`
         @keyframes fade-in { from { opacity:0; transform: translateY(40px);} to { opacity:1; transform:none; } }
         .animate-fade-in { animation: fade-in .7s cubic-bezier(.22,.7,.53,1.15); }
       `}</style>
     </div>
   );
+}
+
+if (loading) {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="text-center">
+        <div className="w-16 h-16 mx-auto mb-4 relative">
+          <div className="absolute inset-0 border-4 border-accent/20 rounded-full"></div>
+          <div className="absolute inset-2 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
+        </div>
+        <p className="font-medium text-brand-dark">Loading event...</p>
+      </div>
+    </div>
+  );
+}
+
+if (!eventData) {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="text-center">
+        <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
+          <svg className="w-8 h-8 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+          </svg>
+        </div>
+        <p className="font-medium text-red-600">Event not found.</p>
+      </div>
+    </div>
+  );
+}
+
+return (
+  <div className="min-h-screen bg-brand-light flex flex-col pt-[14vh]">
+    <main className="flex-1 py-8 md:py-12">
+      <div className="max-w-2xl mx-auto px-4">
+        <div className="bg-brand-white shadow-soft rounded-3xl overflow-hidden animate-fade-in">
+          {/* Event banner */}
+          <div className="bg-accent text-brand-light px-6 md:px-8 py-6 flex flex-col gap-2 border">
+            <div className="flex items-start gap-3">
+              <Calendar className="w-6 h-6 mt-1 flex-shrink-0" />
+              <div className="flex-1">
+                <div className="font-semibold text-lg md:text-xl">{eventData.title}</div>
+                <div className="flex items-center gap-1 text-sm mt-1">
+                  <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
+                  <span>{eventData.location || '—'}</span>
+                </div>
+              </div>
+            </div>
+            {eventData.description && (
+              <div className="mt-2 ml-9 text-sm text-brand-light/90 italic text-justify">
+                {eventData.description}
+              </div>
+            )}
+          </div>
+          {/* Registration Form */}
+          <form onSubmit={handleSubmit} className="p-6 md:p-8 bg-brand-white space-y-6">
+            <div className="text-xl md:text-2xl font-bold text-accent text-center mb-6">
+              Event Registration
+            </div>
+
+            <FloatingLabelInput
+              icon={<User />}
+              name="name"
+              value={form.name}
+              onChange={handleChange}
+              type="text"
+              label="Full Name"
+            />
+            <FloatingLabelInput
+              icon={<Mail />}
+              name="email"
+              value={form.email}
+              onChange={handleChange}
+              type="email"
+              label="Email"
+            />
+            <FloatingLabelInput
+              icon={<Phone />}
+              name="phone"
+              value={form.phone}
+              onChange={handleChange}
+              type="tel"
+              label="Phone Number"
+              autoComplete="tel"
+            />
+            <FloatingLabelInput
+              icon={<Home />}
+              name="address"
+              value={form.address}
+              onChange={handleChange}
+              type="text"
+              label="Address"
+            />
+
+            <div className="flex flex-col md:flex-row gap-4">
+              <FloatingLabelInput
+                icon={<Users />}
+                name="state"
+                value={form.state}
+                onChange={handleChange}
+                type="text"
+                label="State"
+              />
+              <FloatingLabelInput
+                icon={<Hash />}
+                name="zip"
+                value={form.zip}
+                onChange={handleChange}
+                type="text"
+                label="ZIP Code"
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={submitting}
+              className={`mt-6 w-full py-3 md:py-4 rounded-xl bg-accent font-bold text-brand-light shadow-soft hover:shadow-lg hover:from-accent-hov hover:to-accent transition-all duration-300 text-base md:text-lg tracking-wide flex items-center justify-center ${
+                submitting ? 'opacity-60 cursor-not-allowed' : ''
+              }`}
+            >
+              {submitting && (
+                <svg className="animate-spin h-5 w-5 md:h-6 md:w-6 mr-2 text-brand-light" viewBox="0 0 24 24">
+                  <circle className="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/>
+                  <path className="opacity-70" fill="currentColor"
+                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
+                </svg>
+              )}
+              {submitting ? "Submitting..." : "Register"}
+            </button>
+          </form>
+        </div>
+      </div>
+    </main>
+    
+    <style jsx global>{`
+      @keyframes fade-in { from { opacity:0; transform: translateY(40px);} to { opacity:1; transform:none; } }
+      .animate-fade-in { animation: fade-in .7s cubic-bezier(.22,.7,.53,1.15); }
+    `}</style>
+  </div>
+);
+
 }
 
 // --- Actual page export: useSearchParams in Suspense-bound client component ---

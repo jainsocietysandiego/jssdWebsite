@@ -99,95 +99,99 @@ export default function CommitteePage() {
     : '/default-banner.jpg';
 
   return (
-    <main className="pt-16">
-      <div className="pb-12">
-        <div className="relative h-64 w-full overflow-hidden">
-          <img src={imageUrl} alt={title} className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-black bg-opacity-40" />
-          <h1 className="absolute inset-0 z-10 flex items-center justify-center text-white text-4xl font-bold">
-            {title}
-          </h1>
-        </div>
+    <div className="min-h-screen bg-brand-light">
+      <main className="pt-[14vh]">
+        <div className="pb-12">
+          <div className="relative h-48 sm:h-56 md:h-64 lg:h-72 w-full overflow-hidden">
+            <img src={imageUrl} alt={title} className="w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/60" />
+            <h1 className="absolute inset-0 z-10 flex items-center justify-center text-brand-light text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold drop-shadow-[0_0_10px_rgb(255_255_255_/_50%)] px-4 text-center">
+              {title}
+            </h1>
+          </div>
 
-        <div className="max-w-4xl mx-auto px-4 py-4 space-y-8">
-          {Object.entries(committee).map(([key, value]) => {
-            if (
-              EXCLUDED_KEYS.includes(key) ||
-              key === 'Committee Name' ||
-              key === 'Banner Image Name'
-            )
-              return null;
+          <div className="max-w-4xl mx-auto px-4 py-12 space-y-8">
+            {Object.entries(committee).map(([key, value]) => {
+              if (
+                EXCLUDED_KEYS.includes(key) ||
+                key === 'Committee Name' ||
+                key === 'Banner Image Name'
+              )
+                return null;
 
-            if (CONTACT_KEYS.includes(key)) return null;
+              if (CONTACT_KEYS.includes(key)) return null;
 
-            if (BULLET_KEYS.includes(key)) {
-              const bullets = value.split(',').map((item) => item.trim()).filter(Boolean);
-              if (bullets.length === 0) return null;
+              if (BULLET_KEYS.includes(key)) {
+                const bullets = value.split(',').map((item) => item.trim()).filter(Boolean);
+                if (bullets.length === 0) return null;
 
-              return (
-                <div key={key}>
-                  <h2 className="text-xl font-semibold mt-2 mb-2">{key}</h2>
-                  <ul className="list-disc list-inside text-gray-700">
-                    {bullets.map((point, i) => (
-                      <li key={i}>{point}</li>
-                    ))}
-                  </ul>
-                </div>
-              );
-            }
+                return (
+                  <div key={key} className="bg-brand-white rounded-xl shadow-soft p-6">
+                    <h2 className="text-lg md:text-xl font-semibold text-accent mb-4">{key}</h2>
+                    <ul className="list-disc list-inside text-brand-dark space-y-1 text-sm md:text-base">
+                      {bullets.map((point, i) => (
+                        <li key={i} className="text-justify">{point}</li>
+                      ))}
+                    </ul>
+                  </div>
+                );
+              }
 
-            if (!value.trim()) return null;
-
-            return (
-              <div key={key}>
-                <h2 className="text-xl font-semibold mb-2">{key}</h2>
-                <p className="text-gray-700 whitespace-pre-line">{value}</p>
-              </div>
-            );
-          })}
-
-          <div>
-            <h2 className="text-xl font-semibold mb-2">Contact Details</h2>
-            {[1, 2].map((num) => {
-              const name = committee[`Contact ${num} Name`];
-              const phone = committee[`Contact ${num} Phone`];
-              const email = committee[`Contact ${num} Email`];
-              if (!name) return null;
+              if (!value.trim()) return null;
 
               return (
-                <div key={num} className="mb-4 text-gray-700">
-                  <p className="font-medium">{name}</p>
-                  {phone && <p>📞 {phone}</p>}
-                  {email && <p>✉️ {email}</p>}
+                <div key={key} className="bg-brand-white rounded-xl shadow-soft p-6">
+                  <h2 className="text-lg md:text-xl font-semibold text-accent mb-4">{key}</h2>
+                  <p className="text-brand-dark whitespace-pre-line text-sm md:text-base leading-relaxed text-justify">{value}</p>
                 </div>
               );
             })}
+
+            <div className="bg-brand-white rounded-xl shadow-soft p-6">
+              <h2 className="text-lg md:text-xl font-semibold text-accent mb-4">Contact Details</h2>
+              {[1, 2].map((num) => {
+                const name = committee[`Contact ${num} Name`];
+                const phone = committee[`Contact ${num} Phone`];
+                const email = committee[`Contact ${num} Email`];
+                if (!name) return null;
+
+                return (
+                  <div key={num} className="mb-4 p-4 bg-brand-light rounded-lg border-soft">
+                    <p className="font-medium text-brand-dark mb-2">{name}</p>
+                    {phone && <p className="text-brand-dark/80 text-sm md:text-base">📞 {phone}</p>}
+                    {email && <p className="text-brand-dark/80 text-sm md:text-base">✉️ {email}</p>}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
-      </div>
-    </main>
+      </main>
+    </div>
   );
 }
 
 // Skeleton
 function Skeleton() {
   return (
-    <main className="pt-16 animate-pulse">
-      <div className="h-64 bg-orange-200 w-full relative">
-        <div className="absolute inset-0 bg-black/40" />
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="h-10 w-1/2 bg-white/50 rounded" />
-        </div>
-      </div>
-      <div className="max-w-4xl mx-auto px-4 py-12 space-y-6">
-        {[...Array(3)].map((_, i) => (
-          <div key={i}>
-            <div className="h-4 w-1/3 bg-orange-100 mb-2 rounded" />
-            <div className="h-4 w-full bg-orange-50 mb-1 rounded" />
-            <div className="h-4 w-5/6 bg-orange-50 rounded" />
+    <div className="min-h-screen bg-brand-light">
+      <main className="pt-[14vh] animate-pulse">
+        <div className="h-48 sm:h-56 md:h-64 lg:h-72 bg-brand-dark/20 w-full relative">
+          <div className="absolute inset-0 bg-black/40" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="h-8 md:h-10 w-1/2 bg-white/50 rounded" />
           </div>
-        ))}
-      </div>
-    </main>
+        </div>
+        <div className="max-w-4xl mx-auto px-4 py-12 space-y-6">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="bg-brand-white rounded-xl p-6">
+              <div className="h-4 w-1/3 bg-brand-dark/10 mb-2 rounded" />
+              <div className="h-4 w-full bg-brand-dark/5 mb-1 rounded" />
+              <div className="h-4 w-5/6 bg-brand-dark/5 rounded" />
+            </div>
+          ))}
+        </div>
+      </main>
+    </div>
   );
 }

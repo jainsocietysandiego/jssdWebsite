@@ -191,232 +191,226 @@ const MembershipPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-orange-50 pt-16">
-      <section className="bg-gradient-to-r from-orange-600 to-orange-700 text-white h-48 sm:h-52 md:h-56 lg:h-60 flex items-center justify-center">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <h1 className="text-5xl font-bold">Membership Registration</h1>
-        </div>
-      </section>
-      <div className="max-w-5xl mx-auto bg-white rounded-xl shadow-xl p-8 space-y-10">
-        {/* Membership Types */}
-        <div>
-          <h2 className="text-xl font-semibold mb-4">Choose a Membership Plan</h2>
-          <div className="grid md:grid-cols-3 gap-4">
-            {membershipTypes.map(type => (
-              <label
-                key={type.id}
-                className={`p-4 rounded-lg border transition-all cursor-pointer ${
-                  selectedMembership === type.id
-                    ? 'bg-orange-50 border-orange-500'
-                    : 'border-gray-200 hover:border-orange-300'
-                } ${type.highlight ? 'bg-yellow-50 border-yellow-400' : ''}`}
-              >
-                <input
-                  type="radio"
-                  name="membershipType"
-                  className="mr-2"
-                  checked={selectedMembership === type.id}
-                  onChange={() => setSelectedMembership(type.id)}
-                />
-                <span className="font-semibold">{type.name}</span>
-                <div className="text-sm text-gray-600 mt-1">{type.description}</div>
-                <div className="text-orange-600 font-bold mt-1">${type.amount.toFixed(2)}</div>
-              </label>
-            ))}
-          </div>
-        </div>
-
-        {/* Optional 3% */}
-        <div className="bg-yellow-50 p-4 rounded border border-yellow-200">
-          <label className="flex items-start space-x-2">
-            <input
-              type="checkbox"
-              checked={addFees}
-              onChange={() => setAddFees(!addFees)}
-              className="mt-1"
-            />
-            <span className="text-red-600 font-medium">
-              We pay ~3% in fees for online payments. Consider covering that cost so 100% of your contribution supports the community.
-            </span>
-          </label>
-          <div className="text-right font-semibold mt-2 text-gray-700">
-            Total: <span className="text-red-600">${totalWithFee.toFixed(2)}</span>
-          </div>
-        </div>
-
-        {/* Personal Info Form */}
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid md:grid-cols-2 gap-4">
-            {[
-              { name: 'fullName', label: 'Full Name' },
-              { name: 'email', label: 'Email' },
-              { name: 'phone', label: 'Phone' },
-              { name: 'address', label: 'Address' },
-              { name: 'city', label: 'City' },
-              { name: 'state', label: 'State' },
-              { name: 'zipCode', label: 'ZIP Code' },
-            ].map(({ name, label }) => (
-              <div key={name}>
-                <label className="block text-sm font-medium mb-1">{label}</label>
-                <input
-                  type="text"
-                  name={name}
-                  value={(formData as any)[name]}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                />
-              </div>
-            ))}
-          </div>
-
-          {/* Family Members */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Family Members (Names & Ages)</label>
-            <textarea
-              name="familyMembers"
-              rows={3}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
-              value={formData.familyMembers}
-              onChange={handleInputChange}
-            />
-          </div>
-
-          {/* Interests */}
-          <div>
-            <label className="block text-sm font-medium mb-2">Areas of Interest</label>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              {[
-                'Religious Events', 'Community Service', 'Cultural Programs',
-                'Educational Activities', 'Pathsala Teaching', 'Event Planning',
-                'Fundraising', 'Youth Programs', 'Senior Activities', 'Wellness Programs',
-              ].map(interest => (
-                <label key={interest} className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={formData.interests.includes(interest)}
-                    onChange={() => handleInterestChange(interest)}
-                    className="mr-2"
-                  />
-                  <span>{interest}</span>
-                </label>
-              ))}
-            </div>
-          </div>
-
-          {/* Payment Method */}
-          <div>
-            <h2 className="text-xl font-semibold mb-2">Choose Payment Method</h2>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              {(['paypal', 'zelle', 'cheque', 'stock'] as PaymentMethod[]).map((method) => (
-                <button
-                  key={method}
-                  type="button"
-                  className={`border rounded-lg p-4 text-center transition ${
-                    paymentMethod === method
-                      ? 'border-orange-600 bg-orange-50'
-                      : 'border-gray-200 hover:border-orange-300'
-                  }`}
-                  onClick={() => {
-                    setPaymentMethod(method);
-                    setPaymentReference('');
-                  }}
-                >
-                  <div className="text-lg font-bold capitalize">{method}</div>
-                </button>
-              ))}
-            </div>
-
-            {/* Reference Field */}
-            {paymentMethod && (
-              <div className="mt-4">
-                {paymentMethod === 'paypal' ? (
-                  <div className="text-gray-600">No additional information needed for Paypal.</div>
-                ) : (
-                  <div>
-                    <label className="block text-sm font-medium mb-1">{getPaymentRefLabel(paymentMethod)} <span className="text-red-500">*</span></label>
-                    <input
-                      type="text"
-                      value={paymentReference}
-                      onChange={e => setPaymentReference(e.target.value)}
-                      required={paymentMethod === 'zelle' || paymentMethod === 'cheque' || paymentMethod === 'stock'}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
-                      placeholder={`Enter ${getPaymentRefLabel(paymentMethod)}`}
-                    />
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Payment method-specific info */}
-            {paymentMethod === 'paypal' && (
-              <div className="mt-4 border rounded p-4 bg-gray-50">
-                <form
-                  action="https://www.paypal.com/donate"
-                  method="post"
-                  target="_blank"
-                >
-                  <input type="hidden" name="business" value="donate@yourdomain.org" />
-                  <input type="hidden" name="currency_code" value="USD" />
-                  <input type="hidden" name="amount" value={totalWithFee.toFixed(2)} />
-                  <button className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-6 rounded">
-                    Pay with PayPal
-                  </button>
-                </form>
-              </div>
-            )}
-
-            {paymentMethod === 'zelle' && (
-              <div className="mt-4 border rounded p-4 bg-gray-50 text-center">
-                <p className="font-medium text-gray-700">Scan the Zelle QR code:</p>
-                {zelleQrUrl && (
-                  <div className="relative w-[200px] h-[200px] mx-auto mt-2">
-                    <Image
-                      src={zelleQrUrl}
-                      alt="Zelle QR"
-                      fill
-                      className="object-contain"
-                    />
-                  </div>
-                )}
-                <p className="text-sm text-gray-600 mt-2">
-                  or send to <strong>donate@yourdomain.org</strong>
-                </p>
-              </div>
-            )}
-
-            {paymentMethod === 'cheque' && (
-              <div className="mt-4 border rounded p-4 bg-gray-50">
-                <p>Mail your cheque to:</p>
-                <p className="mt-2 font-medium text-gray-700">
-                  Jain Center<br />1234 Jain Street<br />Your City, State ZIP
-                </p>
-              </div>
-            )}
-
-            {paymentMethod === 'stock' && (
-              <div className="mt-4 border rounded p-4 bg-gray-50">
-                <p>
-                  Please enter your Stock Transfer No above after completing your stock donation. For transfer instructions, contact{' '}
-                  <a href="mailto:donate@yourdomain.org" className="underline text-orange-700">donate@yourdomain.org</a>.
-                </p>
-              </div>
-            )}
-          </div>
-
-          <button
-            type="submit"
-            disabled={!canSubmit}
-            className={`w-full bg-orange-600 hover:bg-orange-700 text-white py-4 rounded font-semibold text-lg flex items-center justify-center
-              ${!canSubmit ? 'opacity-50 cursor-not-allowed' : ''}`}
-          >
-            <Heart className="h-5 w-5 mr-2" />
-            Confirm Details
-          </button>
-        </form>
+  <div className="min-h-screen bg-brand-light pt-[14vh] pb-16">
+    {/* ───── HERO ───── */}
+    <section className="relative flex items-center justify-center
+                        h-48 sm:h-56 md:h-64 lg:h-72 overflow-hidden">
+      <Image
+        src="/images/hero-banner.jpg"
+        alt="Membership Registration"
+        fill
+        priority
+        quality={85}
+        className="object-cover"
+      />
+      <div className="relative z-10 max-w-7xl mx-auto px-4 text-center">
+        <h1 className="font-bold text-brand-light text-3xl sm:text-4xl md:text-5xl
+                       drop-shadow-[0_0_10px_rgb(255_255_255_/_50%)]">
+          Membership Registration
+        </h1>
       </div>
+    </section>
+
+    <div className="max-w-5xl mx-auto bg-brand-white rounded-xl shadow-soft p-6 md:p-8 space-y-8 -mt-8 relative z-10 ">
+      {/* Membership Types */}
+      <div>
+        <h2 className="text-lg md:text-xl font-semibold text-brand-dark mb-4">Choose a Membership Plan</h2>
+        <div className="grid md:grid-cols-3 gap-4">
+          {membershipTypes.map(type => (
+            <label
+              key={type.id}
+              className={`p-4 rounded-xl border-soft transition-all cursor-pointer ${
+                selectedMembership === type.id
+                  ? 'bg-brand-light border-accent'
+                  : 'border-accent/20 hover:border-accent/40'
+              } ${type.highlight ? 'bg-yellow-50 border-yellow-400' : ''}`}
+            >
+              <input
+                type="radio"
+                name="membershipType"
+                className="mr-2 accent-accent"
+                checked={selectedMembership === type.id}
+                onChange={() => setSelectedMembership(type.id)}
+              />
+              <span className="font-semibold text-brand-dark">{type.name}</span>
+              <div className="text-sm text-brand-dark/70 mt-1 text-justify">{type.description}</div>
+              <div className="text-accent font-bold mt-1">${type.amount.toFixed(2)}</div>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {/* Optional 3% */}
+      <div className="bg-yellow-50 p-4 rounded-xl border border-yellow-200">
+        <label className="flex items-start space-x-2">
+          <input
+            type="checkbox"
+            checked={addFees}
+            onChange={() => setAddFees(!addFees)}
+            className="mt-1 accent-accent"
+          />
+          <span className="text-red-600 font-medium text-sm md:text-base text-justify">
+            We pay ~3% in fees for online payments. Consider covering that cost so 100% of your contribution supports the community.
+          </span>
+        </label>
+        <div className="text-right font-semibold mt-2 text-brand-dark">
+          Total: <span className="text-red-600">${totalWithFee.toFixed(2)}</span>
+        </div>
+      </div>
+
+      {/* Personal Info Form */}
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="grid md:grid-cols-2 gap-4">
+          {[
+            { name: 'fullName', label: 'Full Name' },
+            { name: 'email', label: 'Email' },
+            { name: 'phone', label: 'Phone' },
+            { name: 'address', label: 'Address' },
+            { name: 'city', label: 'City' },
+            { name: 'state', label: 'State' },
+            { name: 'zipCode', label: 'ZIP Code' },
+          ].map(({ name, label }) => (
+            <div key={name}>
+              <label className="block text-sm font-medium mb-1 text-brand-dark">{label}</label>
+              <input
+                type="text"
+                name={name}
+                value={(formData as any)[name]}
+                onChange={handleInputChange}
+                required
+                className="w-full px-4 py-3 border-soft rounded-xl text-sm md:text-base text-brand-dark  focus:ring-2 focus:ring-accent/20 focus:border-accent focus:outline-none transition-all duration-300"
+              />
+            </div>
+          ))}
+        </div>
+
+        {/* Family Members */}
+        <div>
+          <label className="block text-sm font-medium mb-1 text-brand-dark">Family Members (Names & Ages)</label>
+          <textarea
+            name="familyMembers"
+            rows={3}
+            className="w-full px-4 py-3 border-soft rounded-xl text-sm md:text-base text-brand-dark  focus:ring-2 focus:ring-accent/20 focus:border-accent focus:outline-none transition-all duration-300 resize-none"
+            value={formData.familyMembers}
+            onChange={handleInputChange}
+          />
+        </div>
+
+        {/* Payment Method */}
+        <div>
+          <h2 className="text-lg md:text-xl font-semibold mb-4 text-brand-dark">Choose Payment Method</h2>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {(['paypal', 'zelle', 'cheque', 'stock'] as PaymentMethod[]).map((method) => (
+              <button
+                key={method}
+                type="button"
+                className={`border-soft rounded-xl p-4 text-center transition-all ${
+                  paymentMethod === method
+                    ? 'border-accent bg-brand-light'
+                    : 'border-accent/20 hover:border-accent/40'
+                }`}
+                onClick={() => {
+                  setPaymentMethod(method);
+                  setPaymentReference('');
+                }}
+              >
+                <div className="text-sm md:text-base font-bold capitalize text-brand-dark">{method}</div>
+              </button>
+            ))}
+          </div>
+
+          {/* Reference Field */}
+          {paymentMethod && (
+            <div className="mt-4">
+              {paymentMethod === 'paypal' ? (
+                <div className="text-brand-dark/70 text-sm md:text-base">No additional information needed for Paypal.</div>
+              ) : (
+                <div>
+                  <label className="block text-sm font-medium mb-1 text-brand-dark">
+                    {getPaymentRefLabel(paymentMethod)} <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={paymentReference}
+                    onChange={e => setPaymentReference(e.target.value)}
+                    required={paymentMethod === 'zelle' || paymentMethod === 'cheque' || paymentMethod === 'stock'}
+                    className="w-full px-4 py-3 border-soft rounded-xl text-sm md:text-base text-brand-dark bg-brand-light focus:ring-2 focus:ring-accent/20 focus:border-accent focus:outline-none transition-all duration-300"
+                    placeholder={`Enter ${getPaymentRefLabel(paymentMethod)}`}
+                  />
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Payment method-specific info */}
+          {paymentMethod === 'paypal' && (
+            <div className="mt-4 border-soft rounded-xl p-4 bg-brand-light">
+              <form
+                action="https://www.paypal.com/donate"
+                method="post"
+                target="_blank"
+              >
+                <input type="hidden" name="business" value="donate@yourdomain.org" />
+                <input type="hidden" name="currency_code" value="USD" />
+                <input type="hidden" name="amount" value={totalWithFee.toFixed(2)} />
+                <button className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-6 rounded-xl transition-colors">
+                  Pay with PayPal
+                </button>
+              </form>
+            </div>
+          )}
+
+          {paymentMethod === 'zelle' && (
+            <div className="mt-4 border-soft rounded-xl p-4 bg-brand-light text-center">
+              <p className="font-medium text-brand-dark">Scan the Zelle QR code:</p>
+              {zelleQrUrl && (
+                <div className="relative w-[200px] h-[200px] mx-auto mt-2">
+                  <Image
+                    src={zelleQrUrl}
+                    alt="Zelle QR"
+                    fill
+                    className="object-contain"
+                  />
+                </div>
+              )}
+              <p className="text-sm text-brand-dark/70 mt-2">
+                or send to <strong>donate@yourdomain.org</strong>
+              </p>
+            </div>
+          )}
+
+          {paymentMethod === 'cheque' && (
+            <div className="mt-4 border-soft rounded-xl p-4 bg-brand-light">
+              <p className="text-brand-dark mb-2">Mail your cheque to:</p>
+              <p className="mt-2 font-medium text-brand-dark">
+                Jain Center<br />1234 Jain Street<br />Your City, State ZIP
+              </p>
+            </div>
+          )}
+
+          {paymentMethod === 'stock' && (
+            <div className="mt-4 border-soft rounded-xl p-4 bg-brand-light">
+              <p className="text-brand-dark text-justify">
+                Please enter your Stock Transfer No above after completing your stock donation. For transfer instructions, contact{' '}
+                <a href="mailto:donate@yourdomain.org" className="underline text-accent">donate@yourdomain.org</a>.
+              </p>
+            </div>
+          )}
+        </div>
+
+        <button
+          type="submit"
+          disabled={!canSubmit}
+          className={`w-full btn-primary text-lg py-4 flex items-center justify-center
+            ${!canSubmit ? 'opacity-50 cursor-not-allowed' : ''}`}
+        >
+          <Heart className="h-5 w-5 mr-2" />
+          Confirm Details
+        </button>
+      </form>
     </div>
-  );
-};
+  </div>
+);
+}
 
 export default MembershipPage;

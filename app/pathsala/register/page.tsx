@@ -194,218 +194,309 @@ const PathshalaRegister: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-orange-50 p-6 md:p-12">
-      <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-xl p-8 space-y-10">
-        <h1 className="text-3xl font-bold text-orange-700 text-center">Pathshala Registration</h1>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Student Info */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Student Name <span className="text-red-500">*</span></label>
-              <input type="text" name="studentName" value={formData.studentName}
-                onChange={handleInputChange}
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Student Age</label>
-              <input type="text" name="studentAge" value={formData.studentAge}
-                onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg" />
-            </div>
-          </div>
-          {/* Father & Mother Info (no required except validation for at least one) */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Father's Name</label>
-              <input type="text" name="fatherName" value={formData.fatherName}
-                onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Father's Email</label>
-              <input type="email" name="fatherEmail" value={formData.fatherEmail}
-                onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Father's Phone</label>
-              <input type="tel" name="fatherPhone" value={formData.fatherPhone}
-                onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Mother's Name</label>
-              <input type="text" name="motherName" value={formData.motherName}
-                onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Mother's Email</label>
-              <input type="email" name="motherEmail" value={formData.motherEmail}
-                onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Mother's Phone</label>
-              <input type="tel" name="motherPhone" value={formData.motherPhone}
-                onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg" />
-            </div>
-          </div>
-          {/* Address */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Address</label>
-              <input type="text" name="address" value={formData.address}
-                onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">City</label>
-              <input type="text" name="city" value={formData.city}
-                onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">State</label>
-              <input type="text" name="state" value={formData.state}
-                onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">ZIP Code</label>
-              <input type="text" name="zipCode" value={formData.zipCode}
-                onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg" />
-            </div>
-          </div>
-          {/* Level Selection */}
-          <div>
-            <label className="block text-lg font-semibold mb-2">Select Pathshala Level <span className="text-red-500">*</span></label>
-            <select
-              className="w-full border px-4 py-2 rounded-lg"
-              value={selectedLevel}
-              onChange={e => setSelectedLevel(e.target.value)}
-              required
-            >
-              <option value="">-- Select a Level --</option>
-              {levels.map(lvl => (
-                <option key={lvl.Level} value={lvl.Level}>{lvl.Level}</option>
-              ))}
-            </select>
-            {selectedPlan && (
-              <div className="mt-2 text-sm text-gray-700 bg-gray-50 p-3 rounded border">
-                <b>Description:</b> {selectedPlan.Description || '-'}<br />
-                <b>Fee:</b> ${selectedPlan.Fees}
-              </div>
-            )}
-          </div>
-          {/* 3% Fee Option + Total */}
-          <div className="bg-yellow-50 p-4 rounded border border-yellow-200">
-            <label className="flex items-start space-x-2">
-              <input
-                type="checkbox"
-                checked={addFees}
-                onChange={() => setAddFees(!addFees)}
-                className="mt-1"
-              />
-              <span className="text-red-600 font-medium">
-                We pay ~3% in fees for online payments. Consider covering that cost so 100% of your contribution supports the community.
-              </span>
-            </label>
-            <div className="text-right font-semibold mt-2 text-gray-700">
-              Total: <span className="text-red-600">${totalWithFee.toFixed(2)}</span>
-            </div>
-          </div>
-          {/* Payment Method + Reference */}
-          <div>
-            <h2 className="text-xl font-semibold mb-2">Choose Payment Method <span className="text-red-500">*</span></h2>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              {['paypal', 'zelle', 'cheque', 'stock'].map((method) => (
-                <button
-                  key={method}
-                  type="button"
-                  className={`border rounded-lg p-4 text-center transition ${paymentMethod === method ? 'border-orange-600 bg-orange-50' : 'border-gray-200 hover:border-orange-300'}`}
-                  onClick={() => {
-                    setPaymentMethod(method as PaymentMethod);
-                    setPaymentReference('');
-                  }}>
-                  <div className="text-lg font-bold capitalize">{method}</div>
-                </button>
-              ))}
-            </div>
-            {paymentMethod && paymentMethod !== 'paypal' && (
-              <div className="mt-4">
-                <label className="block text-sm font-medium mb-1">
-                  {getPaymentRefLabel(paymentMethod)} <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={paymentReference}
-                  onChange={e => setPaymentReference(e.target.value)}
-                  required={paymentMethod === 'zelle' || paymentMethod === 'cheque' || paymentMethod === 'stock'}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
-                  placeholder={`Enter ${getPaymentRefLabel(paymentMethod)}`}
-                />
-              </div>
-            )}
-            {/* Payment details */}
-            {paymentMethod === 'zelle' && (
-              <div className="mt-4 border rounded p-4 bg-gray-50 text-center">
-                <p className="font-medium text-gray-700">Scan the Zelle QR code:</p>
-                {zelleQrUrl && (
-                  <div className="relative w-[200px] h-[200px] mx-auto mt-2">
-                    <Image src={zelleQrUrl} alt="Zelle QR" fill className="object-contain" />
-                  </div>
-                )}
-                <p className="text-sm text-gray-600 mt-2">
-                  or send to <strong>donate@yourdomain.org</strong>
-                </p>
-              </div>
-            )}
-            {paymentMethod === 'paypal' && (
-              <div className="mt-4 border rounded p-4 bg-gray-50">
-                <form action="https://www.sandbox.paypal.com/donate"
-                  method="post" target="_blank">
-                  <input type="hidden" name="business" value="your-paypal-email@example.com" />
-                  <input type="hidden" name="currency_code" value="USD" />
-                  <input type="hidden" name="amount" value={totalWithFee.toFixed(2)} />
-                  <button className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-6 rounded">
-                    Pay with PayPal
-                  </button>
-                </form>
-              </div>
-            )}
-            {paymentMethod === 'cheque' && (
-              <div className="mt-4 border rounded p-4 bg-gray-50">
-                <p>Mail your cheque to:</p>
-                <p className="mt-2 font-medium text-gray-700">
-                  Jain Center<br />1234 Jain Street<br />Your City, State ZIP
-                </p>
-              </div>
-            )}
-            {paymentMethod === 'stock' && (
-              <div className="mt-4 border rounded p-4 bg-gray-50">
-                <p>
-                  Please enter your Stock Transfer No above after completing your stock donation. For transfer instructions, contact <a href="mailto:donate@yourdomain.org" className="underline text-orange-700">donate@yourdomain.org</a>.
-                </p>
-              </div>
-            )}
-          </div>
-          <button
-            type="submit"
-            disabled={!canSubmit}
-            className={`w-full bg-orange-600 hover:bg-orange-700 text-white py-4 rounded font-semibold text-lg flex items-center justify-center mt-6
-              ${!canSubmit ? 'opacity-50 cursor-not-allowed' : ''}`}
-          >
-            <Heart className="h-5 w-5 mr-2" />
-            Submit Pathshala Registration
-          </button>
-        </form>
+  <div className="min-h-screen bg-brand-light pt-[14vh] pb-16">
+    {/* ───── HERO ───── */}
+    <section className="relative flex items-center justify-center
+                        h-48 sm:h-56 md:h-64 lg:h-72 overflow-hidden">
+      <Image
+        src="/images/hero-banner.jpg"
+        alt="Pathshala Registration"
+        fill
+        priority
+        quality={85}
+        className="object-cover"
+      />
+      
+      <div className="relative z-10 max-w-7xl mx-auto px-4 text-center">
+        <h1 className="font-bold text-brand-light text-3xl sm:text-4xl md:text-5xl
+                       drop-shadow-[0_0_10px_rgb(255_255_255_/_50%)]">
+          Pathshala Registration
+        </h1>
       </div>
+    </section>
+
+    <div className="max-w-5xl mx-auto bg-brand-white rounded-xl shadow-soft p-6 md:p-8 space-y-8 -mt-8 relative z-10">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Student Info */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium mb-1 text-brand-dark">
+              Student Name <span className="text-red-500">*</span>
+            </label>
+            <input 
+              type="text" 
+              name="studentName" 
+              value={formData.studentName}
+              onChange={handleInputChange}
+              required
+              className="w-full px-4 py-3 border-soft rounded-xl text-sm md:text-base text-brand-dark focus:ring-2 focus:ring-accent/20 focus:border-accent focus:outline-none transition-all duration-300" 
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1 text-brand-dark">Student Age</label>
+            <input 
+              type="text" 
+              name="studentAge" 
+              value={formData.studentAge}
+              onChange={handleInputChange}
+              className="w-full px-4 py-3 border-soft rounded-xl text-sm md:text-base text-brand-dark focus:ring-2 focus:ring-accent/20 focus:border-accent focus:outline-none transition-all duration-300" 
+            />
+          </div>
+        </div>
+
+        {/* Father & Mother Info */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium mb-1 text-brand-dark">Father's Name</label>
+            <input 
+              type="text" 
+              name="fatherName" 
+              value={formData.fatherName}
+              onChange={handleInputChange}
+              className="w-full px-4 py-3 border-soft rounded-xl text-sm md:text-base text-brand-dark  focus:ring-2 focus:ring-accent/20 focus:border-accent focus:outline-none transition-all duration-300" 
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1 text-brand-dark">Father's Email</label>
+            <input 
+              type="email" 
+              name="fatherEmail" 
+              value={formData.fatherEmail}
+              onChange={handleInputChange}
+              className="w-full px-4 py-3 border-soft rounded-xl text-sm md:text-base text-brand-dark  focus:ring-2 focus:ring-accent/20 focus:border-accent focus:outline-none transition-all duration-300" 
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1 text-brand-dark">Father's Phone</label>
+            <input 
+              type="tel" 
+              name="fatherPhone" 
+              value={formData.fatherPhone}
+              onChange={handleInputChange}
+              className="w-full px-4 py-3 border-soft rounded-xl text-sm md:text-base text-brand-dark  focus:ring-2 focus:ring-accent/20 focus:border-accent focus:outline-none transition-all duration-300" 
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1 text-brand-dark">Mother's Name</label>
+            <input 
+              type="text" 
+              name="motherName" 
+              value={formData.motherName}
+              onChange={handleInputChange}
+              className="w-full px-4 py-3 border-soft rounded-xl text-sm md:text-base text-brand-dark  focus:ring-2 focus:ring-accent/20 focus:border-accent focus:outline-none transition-all duration-300" 
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1 text-brand-dark">Mother's Email</label>
+            <input 
+              type="email" 
+              name="motherEmail" 
+              value={formData.motherEmail}
+              onChange={handleInputChange}
+              className="w-full px-4 py-3 border-soft rounded-xl text-sm md:text-base text-brand-dark  focus:ring-2 focus:ring-accent/20 focus:border-accent focus:outline-none transition-all duration-300" 
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1 text-brand-dark">Mother's Phone</label>
+            <input 
+              type="tel" 
+              name="motherPhone" 
+              value={formData.motherPhone}
+              onChange={handleInputChange}
+              className="w-full px-4 py-3 border-soft rounded-xl text-sm md:text-base text-brand-dark  focus:ring-2 focus:ring-accent/20 focus:border-accent focus:outline-none transition-all duration-300" 
+            />
+          </div>
+        </div>
+
+        {/* Address */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium mb-1 text-brand-dark">Address</label>
+            <input 
+              type="text" 
+              name="address" 
+              value={formData.address}
+              onChange={handleInputChange}
+              className="w-full px-4 py-3 border-soft rounded-xl text-sm md:text-base text-brand-dark  focus:ring-2 focus:ring-accent/20 focus:border-accent focus:outline-none transition-all duration-300" 
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1 text-brand-dark">City</label>
+            <input 
+              type="text" 
+              name="city" 
+              value={formData.city}
+              onChange={handleInputChange}
+              className="w-full px-4 py-3 border-soft rounded-xl text-sm md:text-base text-brand-dark  focus:ring-2 focus:ring-accent/20 focus:border-accent focus:outline-none transition-all duration-300" 
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1 text-brand-dark">State</label>
+            <input 
+              type="text" 
+              name="state" 
+              value={formData.state}
+              onChange={handleInputChange}
+              className="w-full px-4 py-3 border-soft rounded-xl text-sm md:text-base text-brand-dark  focus:ring-2 focus:ring-accent/20 focus:border-accent focus:outline-none transition-all duration-300" 
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1 text-brand-dark">ZIP Code</label>
+            <input 
+              type="text" 
+              name="zipCode" 
+              value={formData.zipCode}
+              onChange={handleInputChange}
+              className="w-full px-4 py-3 border-soft rounded-xl text-sm md:text-base text-brand-dark  focus:ring-2 focus:ring-accent/20 focus:border-accent focus:outline-none transition-all duration-300" 
+            />
+          </div>
+        </div>
+
+        {/* Level Selection */}
+        <div>
+          <label className="block text-lg font-semibold mb-2 text-brand-dark">
+            Select Pathshala Level <span className="text-red-500">*</span>
+          </label>
+          <select
+            className="w-full border-soft px-4 py-3 rounded-xl text-sm md:text-base text-brand-dark  focus:ring-2 focus:ring-accent/20 focus:border-accent focus:outline-none transition-all duration-300"
+            value={selectedLevel}
+            onChange={e => setSelectedLevel(e.target.value)}
+            required
+          >
+            <option value="">-- Select a Level --</option>
+            {levels.map(lvl => (
+              <option key={lvl.Level} value={lvl.Level}>{lvl.Level}</option>
+            ))}
+          </select>
+          {selectedPlan && (
+            <div className="mt-2 text-sm text-brand-dark bg-brand-light p-3 rounded-xl border-soft">
+              <b>Description:</b> {selectedPlan.Description || '-'}<br />
+              <b>Fee:</b> ${selectedPlan.Fees}
+            </div>
+          )}
+        </div>
+
+        {/* 3% Fee Option + Total */}
+        <div className="bg-yellow-50 p-4 rounded-xl border border-yellow-200">
+          <label className="flex items-start space-x-2">
+            <input
+              type="checkbox"
+              checked={addFees}
+              onChange={() => setAddFees(!addFees)}
+              className="mt-1 accent-accent"
+            />
+            <span className="text-red-600 font-medium text-sm md:text-base text-justify">
+              We pay ~3% in fees for online payments. Consider covering that cost so 100% of your contribution supports the community.
+            </span>
+          </label>
+          <div className="text-right font-semibold mt-2 text-brand-dark">
+            Total: <span className="text-red-600">${totalWithFee.toFixed(2)}</span>
+          </div>
+        </div>
+
+        {/* Payment Method + Reference */}
+        <div>
+          <h2 className="text-lg md:text-xl font-semibold mb-4 text-brand-dark">
+            Choose Payment Method <span className="text-red-500">*</span>
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {['paypal', 'zelle', 'cheque', 'stock'].map((method) => (
+              <button
+                key={method}
+                type="button"
+                className={`border-soft rounded-xl p-4 text-center transition-all ${
+                  paymentMethod === method 
+                    ? 'border-accent bg-brand-light' 
+                    : 'border-accent/20 hover:border-accent/40'
+                }`}
+                onClick={() => {
+                  setPaymentMethod(method as PaymentMethod);
+                  setPaymentReference('');
+                }}
+              >
+                <div className="text-sm md:text-base font-bold capitalize text-brand-dark">{method}</div>
+              </button>
+            ))}
+          </div>
+
+          {paymentMethod && paymentMethod !== 'paypal' && (
+            <div className="mt-4">
+              <label className="block text-sm font-medium mb-1 text-brand-dark">
+                {getPaymentRefLabel(paymentMethod)} <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                value={paymentReference}
+                onChange={e => setPaymentReference(e.target.value)}
+                required={paymentMethod === 'zelle' || paymentMethod === 'cheque' || paymentMethod === 'stock'}
+                className="w-full px-4 py-3 border-soft rounded-xl text-sm md:text-base text-brand-dark bg-brand-light focus:ring-2 focus:ring-accent/20 focus:border-accent focus:outline-none transition-all duration-300"
+                placeholder={`Enter ${getPaymentRefLabel(paymentMethod)}`}
+              />
+            </div>
+          )}
+
+          {/* Payment details */}
+          {paymentMethod === 'zelle' && (
+            <div className="mt-4 border-soft rounded-xl p-4 bg-brand-light text-center">
+              <p className="font-medium text-brand-dark">Scan the Zelle QR code:</p>
+              {zelleQrUrl && (
+                <div className="relative w-[200px] h-[200px] mx-auto mt-2">
+                  <Image src={zelleQrUrl} alt="Zelle QR" fill className="object-contain" />
+                </div>
+              )}
+              <p className="text-sm text-brand-dark/70 mt-2">
+                or send to <strong>donate@yourdomain.org</strong>
+              </p>
+            </div>
+          )}
+
+          {paymentMethod === 'paypal' && (
+            <div className="mt-4 border-soft rounded-xl p-4 bg-brand-light">
+              <form action="https://www.sandbox.paypal.com/donate"
+                method="post" target="_blank">
+                <input type="hidden" name="business" value="your-paypal-email@example.com" />
+                <input type="hidden" name="currency_code" value="USD" />
+                <input type="hidden" name="amount" value={totalWithFee.toFixed(2)} />
+                <button className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-6 rounded-xl transition-colors">
+                  Pay with PayPal
+                </button>
+              </form>
+            </div>
+          )}
+
+          {paymentMethod === 'cheque' && (
+            <div className="mt-4 border-soft rounded-xl p-4 bg-brand-light">
+              <p className="text-brand-dark mb-2">Mail your cheque to:</p>
+              <p className="mt-2 font-medium text-brand-dark">
+                Jain Center<br />1234 Jain Street<br />Your City, State ZIP
+              </p>
+            </div>
+          )}
+
+          {paymentMethod === 'stock' && (
+            <div className="mt-4 border-soft rounded-xl p-4 bg-brand-light">
+              <p className="text-brand-dark text-justify">
+                Please enter your Stock Transfer No above after completing your stock donation. For transfer instructions, contact{' '}
+                <a href="mailto:donate@yourdomain.org" className="underline text-accent">donate@yourdomain.org</a>.
+              </p>
+            </div>
+          )}
+        </div>
+
+        <button
+          type="submit"
+          disabled={!canSubmit}
+          className={`w-full btn-primary text-lg py-4 flex items-center justify-center mt-6
+            ${!canSubmit ? 'opacity-50 cursor-not-allowed' : ''}`}
+        >
+          <Heart className="h-5 w-5 mr-2" />
+          Submit Pathshala Registration
+        </button>
+      </form>
     </div>
-  );
+  </div>
+);
+
 };
 
 export default PathshalaRegister;

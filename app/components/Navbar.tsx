@@ -164,12 +164,12 @@ const Navbar: React.FC = () => {
   const navItems = [
     { name: 'Home', path: '/' },
     { name: 'About', path: '/about', hasDropdown: true },
-    { name: 'Pathshala', path: '/pathsala', hasDropdown: true },
-    { name: 'Donate', path: '/contribute' },
-    { name: 'Events', path: '/events' },
-    { name: 'Gallery', path: '/gallery' },
+    { name: 'Pathshala', path: '/pathsala', hasDropdown: true },    
+    { name: 'Events', path: '/events', hasDropdown: true },
     { name: 'Membership', path: '/membership', hasDropdown: true },
-    { name: 'Groups', path: '', hasDropdown: true },
+    { name: 'Groups', path: '', hasDropdown: true },    
+    { name: 'Donate', path: '/contribute' },
+    { name: 'Gallery', path: '/gallery' },
     { name: 'Jinalay', path: '/jinalay' },
   ];
 
@@ -183,6 +183,11 @@ const Navbar: React.FC = () => {
     { name: 'History', path: '/about/history' },
     { name: 'JSSD Policies', path: '/about/policies' },
     { name: 'EC & BOD', path: '/about/bod' },
+  ];
+
+  const EventsOptions = [
+    { name: 'Events', path: '/events' },
+    { name: 'Panchang', path: '/events/panchang' },
   ];
 
   const getDropdownItems = (itemName: string) => {
@@ -202,6 +207,7 @@ const Navbar: React.FC = () => {
       }));
     }
     if (itemName === 'Membership') return membershipOptions;
+    if (itemName === 'Events') return EventsOptions;
     if (itemName === 'About') return aboutUsOptions;
     return [];
   };
@@ -237,13 +243,13 @@ const Navbar: React.FC = () => {
             />
           </Link>
 
-          {/* Desktop Nav - Moved to extreme right */}
+          {/* Desktop Nav - Improved spacing */}
           <div className="hidden md:flex flex-1 justify-end">
-            <div className="flex items-baseline space-x-8">
-              {navItems.map((item) => (
+            <div className="flex items-baseline">
+              {navItems.map((item, index) => (
                 <div
                   key={item.name}
-                  className="relative"
+                  className={` relative ${index > 0 ? 'ml-4' : ''}`}
                   onMouseEnter={() => item.hasDropdown && handleMouseEnter(item.name)}
                   onMouseLeave={() => item.hasDropdown && handleMouseLeave()}
                 >
@@ -252,7 +258,7 @@ const Navbar: React.FC = () => {
                       {item.path ? (
                         <Link
                           href={item.path}
-                          className={`flex items-center px-3 py-2 text-base font-medium transition-colors ${
+                          className={`inline-flex items-center px-3 py-2 text-base font-medium transition-colors whitespace-nowrap ${
                             pathname === item.path
                               ? "text-orange-600 border-b-2 border-orange-600"
                               : "text-gray-700 hover:text-orange-600"
@@ -262,7 +268,7 @@ const Navbar: React.FC = () => {
                           <ChevronDown className="ml-1 h-4 w-4" />
                         </Link>
                       ) : (
-                        <span className="flex items-center px-3 py-2 text-base font-medium text-gray-700 hover:text-orange-600 cursor-pointer">
+                        <span className="inline-flex items-center px-3 py-2 text-base font-medium text-gray-700 hover:text-orange-600 cursor-pointer whitespace-nowrap">
                           {item.name}
                           <ChevronDown className="ml-1 h-4 w-4" />
                         </span>
@@ -286,7 +292,7 @@ const Navbar: React.FC = () => {
                   ) : (
                     <Link
                       href={item.path}
-                      className={`px-3 py-2 text-base font-medium transition-colors ${
+                      className={`inline-block px-3 py-2 text-base font-medium transition-colors whitespace-nowrap ${
                         pathname === item.path
                           ? "text-orange-600 border-b-2 border-orange-600"
                           : "text-gray-700 hover:text-orange-600"

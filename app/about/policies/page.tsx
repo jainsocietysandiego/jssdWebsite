@@ -130,7 +130,7 @@ const PoliciesPage: React.FC = () => {
       <section className="relative flex items-center justify-center
                           h-64 sm:h-72 md:h-80 lg:h-96 xl:h-[28rem] overflow-hidden">
         <Image
-          src="/images/hero-banner.jpg"
+          src="/images/hero-banner.png"
           alt="Hero banner background"
           fill
           priority
@@ -141,7 +141,7 @@ const PoliciesPage: React.FC = () => {
         <div className="relative z-10 px-4 text-center">
           <h1 className="font-bold text-brand-light
                          text-3xl sm:text-4xl md:text-5xl lg:text-6xl
-                         drop-shadow-[0_0_10px_rgb(255_255_255_/_50%)]
+                         
                          [text-shadow:_0_0_10px_rgb(255_255_255_/_40%),_0_0_25px_rgb(255_255_255_/_25%)]">
             {data.heading}
           </h1>

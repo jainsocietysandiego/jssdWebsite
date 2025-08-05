@@ -306,9 +306,9 @@ return (
   <div className="min-h-screen bg-brand-light pt-[14vh] pb-10">
     {/* ───── HERO ───── */}
     <section className="relative flex items-center justify-center
-                        h-48 sm:h-56 md:h-64 lg:h-72 overflow-hidden">
+                        h-40 sm:h-48 md:h-56 lg:h-60 overflow-hidden">
       <Image
-        src="/images/hero-banner.jpg"
+        src="/images/hero-banner.png"
         alt="Make a Donation"
         fill
         priority
@@ -317,7 +317,7 @@ return (
       />
       <div className="relative z-10 max-w-7xl mx-auto px-4 text-center">
         <h1 className="font-bold text-brand-light text-3xl sm:text-4xl md:text-5xl
-                       drop-shadow-[0_0_10px_rgb(255_255_255_/_50%)]">
+                       ">
           Make a Donation
         </h1>
       </div>

@@ -102,10 +102,10 @@ export default function CommitteePage() {
     <div className="min-h-screen bg-brand-light">
       <main className="pt-[14vh]">
         <div className="pb-12">
-          <div className="relative h-48 sm:h-56 md:h-64 lg:h-72 w-full overflow-hidden">
+          <div className="relative h-40 sm:h-48 md:h-56 lg:h-60 w-full overflow-hidden">
             <img src={imageUrl} alt={title} className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/60" />
-            <h1 className="absolute inset-0 z-10 flex items-center justify-center text-brand-light text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold drop-shadow-[0_0_10px_rgb(255_255_255_/_50%)] px-4 text-center">
+            <h1 className="absolute inset-0 z-10 flex items-center justify-center text-brand-light text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold  px-4 text-center">
               {title}
             </h1>
           </div>
@@ -176,7 +176,7 @@ function Skeleton() {
   return (
     <div className="min-h-screen bg-brand-light">
       <main className="pt-[14vh] animate-pulse">
-        <div className="h-48 sm:h-56 md:h-64 lg:h-72 bg-brand-dark/20 w-full relative">
+        <div className="h-40 sm:h-48 md:h-56 lg:h-60 bg-brand-dark/20 w-full relative">
           <div className="absolute inset-0 bg-black/40" />
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="h-8 md:h-10 w-1/2 bg-white/50 rounded" />

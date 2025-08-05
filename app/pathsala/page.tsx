@@ -246,9 +246,9 @@ const Pathsala: React.FC = () => {
         <div className="pt-[14vh]">
           {/* Hero Section */}
           <section className="relative flex items-center justify-center
-                              h-48 sm:h-56 md:h-64 lg:h-72 overflow-hidden">
+                              h-40 sm:h-48 md:h-56 lg:h-60 overflow-hidden">
             <Image
-              src="/images/hero-banner.jpg"
+              src="/images/hero-banner.png"
               alt="Pathshala Program"
               fill
               priority
@@ -257,7 +257,7 @@ const Pathsala: React.FC = () => {
             />
             <div className="relative z-10 text-center px-4">
               <h1 className="font-bold text-brand-light text-3xl sm:text-4xl md:text-5xl
-                             drop-shadow-[0_0_10px_rgb(255_255_255_/_50%)]">
+                             ">
                 Pathshala Program
               </h1>
               <p className="mt-2 max-w-3xl mx-auto text-white text-sm sm:text-base md:text-lg text-center">

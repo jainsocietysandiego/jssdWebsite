@@ -90,9 +90,9 @@ const AboutPage: React.FC = () => {
       <main className="pt-[14vh]">
 
         <section className="relative flex items-center justify-center
-                            h-64 sm:h-72 md:h-80 lg:h-96 xl:h-[28rem] overflow-hidden">
+                            h-40 sm:h-48 md:h-56 lg:h-60 overflow-hidden">
           <Image
-            src="/images/hero-banner.jpg"
+            src="/images/hero-banner.png"
             alt="Hero banner background"
             fill
             priority
@@ -101,8 +101,7 @@ const AboutPage: React.FC = () => {
           />
           <h1 className="relative z-10 px-4 text-center font-bold text-brand-light
                          text-3xl sm:text-4xl md:text-5xl lg:text-6xl
-                         drop-shadow-[0_0_10px_rgb(255_255_255_/_50%)]
-                         [text-shadow:_0_0_10px_rgb(255_255_255_/_40%),_0_0_25px_rgb(255_255_255_/_25%)]">
+                         ">
             {getContent('hero', 'Title')}
           </h1>
         </section>

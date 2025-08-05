@@ -72,7 +72,7 @@ const Membership = () => {
         <section className="relative flex items-center justify-center
                             h-56 sm:h-64 md:h-72 lg:h-80 overflow-hidden">
           <Image
-            src="/images/hero-banner.jpg"
+            src="/images/hero-banner.png"
             alt="Membership hero"
             fill
             priority
@@ -83,7 +83,7 @@ const Membership = () => {
           <div className="relative z-10 text-center px-4">
             <h1 className="font-bold text-brand-light
                            text-3xl sm:text-4xl md:text-5xl mb-4
-                           drop-shadow-[0_0_10px_rgb(255_255_255_/_50%)]
+                           
                            [text-shadow:_0_0_10px_rgb(255_255_255_/_50%),_0_0_20px_rgb(255_255_255_/_30%),_0_0_40px_rgb(255_255_255_/_20%)]">
             Become a Member
             </h1>

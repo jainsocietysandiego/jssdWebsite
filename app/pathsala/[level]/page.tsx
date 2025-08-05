@@ -90,9 +90,9 @@ return (
   <div className="min-h-screen bg-brand-light pt-[14vh]">
     {/* ───── HERO ───── */}
     <section className="relative flex items-center justify-center
-                        h-48 sm:h-56 md:h-64 lg:h-72 overflow-hidden">
+                        h-40 sm:h-48 md:h-56 lg:h-60 overflow-hidden">
       <Image
-        src="/images/hero-banner.jpg"
+        src="/images/hero-banner.png"
         alt="Pathshala Hero"
         fill
         priority
@@ -101,7 +101,7 @@ return (
       />
       <div className="relative z-10 text-center px-4">
           <h1 className="font-bold text-brand-light text-3xl sm:text-4xl md:text-5xl
-                         drop-shadow-[0_0_10px_rgb(255_255_255_/_50%)]">
+                         ">
             Pathshala Level {data.Level}
           </h1>
           <h2 className="mt-3 text-white text-lg sm:text-xl md:text-2xl max-w-4xl mx-auto">

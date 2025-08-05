@@ -136,17 +136,18 @@ const HistoryPage: React.FC = () => {
     <main className="pt-[14vh]">
 
       <section className="relative flex items-center justify-center
-                          h-48 sm:h-56 md:h-64 lg:h-72 overflow-hidden">
+                          h-40 sm:h-48 md:h-56 lg:h-60 overflow-hidden">
         <Image
-          src="/images/hero-banner.jpg"          // keep this banner everywhere
+          src="/images/hero-banner.png"          // keep this banner everywhere
           alt="History banner background"
           fill
           priority
           quality={85}
           className="object-cover"
         />
+        {/* <div className="absolute inset-0 z-0 bg-black/20 " /> */}
         <h1 className="relative z-10 font-bold text-brand-light
-                       text-3xl sm:text-4xl md:text-5xl drop-shadow-[0_0_10px_rgb(255_255_255_/_50%)]">
+                       text-3xl sm:text-4xl md:text-5xl ">
           {getContent('banner','Title') || 'Our History'}
         </h1>
       </section>

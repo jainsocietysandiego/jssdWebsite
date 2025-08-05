@@ -303,7 +303,7 @@ const DonatePage: React.FC = () => {
 
   // ---- MAIN FORM UI
 return (
-  <div className="min-h-screen bg-brand-light pt-[14vh] pb-10">
+  <div className="min-h-screen bg-white pt-[14vh] pb-10">
     {/* ───── HERO ───── */}
     <section className="relative flex items-center justify-center
                         h-40 sm:h-48 md:h-56 lg:h-60 overflow-hidden">
@@ -323,7 +323,7 @@ return (
       </div>
     </section>
 
-    <div className="max-w-5xl mx-auto bg-brand-white rounded-xl shadow-soft p-6 md:p-8 space-y-8  -mt-12 relative z-10">
+    <div className="max-w-5xl mx-auto bg-brand-white rounded-xl shadow-xl p-6 md:p-8 space-y-8 border-4 border-[#FFF7ED] sm:mt-10 relative z-10">
       {/* Categories */}
       <div>
         <h2 className="text-lg md:text-xl font-semibold text-brand-dark mb-4">

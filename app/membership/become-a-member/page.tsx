@@ -191,7 +191,7 @@ const MembershipPage: React.FC = () => {
   }
 
   return (
-  <div className="min-h-screen bg-brand-light pt-[14vh] pb-16">
+  <div className="min-h-screen bg-white pt-[14vh] pb-10">
     {/* ───── HERO ───── */}
     <section className="relative flex items-center justify-center
                         h-40 sm:h-48 md:h-56 lg:h-60 overflow-hidden">
@@ -211,8 +211,8 @@ const MembershipPage: React.FC = () => {
       </div>
     </section>
 
-    <div className="max-w-5xl mx-auto bg-brand-white rounded-xl shadow-soft p-6 md:p-8 space-y-8 -mt-8 relative z-10 ">
-      {/* Membership Types */}
+    <div className="max-w-5xl mx-auto bg-brand-white rounded-xl shadow-xl p-6 md:p-8 space-y-8 border-4 border-[#FFF7ED] sm:mt-10 relative z-10">
+       {/* Membership Types */}
       <div>
         <h2 className="text-lg md:text-xl font-semibold text-brand-dark mb-4">Choose a Membership Plan</h2>
         <div className="grid md:grid-cols-3 gap-4">

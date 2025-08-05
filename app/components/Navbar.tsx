@@ -167,6 +167,7 @@ const Navbar: React.FC = () => {
     { name: 'Pathshala', path: '/pathsala', hasDropdown: true },    
     { name: 'Events', path: '/events', hasDropdown: true },
     { name: 'Membership', path: '/membership', hasDropdown: true },
+    { name: 'Services', path: '', hasDropdown: true },
     { name: 'Groups', path: '', hasDropdown: true },    
     { name: 'Donate', path: '/contribute' },
     { name: 'Gallery', path: '/gallery' },
@@ -176,6 +177,12 @@ const Navbar: React.FC = () => {
   const membershipOptions = [
     { name: 'Membership', path: '/membership' },
     { name: 'Newsletter', path: '/membership/newsletter' },
+  ];
+
+  const servicesOptions = [
+    { name: 'Religious Activities', path: '/services/religious-activities' },
+    { name: 'Request Pooja', path: '/services/request-pooja' },
+    { name: 'Private Events Rental', path: '/services/event-rental' },
   ];
 
   const aboutUsOptions = [
@@ -209,6 +216,7 @@ const Navbar: React.FC = () => {
     if (itemName === 'Membership') return membershipOptions;
     if (itemName === 'Events') return EventsOptions;
     if (itemName === 'About') return aboutUsOptions;
+    if (itemName === 'Services') return servicesOptions;
     return [];
   };
 

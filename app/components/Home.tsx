@@ -209,7 +209,7 @@ const Home: React.FC = () => {
       <main>
         <div className="pt-[14vh]">
           {/* Enhanced Hero Carousel */}
-          <section className="relative h-screen overflow-hidden">
+          <section className="relative h-[86vh] overflow-hidden">
             {/* Carousel Container */}
             <div className="absolute inset-0">
               {data.slides && Array.isArray(data.slides) && data.slides.map((slide: any, i: number) => (
@@ -224,7 +224,7 @@ const Home: React.FC = () => {
                   <img
                     src={slide.url || ""}
                     alt={slide.alt || `Slide ${i + 1}`}
-                    className="w-full h-full object-cover"
+                    className="w-full h-[86vh] object-cover"
                     loading={i === 0 ? "eager" : "lazy"}
                   />
                   <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/30 to-black/60"></div>
@@ -233,33 +233,27 @@ const Home: React.FC = () => {
             </div>
 
             {/* Content Overlay */}
-            <div className="relative z-20 flex items-center justify-center h-full">
+            <div className="relative z-20 flex items-center justify-center h-full pt-48 sm:pt-72">
               <div className="text-center text-brand-light px-4 max-w-5xl">
-                <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold mb-6 md:mb-8 animate-fade-in drop-shadow-2xl">
+                <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold  md:mb-4 animate-fade-in drop-shadow-2xl">
                   {data.heroHeading || ""}
                 </h2>
-                <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl mb-8 md:mb-12 animate-fade-in-delay drop-shadow-lg font-light text-center">
+                <p className="text-md  md:text-xl lg:text-2xl mb-4 md:mb-6 animate-fade-in-delay drop-shadow-lg font-light text-center">
                   {data.heroTagline || ""}
                 </p>
-                <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center animate-fade-in-delay-2">
-                  <button
-                    onClick={scrollToAbout}
-                    className="btn-primary flex items-center justify-center text-sm md:text-lg px-6 md:px-10 py-3 md:py-4 rounded-xl"
-                  >
-                    Learn More <ArrowDown className="ml-2 md:ml-3 h-4 w-4 md:h-6 md:w-6" />
-                  </button>
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full md:w-auto justify-center">
                   <a
                     href="/membership"
-                    className="bg-white/10 backdrop-blur-md border-2 border-white/30 hover:bg-white hover:text-brand-dark text-brand-light px-6 md:px-10 py-3 md:py-4 rounded-xl font-semibold transition-all duration-300 hover:scale-105 shadow-soft text-sm md:text-lg"
+                    className="btn-primary hover:bg-white hover:text-accent hover:border-2 hover:border-accent transition-all duration-300 flex items-center justify-center text-sm md:text-lg px-6 md:px-10 py-3 md:py-4 rounded-xl w-full md:w-auto"
                   >
                     Become a JSSD Member
                   </a>
                   <a
                     href="/contribute"
-                    className="bg-brand-dark hover:bg-brand-dark/90 text-brand-light px-6 md:px-10 py-3 md:py-4 rounded-xl font-semibold transition-all duration-300 hover:scale-105 shadow-soft text-sm md:text-lg"
+                    className="w-full sm:w-auto bg-white text-accent px-6 md:px-10 py-3 md:py-4 rounded-xl font-semibold transition-all duration-300 hover:bg-[#EA580C] hover:text-white hover:scale-105 shadow-[0_2px_4px_rgba(0,0,0,0.06)] hover:border-2 hover:border-accent text-sm md:text-lg text-center"
                   >
-                    Make a Donation
-                  </a>
+                    Donate Now
+                  </a>                
                 </div>
               </div>
             </div>
@@ -380,7 +374,7 @@ const Home: React.FC = () => {
           </section>
 
           {/* Calendar & Announcements */}
-          <section className="bg-brand-light py-12 md:py-16">
+          <section className="bg-brand-white py-12 md:py-16">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="grid grid-cols-1 lg:grid-cols-10 gap-6">
                 {/* Google Calendar - Left Column (70% width) */}
@@ -464,7 +458,7 @@ const Home: React.FC = () => {
           </section>
 
           {/* Feedback */}
-          <section id='feedback' className="bg-brand-white py-12 md:py-16">
+          <section id='feedback' className="bg-brand-light py-12 md:py-16">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
                 <div className="text-center md:text-left">
@@ -476,26 +470,26 @@ const Home: React.FC = () => {
                   </p>
                 </div>
                 
-                <div className="bg-brand-light p-6 md:p-8 rounded-2xl shadow-soft">
+                <div className="bg-brand-white p-6 md:p-8 rounded-2xl shadow-soft">
                   <form onSubmit={handleFeedbackSubmit} className="space-y-4 md:space-y-6">
                     <input
                       type="text"
                       name="name"
                       placeholder="Your Name*"
                       required
-                      className="w-full border-soft rounded-xl px-4 md:px-6 py-3 md:py-4 text-sm md:text-base text-brand-dark bg-brand-white focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all duration-300 shadow-soft"
+                      className="w-full border-soft rounded-xl px-4 md:px-6 py-3 md:py-4 text-sm md:text-base text-brand-dark bg-brand-light focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all duration-300 shadow-soft"
                     />
                     <input
                       type="email"
                       name="email"
                       placeholder="Your Email*"
                       required
-                      className="w-full border-soft rounded-xl px-4 md:px-6 py-3 md:py-4 text-sm md:text-base text-brand-dark bg-brand-white focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all duration-300 shadow-soft"
+                      className="w-full border-soft rounded-xl px-4 md:px-6 py-3 md:py-4 text-sm md:text-base text-brand-dark bg-brand-light focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all duration-300 shadow-soft"
                     />
                     <select
                       name="category"
                       required
-                      className="w-full border-soft rounded-xl px-4 md:px-6 py-3 md:py-4 text-sm md:text-base text-brand-dark bg-brand-white focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all duration-300 shadow-soft"
+                      className="w-full border-soft rounded-xl px-4 md:px-6 py-3 md:py-4 text-sm md:text-base text-brand-dark bg-brand-light focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all duration-300 shadow-soft"
                     >
                       <option value="">--Please choose an option--</option>
                       <option>Any</option>
@@ -516,7 +510,7 @@ const Home: React.FC = () => {
                       placeholder="Your Message*"
                       rows={4}
                       required
-                      className="w-full border-soft rounded-xl px-4 md:px-6 py-3 md:py-4 text-sm md:text-base text-brand-dark bg-brand-white focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all duration-300 shadow-soft resize-none"
+                      className="w-full border-soft rounded-xl px-4 md:px-6 py-3 md:py-4 text-sm md:text-base text-brand-dark bg-brand-light focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all duration-300 shadow-soft resize-none"
                     ></textarea>
                     <button
                       type="submit"
@@ -531,39 +525,36 @@ const Home: React.FC = () => {
           </section>
 
           {/* CTA */}
-          <section className="py-12 md:py-16 bg-brand-dark text-brand-light relative overflow-hidden">
-            {/* Decorative background elements */}
-            <div className="absolute inset-0 opacity-5">
-              <div className="absolute top-10 left-10 w-32 h-32 bg-brand-light rounded-full blur-3xl"></div>
-              <div className="absolute bottom-10 right-10 w-48 h-48 bg-brand-light rounded-full blur-3xl"></div>
+          <section className="py-12 md:py-16 bg-brand-white text-brand-light relative overflow-hidden">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-6 md:mb-8 text-accent">{data.ctaHeading || ""}</h2>
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl mb-8 md:mb-12 opacity-90 font-light max-w-3xl mx-auto text-justify text-gray-700">
+              {data.ctaTagline || ""}
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center">
+              <a
+                href="/events"
+                className="bg-transparent border-2 border-[#EA580C] text-[#EA580C] px-6 md:px-10 py-3 md:py-4 rounded-xl font-semibold transition-all duration-300 hover:bg-[#EA580C] hover:text-white hover:scale-105 shadow-[0_2px_4px_rgba(0,0,0,0.06)] text-sm md:text-lg"
+              >
+                View Events
+              </a>
+              <a
+                href="/membership"
+                className="bg-[#EA580C] text-white px-6 md:px-10 py-3 md:py-4 rounded-xl font-semibold transition-all duration-300 hover:bg-[#B45309] hover:scale-105 shadow-[0_2px_4px_rgba(0,0,0,0.06)] text-sm md:text-lg"
+              >
+                Become a Member
+              </a>
+              <button
+                onClick={() => setShowMailingModal(true)}
+                className="bg-transparent border-2 border-[#EA580C] text-[#EA580C] px-6 md:px-10 py-3 md:py-4 rounded-xl font-semibold transition-all duration-300 hover:bg-[#EA580C] hover:text-white hover:scale-105 shadow-[0_2px_4px_rgba(0,0,0,0.06)] text-sm md:text-lg"
+              >
+                Join Mailing List
+              </button>
             </div>
-            
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-6 md:mb-8">{data.ctaHeading || ""}</h2>
-              <p className="text-base sm:text-lg md:text-xl lg:text-2xl mb-8 md:mb-12 opacity-90 font-light max-w-3xl mx-auto text-justify">{data.ctaTagline || ""}</p>
-              
-              <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center">
-                <a
-                  href="/membership"
-                  className="bg-transparent border-2 border-brand-light hover:bg-brand-light hover:text-brand-dark text-brand-light px-6 md:px-10 py-3 md:py-4 rounded-xl font-semibold transition-all duration-300 hover:scale-105 shadow-soft text-sm md:text-lg"
-                >
-                  Become a Member
-                </a>
-                <a
-                  href="/events"
-                  className="bg-transparent border-2 border-brand-light hover:bg-brand-light hover:text-brand-dark text-brand-light px-6 md:px-10 py-3 md:py-4 rounded-xl font-semibold transition-all duration-300 hover:scale-105 shadow-soft text-sm md:text-lg"
-                >
-                  View Events
-                </a>
-                <button 
-                  onClick={() => setShowMailingModal(true)} 
-                  className="bg-transparent border-2 border-brand-light hover:bg-brand-light hover:text-brand-dark text-brand-light px-6 md:px-10 py-3 md:py-4 rounded-xl font-semibold transition-all duration-300 hover:scale-105 shadow-soft text-sm md:text-lg"
-                >
-                  Join Mailing List
-                </button>
-              </div>
-            </div>
-          </section>
+          </div>
+        </section>
+
 
           {/* Enhanced Modal */}
           {showMailingModal && (

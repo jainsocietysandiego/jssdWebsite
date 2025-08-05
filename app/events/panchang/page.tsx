@@ -79,8 +79,7 @@ const CalendarCarousel: React.FC = () => {
         />
         <div className="relative z-10 text-center px-4">
           <h1 className="font-bold text-brand-light text-3xl sm:text-4xl md:text-5xl
-                         drop-shadow-[0_0_10px_rgb(255_255_255_/_50%)]
-                         [text-shadow:_0_0_10px_rgb(255_255_255_/_50%),_0_0_20px_rgb(255_255_255_/_30%)]">
+                         ">
             Panchang
           </h1>          
         </div>

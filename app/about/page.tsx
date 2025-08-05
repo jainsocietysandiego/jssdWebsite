@@ -92,7 +92,7 @@ const AboutPage: React.FC = () => {
         <section className="relative flex items-center justify-center
                             h-40 sm:h-48 md:h-56 lg:h-60 overflow-hidden">
           <Image
-            src="/images/hero-banner.png"
+            src="/images/hero-banner.jpg"
             alt="Hero banner background"
             fill
             priority

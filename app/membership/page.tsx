@@ -72,7 +72,7 @@ const Membership = () => {
         <section className="relative flex items-center justify-center
                             h-56 sm:h-64 md:h-72 lg:h-80 overflow-hidden">
           <Image
-            src="/images/hero-banner.png"
+            src="/images/hero-banner.jpg"
             alt="Membership hero"
             fill
             priority

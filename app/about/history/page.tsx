@@ -138,7 +138,7 @@ const HistoryPage: React.FC = () => {
       <section className="relative flex items-center justify-center
                           h-40 sm:h-48 md:h-56 lg:h-60 overflow-hidden">
         <Image
-          src="/images/hero-banner.png"          // keep this banner everywhere
+          src="/images/hero-banner.jpg"          // keep this banner everywhere
           alt="History banner background"
           fill
           priority

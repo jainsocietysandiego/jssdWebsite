@@ -1,1 +1,86 @@
-{"heroSection":{"buttonText":"Become a Member"},"benefitsTitle":{"mainTitle":"Membership Benefits","subTitle":"The benefits of becoming a JSSD member are many!"},"benefits":[{"title":"Your Fees go to JSSD General Donation Fund","description":"Your membership fees contribute to the JSSD General Donation Fund to support community activities."},{"title":"Free Pass to JSSD Annual Picnic","description":"Enjoy a complimentary pass to the JSSD Annual Picnic — a day of fun, food, and community bonding."},{"title":"Discounted Rates for JSSD Events","description":"As a member, you receive discounted rates on various JSSD events.","subpoints":["Pathshala Fees","Renting JSSD Facilities for Private Events","Navratri Garba Events","Other community events"]},{"title":"Access to Members Only Events","description":"Gain access to exclusive members-only events hosted by JSSD.","subpoints":["JSSD Cricket League","JSSD Volleyball League","Other special member events"]},{"title":"Eligible to sign-up for volunteer hours for President’s Volunteer Service Award (PVSA) program","description":"Members can sign up for volunteer opportunities that count towards the PVSA program."},{"title":"Preference to Limited Attendance Activities","description":"Get preference for attending activities with limited spots."},{"title":"Right to Vote in JSSD Elections","description":"Exercise your right to vote in the JSSD elections and shape the future of the community."},{"title":"Membership Fees Are Tax Deductible","description":"Your membership fees may be tax deductible as per applicable laws."}],"membershipTypesTitle":{"mainTitle":"Membership Types","subTitle":"Following membership types are available at JSSD"},"membershipTypes":[{"title":"Life Membership","coverage":"Entire family (children under 18) for lifetime","price":501},{"title":"Family Annual","coverage":"Entire family (children under 18) for the calendar year.","price":51},{"title":"Individual Annual","coverage":"One individual for the calendar year.","price":31}],"ruleTitle":"Who's Part of Membership Section","membershipRules":["1. A husband and wife with unmarried children under the age of twenty-one (21) and/or parent(s) and/or grandparent(s);","2. An individual with unmarried children under the age of twenty-one (21) and/or parent(s) and/or grandparent(s);","3. An individual or husband and wife with parents living with them."],"note":"Note :","noteRule":{"noteRule1":"Your sister and her family would need to sign up separately.","noteRule2":"Only primary and secondary member of the membership will be eligible to vote for JSSD elections."},"query":"For any questions you may have regarding membership, please contact","contactEmail":"pr@jssd.org"}
+{
+  "heroSection": { "buttonText": "Register Now" },
+  "benefitsTitle": {
+    "mainTitle": "Membership Benefits",
+    "subTitle": "The benefits of becoming a JSSD member are many!"
+  },
+  "benefits": [
+    {
+      "title": "Your Fees go to JSSD General Donation Fund",
+      "description": "Your membership fees contribute to the JSSD General Donation Fund to support community activities."
+    },
+    {
+      "title": "Free Pass to JSSD Annual Picnic",
+      "description": "Enjoy a complimentary pass to the JSSD Annual Picnic — a day of fun, food, and community bonding."
+    },
+    {
+      "title": "Discounted Rates for JSSD Events",
+      "description": "As a member, you receive discounted rates on various JSSD events.",
+      "subpoints": [
+        "Pathshala Fees",
+        "Renting JSSD Facilities for Private Events",
+        "Navratri Garba Events",
+        "Other community events"
+      ]
+    },
+    {
+      "title": "Access to Members Only Events",
+      "description": "Gain access to exclusive members-only events hosted by JSSD.",
+      "subpoints": [
+        "JSSD Cricket League",
+        "JSSD Volleyball League",
+        "Other special member events"
+      ]
+    },
+    {
+      "title": "Eligible to sign-up for volunteer hours for President’s Volunteer Service Award (PVSA) program",
+      "description": "Members can sign up for volunteer opportunities that count towards the PVSA program."
+    },
+    {
+      "title": "Preference to Limited Attendance Activities",
+      "description": "Get preference for attending activities with limited spots."
+    },
+    {
+      "title": "Right to Vote in JSSD Elections",
+      "description": "Exercise your right to vote in the JSSD elections and shape the future of the community."
+    },
+    {
+      "title": "Membership Fees Are Tax Deductible",
+      "description": "Your membership fees may be tax deductible as per applicable laws."
+    }
+  ],
+  "membershipTypesTitle": {
+    "mainTitle": "Membership Types",
+    "subTitle": "Following membership types are available at JSSD"
+  },
+  "membershipTypes": [
+    {
+      "title": "Life Membership",
+      "coverage": "Entire family (children under 18) for lifetime",
+      "price": 501
+    },
+    {
+      "title": "Family Annual",
+      "coverage": "Entire family (children under 18) for the calendar year.",
+      "price": 51
+    },
+    {
+      "title": "Individual Annual",
+      "coverage": "One individual for the calendar year.",
+      "price": 31
+    }
+  ],
+  "ruleTitle": "Who's Part of Membership Section",
+  "membershipRules": [
+    "1. A husband and wife with unmarried children under the age of twenty-one (21) and/or parent(s) and/or grandparent(s);",
+    "2. An individual with unmarried children under the age of twenty-one (21) and/or parent(s) and/or grandparent(s);",
+    "3. An individual or husband and wife with parents living with them."
+  ],
+  "note": "Note :",
+  "noteRule": {
+    "noteRule1": "Your sister and her family would need to sign up separately.",
+    "noteRule2": "Only primary and secondary member of the membership will be eligible to vote for JSSD elections."
+  },
+  "query": "For any questions you may have regarding membership, please contact",
+  "contactEmail": "pr@jssd.org"
+}

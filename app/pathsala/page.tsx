@@ -389,7 +389,7 @@ const Pathsala: React.FC = () => {
                   <div className="lg:w-1/3 flex flex-row gap-4 w-full lg:w-auto lg:self-center mt-6 lg:mt-0">
                     <button
                       onClick={() => setIsLunchModalOpen(true)}
-                      className="group flex items-center justify-center px-4 md:px-6 py-3 bg-brand-white border-2 border-accent text-accent rounded-xl font-semibold hover:bg-accent hover:text-brand-light transition-all duration-300 shadow-soft hover:shadow-lg flex-1 text-sm md:text-base"
+                      className="group flex items-center justify-center px-4 md:px-6 py-3 bg-brand-white border-2 border-accent text-accent rounded-xl font-semibold hover:bg-accent hover:text-white transition-all duration-300 shadow-soft hover:shadow-lg flex-1 text-sm md:text-base"
                     >
                       <BookOpen className="h-5 w-5 mr-2 group-hover:scale-110 transition-transform" />
                       {lunchContent.button_one ?? "Know More"}
@@ -399,7 +399,7 @@ const Pathsala: React.FC = () => {
                       onClick={() => {
                         router.push('/pathsala/lunch-donation');
                       }}
-                      className="group flex items-center justify-center px-4 md:px-6 py-3 bg-brand-white border-2 border-green-600 text-green-600 rounded-xl font-semibold hover:bg-green-600 hover:text-brand-light transition-all duration-300 shadow-soft hover:shadow-lg flex-1 text-sm md:text-base"
+                      className="group flex items-center justify-center px-4 md:px-6 py-3 bg-brand-white border-2 border-green-600 text-green-600 rounded-xl font-semibold hover:bg-green-600 hover:text-white transition-all duration-300 shadow-soft hover:shadow-lg flex-1 text-sm md:text-base"
                     >
                       <Heart className="h-5 w-5 mr-2 group-hover:scale-110 transition-transform" />
                       {lunchContent.button_two ?? "Donate"}

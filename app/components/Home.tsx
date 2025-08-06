@@ -9,26 +9,25 @@ const API_URL =
 const CACHE_KEY = "homepage-api";
 const CACHE_TTL = 1 * 60 * 1000; // 1 minute
 
-// Beautiful Loading Component
-const BeautifulLoader = () => (
+const Loading = () => (
   <div className="min-h-screen bg-brand-light flex items-center justify-center">
-    <div className="text-center">
+    <div className="text-center px-4">
       <div className="relative">
-        {/* Animated rings */}
-        <div className="w-16 md:w-24 h-16 md:h-24 mx-auto mb-6 md:mb-8 relative">
-          <div className="absolute inset-0 border-4 border-accent/20 rounded-full"></div>
-          <div className="absolute inset-2 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
-          <div className="absolute inset-4 border-4 border-brand-dark/30 border-r-transparent rounded-full animate-spin-reverse"></div>
-          <div className="absolute inset-6 w-8 md:w-12 h-8 md:h-12 bg-accent rounded-full flex items-center justify-center animate-pulse">
-            <div className="w-4 md:w-6 h-4 md:h-6 bg-white rounded-full"></div>
+        <div className="w-20 h-20 md:w-24 md:h-24 mx-auto mb-6 md:mb-8 relative">
+          <div className="absolute inset-0 border-4 border-[rgba(234,88,12,0.1)] rounded-full"></div>
+          <div className="absolute inset-1 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
+          <div 
+            className="absolute inset-2 border-4 border-brand-dark/30 border-r-transparent rounded-full"
+            style={{
+              animation: 'spin 1s linear infinite reverse'
+            }}
+          ></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-accent rounded-full flex items-center justify-center animate-pulse">
+            <div className="w-5 h-5 md:w-6 md:h-6 bg-white rounded-full"></div>
           </div>
-        </div>
-        
-        {/* Loading text */}
+        </div>        
         <h3 className="text-lg md:text-xl font-semibold text-brand-dark mb-2">Jai Jinendra</h3>
         <p className="text-sm md:text-base text-accent animate-pulse">Ahimsa Parmo Dharma</p>
-        
-        {/* Animated dots */}
         <div className="flex justify-center space-x-1 mt-4">
           <div className="w-2 h-2 bg-accent rounded-full animate-bounce" style={{animationDelay: '0ms'}}></div>
           <div className="w-2 h-2 bg-accent rounded-full animate-bounce" style={{animationDelay: '150ms'}}></div>
@@ -202,7 +201,7 @@ const Home: React.FC = () => {
     form.reset();
   };
 
-  if (!data) return <BeautifulLoader />;
+  if (!data) return <Loading />;
 
   return (
     <div className="min-h-screen bg-brand-light">

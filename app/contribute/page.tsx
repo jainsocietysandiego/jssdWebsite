@@ -27,41 +27,31 @@ interface DonationData {
   zelleQrUrl: string;
 }
 
-const DonationSkeleton = () => (
-  <div className="min-h-screen bg-orange-50 p-6 md:p-12 animate-pulse">
-    <div className="max-w-5xl mx-auto bg-white rounded-xl shadow p-8 space-y-8">
-      <div className="h-10 w-1/2 mx-auto rounded bg-orange-200" />
-      <div>
-        <div className="h-6 w-1/3 mb-4 rounded bg-orange-100" />
-        <div className="grid md:grid-cols-3 gap-4">
-          {[...Array(6)].map((_, i) => (
-            <div key={i} className="p-4 rounded-lg border border-gray-200">
-              <div className="h-5 w-3/4 mb-2 rounded bg-orange-100" />
-              <div className="h-4 w-1/2 rounded bg-orange-100" />
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="grid md:grid-cols-2 gap-4">
-        {[...Array(4)].map((_, i) => (
-          <div key={i}>
-            <div className="h-4 w-1/3 mb-2 rounded bg-orange-100" />
-            <div className="h-10 w-full rounded bg-orange-100" />
+ const Loading = () => (
+  <div className="min-h-screen bg-brand-light flex items-center justify-center">
+    <div className="text-center px-4">
+      <div className="relative">
+        <div className="w-20 h-20 md:w-24 md:h-24 mx-auto mb-6 md:mb-8 relative">
+          <div className="absolute inset-0 border-4 border-[rgba(234,88,12,0.1)] rounded-full"></div>
+          <div className="absolute inset-1 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
+          <div 
+            className="absolute inset-2 border-4 border-brand-dark/30 border-r-transparent rounded-full"
+            style={{
+              animation: 'spin 1s linear infinite reverse'
+            }}
+          ></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-accent rounded-full flex items-center justify-center animate-pulse">
+            <div className="w-5 h-5 md:w-6 md:h-6 bg-white rounded-full"></div>
           </div>
-        ))}
-      </div>
-      <div>
-        <div className="h-6 w-1/4 mb-4 rounded bg-orange-100" />
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="border rounded-lg p-4 text-center">
-              <div className="h-8 w-8 mx-auto mb-2 rounded bg-orange-100" />
-              <div className="h-5 w-2/3 mx-auto rounded bg-orange-100" />
-            </div>
-          ))}
+        </div>        
+        <h3 className="text-lg md:text-xl font-semibold text-brand-dark mb-2">Jai Jinendra</h3>
+        <p className="text-sm md:text-base text-accent animate-pulse">Ahimsa Parmo Dharma</p>
+        <div className="flex justify-center space-x-1 mt-4">
+          <div className="w-2 h-2 bg-accent rounded-full animate-bounce" style={{animationDelay: '0ms'}}></div>
+          <div className="w-2 h-2 bg-accent rounded-full animate-bounce" style={{animationDelay: '150ms'}}></div>
+          <div className="w-2 h-2 bg-accent rounded-full animate-bounce" style={{animationDelay: '300ms'}}></div>
         </div>
       </div>
-      <div className="h-12 w-full rounded bg-orange-200" />
     </div>
   </div>
 );
@@ -264,7 +254,7 @@ const DonatePage: React.FC = () => {
     );
 
   // ---- ERROR STATE
-  if (loading) return <DonationSkeleton />;
+  if (loading) return <Loading />;
   if (error || !data) {
     return (
       <div className="min-h-screen bg-orange-50 p-6 md:p-12 flex items-center justify-center">

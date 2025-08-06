@@ -19,31 +19,31 @@ interface SheetEntry {
   ImageURL?: string;
 }
 
-const HistorySkeleton = () => (
-  <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 animate-pulse">
-    <div className="pt-16">
-      <section className="bg-gradient-to-r from-orange-600 to-orange-700 text-white py-20">
-        <div className="h-10 w-1/2 mx-auto rounded bg-orange-300 mb-4" />
-        <div className="h-6 w-1/3 mx-auto rounded bg-orange-200" />
-      </section>
-      <section className="py-16 bg-white">
-        <div className="max-w-5xl mx-auto px-4 space-y-6">
-          <div className="h-6 w-full bg-orange-100 rounded mb-4" />
-          <div className="h-6 w-3/4 bg-orange-100 rounded mb-4" />
-          <div className="h-6 w-2/3 bg-orange-100 rounded mb-4" />
+const Loading = () => (
+  <div className="min-h-screen bg-brand-light flex items-center justify-center">
+    <div className="text-center px-4">
+      <div className="relative">
+        <div className="w-20 h-20 md:w-24 md:h-24 mx-auto mb-6 md:mb-8 relative">
+          <div className="absolute inset-0 border-4 border-[rgba(234,88,12,0.1)] rounded-full"></div>
+          <div className="absolute inset-1 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
+          <div 
+            className="absolute inset-2 border-4 border-brand-dark/30 border-r-transparent rounded-full"
+            style={{
+              animation: 'spin 1s linear infinite reverse'
+            }}
+          ></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-accent rounded-full flex items-center justify-center animate-pulse">
+            <div className="w-5 h-5 md:w-6 md:h-6 bg-white rounded-full"></div>
+          </div>
+        </div>        
+        <h3 className="text-lg md:text-xl font-semibold text-brand-dark mb-2">Jai Jinendra</h3>
+        <p className="text-sm md:text-base text-accent animate-pulse">Ahimsa Parmo Dharma</p>
+        <div className="flex justify-center space-x-1 mt-4">
+          <div className="w-2 h-2 bg-accent rounded-full animate-bounce" style={{animationDelay: '0ms'}}></div>
+          <div className="w-2 h-2 bg-accent rounded-full animate-bounce" style={{animationDelay: '150ms'}}></div>
+          <div className="w-2 h-2 bg-accent rounded-full animate-bounce" style={{animationDelay: '300ms'}}></div>
         </div>
-      </section>
-      <section className="py-16 bg-orange-50">
-        <div className="max-w-5xl mx-auto px-4 space-y-6">
-          {[...Array(3)].map((_, idx) => (
-            <div key={idx}>
-              <div className="h-6 w-1/2 bg-orange-200 rounded mb-4" />
-              <div className="h-4 w-full bg-orange-100 rounded mb-2" />
-              <div className="h-4 w-3/4 bg-orange-100 rounded" />
-            </div>
-          ))}
-        </div>
-      </section>
+      </div>
     </div>
   </div>
 );
@@ -129,7 +129,7 @@ const HistoryPage: React.FC = () => {
     };
   }, []);
 
-  if (loading) return <HistorySkeleton />;
+  if (loading) return <Loading />;
 
   return (
   <div className="min-h-screen bg-brand-light">

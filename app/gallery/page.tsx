@@ -36,6 +36,35 @@ interface ApiResponse {
   error?: string;
 }
 
+ const Loading = () => (
+  <div className="min-h-screen bg-brand-light flex items-center justify-center">
+    <div className="text-center px-4">
+      <div className="relative">
+        <div className="w-20 h-20 md:w-24 md:h-24 mx-auto mb-6 md:mb-8 relative">
+          <div className="absolute inset-0 border-4 border-[rgba(234,88,12,0.1)] rounded-full"></div>
+          <div className="absolute inset-1 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
+          <div 
+            className="absolute inset-2 border-4 border-brand-dark/30 border-r-transparent rounded-full"
+            style={{
+              animation: 'spin 1s linear infinite reverse'
+            }}
+          ></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-accent rounded-full flex items-center justify-center animate-pulse">
+            <div className="w-5 h-5 md:w-6 md:h-6 bg-white rounded-full"></div>
+          </div>
+        </div>        
+        <h3 className="text-lg md:text-xl font-semibold text-brand-dark mb-2">Jai Jinendra</h3>
+        <p className="text-sm md:text-base text-accent animate-pulse">Ahimsa Parmo Dharma</p>
+        <div className="flex justify-center space-x-1 mt-4">
+          <div className="w-2 h-2 bg-accent rounded-full animate-bounce" style={{animationDelay: '0ms'}}></div>
+          <div className="w-2 h-2 bg-accent rounded-full animate-bounce" style={{animationDelay: '150ms'}}></div>
+          <div className="w-2 h-2 bg-accent rounded-full animate-bounce" style={{animationDelay: '300ms'}}></div>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
 const Gallery: React.FC = () => {
   const [images, setImages] = useState<ImageData[]>([]);
   const [albums, setAlbums] = useState<AlbumData[]>([]);
@@ -104,17 +133,7 @@ const Gallery: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-brand-light">
-        <div className="flex items-center justify-center min-h-screen pt-[14vh]">
-          <div className="text-center">
-            <div className="w-16 h-16 mx-auto mb-6 relative">
-              <div className="absolute inset-0 border-4 border-accent/20 rounded-full"></div>
-              <div className="absolute inset-2 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
-            </div>
-            <p className="text-brand-dark text-lg">Loading gallery...</p>
-          </div>
-        </div>
-      </div>
+      <Loading />
     );
   }
 

@@ -63,13 +63,32 @@ function getCurrentAndPrevious(newsletters: Newsletter[]): [Newsletter | null, N
   return [cur, prev];
 }
 
-const NewsletterSkeleton = () => (
-  <div className="py-32 min-h-[60vh] flex flex-col items-center gap-10 animate-pulse">
-    <div className="bg-brand-dark/10 h-14 w-80 rounded-lg" />
-    <div className="bg-brand-dark/20 h-10 w-3/4 max-w-lg rounded-lg" />
-    <div className="bg-brand-light h-[420px] w-full max-w-3xl rounded-2xl" />
-    <div className="bg-brand-dark/10 h-10 w-48 rounded" />
-    <div className="bg-brand-light h-28 w-full max-w-xl rounded-xl" />
+const Loading = () => (
+  <div className="min-h-screen bg-brand-light flex items-center justify-center">
+    <div className="text-center px-4">
+      <div className="relative">
+        <div className="w-20 h-20 md:w-24 md:h-24 mx-auto mb-6 md:mb-8 relative">
+          <div className="absolute inset-0 border-4 border-[rgba(234,88,12,0.1)] rounded-full"></div>
+          <div className="absolute inset-1 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
+          <div 
+            className="absolute inset-2 border-4 border-brand-dark/30 border-r-transparent rounded-full"
+            style={{
+              animation: 'spin 1s linear infinite reverse'
+            }}
+          ></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-accent rounded-full flex items-center justify-center animate-pulse">
+            <div className="w-5 h-5 md:w-6 md:h-6 bg-white rounded-full"></div>
+          </div>
+        </div>        
+        <h3 className="text-lg md:text-xl font-semibold text-brand-dark mb-2">Jai Jinendra</h3>
+        <p className="text-sm md:text-base text-accent animate-pulse">Ahimsa Parmo Dharma</p>
+        <div className="flex justify-center space-x-1 mt-4">
+          <div className="w-2 h-2 bg-accent rounded-full animate-bounce" style={{animationDelay: '0ms'}}></div>
+          <div className="w-2 h-2 bg-accent rounded-full animate-bounce" style={{animationDelay: '150ms'}}></div>
+          <div className="w-2 h-2 bg-accent rounded-full animate-bounce" style={{animationDelay: '300ms'}}></div>
+        </div>
+      </div>
+    </div>
   </div>
 );
 
@@ -132,6 +151,10 @@ const NewsletterPage: React.FC = () => {
     return () => { didCancel = true; };
   }, []);
 
+  if (loading && newsletters.length === 0) {
+    return <Loading />;
+  }
+
   return (
     <div className="min-h-screen bg-brand-light pt-[14vh]">
       <section className="relative flex items-center justify-center
@@ -157,7 +180,6 @@ const NewsletterPage: React.FC = () => {
       </section>
 
       <main className="max-w-5xl mx-auto pt-20 px-2 pb-24">      
-        {loading ? <NewsletterSkeleton /> : (
           <>
             <section className="mb-20">
               <div className="text-xl md:text-2xl font-bold text-accent mb-5">
@@ -228,8 +250,7 @@ const NewsletterPage: React.FC = () => {
                 ))}
               </ul>
             </section>
-          </>
-        )}
+          </>        
       </main>
     </div>
   );

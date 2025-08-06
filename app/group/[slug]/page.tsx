@@ -89,7 +89,7 @@ export default function CommitteePage() {
     loadData();
   }, [slug]);
 
-  if (loading) return <Skeleton />;
+  if (loading) return <Loading />;
   if (!committee) return notFound();
 
   const title = committee['Committee Name'];
@@ -171,27 +171,31 @@ export default function CommitteePage() {
   );
 }
 
-// Skeleton
-function Skeleton() {
-  return (
-    <div className="min-h-screen bg-brand-light">
-      <main className="pt-[14vh] animate-pulse">
-        <div className="h-40 sm:h-48 md:h-56 lg:h-60 bg-brand-dark/20 w-full relative">
-          <div className="absolute inset-0 bg-black/40" />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="h-8 md:h-10 w-1/2 bg-white/50 rounded" />
+const Loading = () => (
+  <div className="min-h-screen bg-brand-light flex items-center justify-center">
+    <div className="text-center px-4">
+      <div className="relative">
+        <div className="w-20 h-20 md:w-24 md:h-24 mx-auto mb-6 md:mb-8 relative">
+          <div className="absolute inset-0 border-4 border-[rgba(234,88,12,0.1)] rounded-full"></div>
+          <div className="absolute inset-1 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
+          <div 
+            className="absolute inset-2 border-4 border-brand-dark/30 border-r-transparent rounded-full"
+            style={{
+              animation: 'spin 1s linear infinite reverse'
+            }}
+          ></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-accent rounded-full flex items-center justify-center animate-pulse">
+            <div className="w-5 h-5 md:w-6 md:h-6 bg-white rounded-full"></div>
           </div>
+        </div>        
+        <h3 className="text-lg md:text-xl font-semibold text-brand-dark mb-2">Jai Jinendra</h3>
+        <p className="text-sm md:text-base text-accent animate-pulse">Ahimsa Parmo Dharma</p>
+        <div className="flex justify-center space-x-1 mt-4">
+          <div className="w-2 h-2 bg-accent rounded-full animate-bounce" style={{animationDelay: '0ms'}}></div>
+          <div className="w-2 h-2 bg-accent rounded-full animate-bounce" style={{animationDelay: '150ms'}}></div>
+          <div className="w-2 h-2 bg-accent rounded-full animate-bounce" style={{animationDelay: '300ms'}}></div>
         </div>
-        <div className="max-w-4xl mx-auto px-4 py-12 space-y-6">
-          {[...Array(3)].map((_, i) => (
-            <div key={i} className="bg-brand-white rounded-xl p-6">
-              <div className="h-4 w-1/3 bg-brand-dark/10 mb-2 rounded" />
-              <div className="h-4 w-full bg-brand-dark/5 mb-1 rounded" />
-              <div className="h-4 w-5/6 bg-brand-dark/5 rounded" />
-            </div>
-          ))}
-        </div>
-      </main>
+      </div>
     </div>
-  );
-}
+  </div>
+);

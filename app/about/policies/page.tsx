@@ -30,28 +30,32 @@ const PolicyList: React.FC<{ title: string; items: PolicyItem[] }> = ({ title, i
   </div>
 );
 
-const PolicySkeleton = () => (
-  <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 animate-pulse">
-   
-    <div className="pt-16">
-      <div className="bg-gradient-to-r from-orange-600 to-orange-700 text-white py-20 text-center">
-        <div className="h-10 w-1/2 mx-auto rounded bg-orange-300 mb-4" />
-        <div className="h-6 w-1/3 mx-auto rounded bg-orange-200" />
-      </div>
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {[...Array(3)].map((_, i) => (
-            <div key={i} className="bg-white p-6 rounded-lg shadow-md space-y-4">
-              <div className="h-6 w-2/3 bg-orange-100 rounded" />
-              {[...Array(4)].map((_, j) => (
-                <div key={j} className="h-4 w-full bg-orange-50 rounded" />
-              ))}
-            </div>
-          ))}
+const Loading = () => (
+  <div className="min-h-screen bg-brand-light flex items-center justify-center">
+    <div className="text-center px-4">
+      <div className="relative">
+        <div className="w-20 h-20 md:w-24 md:h-24 mx-auto mb-6 md:mb-8 relative">
+          <div className="absolute inset-0 border-4 border-[rgba(234,88,12,0.1)] rounded-full"></div>
+          <div className="absolute inset-1 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
+          <div 
+            className="absolute inset-2 border-4 border-brand-dark/30 border-r-transparent rounded-full"
+            style={{
+              animation: 'spin 1s linear infinite reverse'
+            }}
+          ></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-accent rounded-full flex items-center justify-center animate-pulse">
+            <div className="w-5 h-5 md:w-6 md:h-6 bg-white rounded-full"></div>
+          </div>
+        </div>        
+        <h3 className="text-lg md:text-xl font-semibold text-brand-dark mb-2">Jai Jinendra</h3>
+        <p className="text-sm md:text-base text-accent animate-pulse">Ahimsa Parmo Dharma</p>
+        <div className="flex justify-center space-x-1 mt-4">
+          <div className="w-2 h-2 bg-accent rounded-full animate-bounce" style={{animationDelay: '0ms'}}></div>
+          <div className="w-2 h-2 bg-accent rounded-full animate-bounce" style={{animationDelay: '150ms'}}></div>
+          <div className="w-2 h-2 bg-accent rounded-full animate-bounce" style={{animationDelay: '300ms'}}></div>
         </div>
-      </section>
+      </div>
     </div>
-
   </div>
 );
 
@@ -121,14 +125,14 @@ const PoliciesPage: React.FC = () => {
     };
   }, []);
 
-  if (!data) return <PolicySkeleton />;
+  if (!data) return <Loading />;
 
   return (
   <div className="min-h-screen bg-brand-light">
     <main className="pt-[14vh]">
 
       <section className="relative flex items-center justify-center
-                          h-64 sm:h-72 md:h-80 lg:h-96 xl:h-[28rem] overflow-hidden">
+                         h-40 sm:h-48 md:h-56 lg:h-60 overflow-hidden overflow-hidden">
         <Image
           src="/images/hero-banner.jpg"
           alt="Hero banner background"
@@ -140,14 +144,12 @@ const PoliciesPage: React.FC = () => {
 
         <div className="relative z-10 px-4 text-center">
           <h1 className="font-bold text-brand-light
-                         text-3xl sm:text-4xl md:text-5xl lg:text-6xl
-                         
-                         [text-shadow:_0_0_10px_rgb(255_255_255_/_40%),_0_0_25px_rgb(255_255_255_/_25%)]">
+                         text-3xl sm:text-5xl ">
             {data.heading}
           </h1>
 
           <p className="mt-4 max-w-2xl mx-auto text-center
-                        text-xs md:text-xl text-brand-light">
+                        text-xs md:text-lg text-brand-light">
             {data.description}
           </p>
         </div>

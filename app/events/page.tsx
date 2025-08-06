@@ -15,6 +15,34 @@ import Image from 'next/image';
 const API_KEY = 'AIzaSyD0MBBXb6oamBJQaEe_FF7T8i0DDzx3UTg';
 const CALENDAR_ID = 'jainsocietyofsandiego@gmail.com';
 const PACIFIC_TZ = 'America/Los_Angeles';
+const Loading = () => (
+  <div className="min-h-screen bg-brand-light flex items-center justify-center">
+    <div className="text-center px-4">
+      <div className="relative">
+        <div className="w-20 h-20 md:w-24 md:h-24 mx-auto mb-6 md:mb-8 relative">
+          <div className="absolute inset-0 border-4 border-[rgba(234,88,12,0.1)] rounded-full"></div>
+          <div className="absolute inset-1 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
+          <div 
+            className="absolute inset-2 border-4 border-brand-dark/30 border-r-transparent rounded-full"
+            style={{
+              animation: 'spin 1s linear infinite reverse'
+            }}
+          ></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-accent rounded-full flex items-center justify-center animate-pulse">
+            <div className="w-5 h-5 md:w-6 md:h-6 bg-white rounded-full"></div>
+          </div>
+        </div>        
+        <h3 className="text-lg md:text-xl font-semibold text-brand-dark mb-2">Jai Jinendra</h3>
+        <p className="text-sm md:text-base text-accent animate-pulse">Ahimsa Parmo Dharma</p>
+        <div className="flex justify-center space-x-1 mt-4">
+          <div className="w-2 h-2 bg-accent rounded-full animate-bounce" style={{animationDelay: '0ms'}}></div>
+          <div className="w-2 h-2 bg-accent rounded-full animate-bounce" style={{animationDelay: '150ms'}}></div>
+          <div className="w-2 h-2 bg-accent rounded-full animate-bounce" style={{animationDelay: '300ms'}}></div>
+        </div>
+      </div>
+    </div>
+  </div>
+);
 
 // --- Timezone helpers ---
 function extractPacificParts(dateStr: string) {
@@ -91,15 +119,21 @@ const EventsPage = () => {
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const [pageLoading, setPageLoading] = useState(true);
 
   useEffect(() => {
-    setLoading(true);
-    const minIso = new Date(currentMonth.getFullYear() - 1, 0, 1).toISOString();
-    const maxIso = new Date(currentMonth.getFullYear() + 1, 11, 31).toISOString();
-    fetchCalendarEvents(minIso, maxIso)
-      .then(setEvents)
-      .finally(() => setLoading(false));
-  }, [currentMonth]);
+  setLoading(true);
+  setPageLoading(true); // Set page loading to true
+  const minIso = new Date(currentMonth.getFullYear() - 1, 0, 1).toISOString();
+  const maxIso = new Date(currentMonth.getFullYear() + 1, 11, 31).toISOString();
+  fetchCalendarEvents(minIso, maxIso)
+    .then(setEvents)
+    .finally(() => {
+      setLoading(false);
+      setPageLoading(false); // Set page loading to false when done
+    });
+}, [currentMonth]);
+
 
   // --- Pacific today ---
   const now = new Date();
@@ -137,6 +171,10 @@ const EventsPage = () => {
   function eventBadge() {
     return 'bg-blue-100 text-blue-800';
   }
+
+  if (pageLoading) {
+  return <Loading />;
+}
 
   // --- Render ---
   return (
@@ -177,9 +215,9 @@ const EventsPage = () => {
               Don't miss these exciting events happening in our community
             </p>
           </div>
-          {loading ? (
-            <div className="text-center text-brand-dark">Loading events...</div>
-          ) : (
+          {loading ? 
+            <Loading />
+           : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {upcomingEvents.length === 0 && (
                 <div className="col-span-2 text-center text-brand-dark/60">No upcoming events.</div>
@@ -263,7 +301,7 @@ const EventsPage = () => {
             </p>
           </div>
           {loading ? (
-            <div className="text-center text-brand-dark">Loading events...</div>
+            <Loading />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {pastEvents.length === 0 && (

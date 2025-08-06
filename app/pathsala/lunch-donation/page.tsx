@@ -6,7 +6,7 @@ import { CreditCard, DollarSign, Mail, TrendingUp, Heart, CheckCircle } from 'lu
 
 // Endpoints
 const ZELLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzIHxb91BTRhLhjOr4an8hcgHBzjOOFWRDPiJgGMlfDEpxGA3yksX0RGjwqE3luzNNDlw/exec';
-const SUBMIT_API_URL = 'https://script.google.com/macros/s/AKfycbzWIqCs1aQm3u6w9_JNHQ1LNa7DFFhkzORarM7NNXh6OJ0z-8eLe_xbyydz7JRE1L_6-w/exec'; // <--- Replace with your Apps Script deployed endpoint
+const SUBMIT_API_URL = 'https://script.google.com/macros/s/AKfycbzWIqCs1aQm3u6w9_JNHQ1LNa7DFFhkzORarM7NNXh6OJ0z-8eLe_xbyydz7JRE1L_6-w/exec';
 const LUNCH_DONATION_BASE_FEE = 50;
 
 const stockInstructions = {
@@ -33,7 +33,7 @@ const initialFormData = {
   zipCode: ''
 };
 
-// Fetch/caching for the Zelle QR (matches registration page)
+// Fetch/caching for the Zelle QR
 const cacheFetch = async (key: string, fetcher: () => Promise<any>, maxAgeMs = 60*60*1000) => {
   const now = Date.now();
   try {
@@ -60,7 +60,7 @@ export default function LunchDonationPage() {
   const [submitting, setSubmitting] = useState(false);
   const [zelleQrUrl, setZelleQrUrl] = useState('');
 
-  // Fetch Zelle QR code (caches 1 hour)
+  // Fetch Zelle QR code
   useEffect(() => {
     async function fetchQr() {
       try {
@@ -172,260 +172,299 @@ export default function LunchDonationPage() {
 
   if (isSubmitted) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-orange-50 p-6">
-        <div className="bg-white rounded-lg shadow-lg p-8 text-center max-w-lg w-full">
+      <div className="min-h-screen flex items-center justify-center bg-brand-light p-6">
+        <div className="bg-brand-white rounded-xl shadow-soft p-8 text-center max-w-lg w-full">
           <CheckCircle className="h-12 w-12 text-green-600 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-gray-800 mb-2">Thank You for Registering!</h1>
-          <p className="text-gray-700 mb-4">Your donation/registration has been submitted.</p>
-          <p className="text-gray-600 mb-4">You will receive a confirmation email soon.</p>
+          <h1 className="text-xl md:text-2xl font-bold text-brand-dark mb-2">Thank You for Registering!</h1>
+          <p className="text-brand-dark/80 mb-4 text-sm md:text-base">Your donation/registration has been submitted.</p>
+          <p className="text-brand-dark/70 text-sm md:text-base">You will receive a confirmation email soon.</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-orange-50 pt-10 pb-10">
-      <section className="bg-gradient-to-r from-orange-600 to-orange-700 text-white h-40 md:h-60 flex items-center justify-center">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold">Lunch Donation Registration</h1>
+    <div className="min-h-screen bg-white pt-[14vh]">
+      {/* ───── HERO BANNER ───── */}
+      <section className="relative flex items-center justify-center
+                              h-40 sm:h-48 md:h-56 lg:h-60 overflow-hidden">
+            <Image
+              src="/images/hero-banner.jpg"
+              alt="Make a Donation"
+              fill
+              priority
+              quality={85}
+              className="object-cover"
+            />        
+        <div className="relative z-10 text-center px-4">
+          <h1 className="font-bold text-brand-light text-3xl sm:text-4xl md:text-5xl">
+            Lunch Donation Registration
+          </h1>
         </div>
       </section>
-      <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-xl p-8 mt-8 space-y-8">
-        <div className="bg-yellow-50 p-4 rounded-xl border border-yellow-200">
-          <label className="flex items-start space-x-2">
-            <input
-              type="checkbox"
-              checked={addFees}
-              onChange={() => setAddFees(v => !v)}
-              className="mt-1 accent-accent"
-            />
-            <span className="text-red-600 font-medium">
-              Jain Center pays up to 3% as commission. Consider covering that so we receive the full donation.
-            </span>
-          </label>
-          <div className="text-right font-semibold mt-2 text-brand-dark">
-            Total: <span className="text-red-600">${totalWithFee.toFixed(2)}</span>
-          </div>
-        </div>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid md:grid-cols-2 gap-4">
-            {[
-              { name: 'fullName', label: 'Full Name', required: true },
-              { name: 'email', label: 'Email', required: true },
-              { name: 'phone', label: 'Phone', required: true },
-              { name: 'address', label: 'Address', required: true },
-              { name: 'city', label: 'City', required: true },
-              { name: 'state', label: 'State', required: true },
-              { name: 'zipCode', label: 'ZIP Code', required: true },
-            ].map(({ name, label, required }) => (
-              <div key={name}>
-                <label className="block text-sm font-medium mb-1">{label}</label>
+
+      {/* ───── MAIN FORM ───── */}
+      <section className="bg-brand-white">
+        <div className="max-w-5xl mx-auto px-4">
+          <div className=" bg-brand-white rounded-xl shadow-xl p-6 md:p-8 space-y-8 border-4 border-[#FFF7ED] sm:mt-10 relative z-10">
+            
+            {/* 3% Fee Notice */}
+            <div className="bg-yellow-50 p-4 rounded-xl border border-yellow-200">
+              <label className="flex items-start space-x-2">
                 <input
-                  type="text"
-                  name={name}
-                  value={(formData as any)[name]}
-                  onChange={handleInputChange}
-                  required={required}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  type="checkbox"
+                  checked={addFees}
+                  onChange={() => setAddFees(v => !v)}
+                  className="mt-1 accent-accent"
                 />
+                <span className="text-red-600 font-medium text-sm md:text-base">
+                  Jain Center pays up to 3% as commission. Consider covering that so we receive the full donation.
+                </span>
+              </label>
+              <div className="text-right font-semibold mt-2 text-brand-dark">
+                Total: <span className="text-red-600">${totalWithFee.toFixed(2)}</span>
               </div>
-            ))}
-          </div>
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <h2 className="text-lg font-semibold">Children</h2>
-              <button
-                type="button"
-                onClick={addChild}
-                className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-1 rounded"
-              >
-                Add Child
-              </button>
             </div>
-            {children.length === 0 && (
-              <p className="text-sm text-gray-600">No children added yet. At least one child is required.</p>
-            )}
-            {children.map((child, idx) => (
-              <div
-                key={idx}
-                className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end mb-3 border rounded bg-yellow-50 p-4"
-              >
-                <div>
-                  <label className="block text-sm font-medium mb-1">Child Full Name</label>
-                  <input
-                    type="text"
-                    value={child.fullName}
-                    onChange={e => handleChildChange(idx, 'fullName', e.target.value)}
-                    required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Child Age</label>
-                  <input
-                    type="text"
-                    value={child.age}
-                    onChange={e => handleChildChange(idx, 'age', e.target.value)}
-                    required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                  />
-                </div>
-                <div>
+
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Personal Information */}
+              <div className="grid md:grid-cols-2 gap-4">
+                {[
+                  { name: 'fullName', label: 'Full Name', required: true },
+                  { name: 'email', label: 'Email', required: true },
+                  { name: 'phone', label: 'Phone', required: true },
+                  { name: 'address', label: 'Address', required: true },
+                  { name: 'city', label: 'City', required: true },
+                  { name: 'state', label: 'State', required: true },
+                  { name: 'zipCode', label: 'ZIP Code', required: true },
+                ].map(({ name, label, required }) => (
+                  <div key={name}>
+                    <label className="block text-sm font-medium mb-1 text-brand-dark">{label}</label>
+                    <input
+                      type="text"
+                      name={name}
+                      value={(formData as any)[name]}
+                      onChange={handleInputChange}
+                      required={required}
+                      className="w-full px-4 py-3 border-soft rounded-xl text-sm md:text-base text-brand-dark bg-brand-white focus:ring-2 focus:ring-accent/20 focus:border-accent focus:outline-none transition-all duration-300"
+                    />
+                  </div>
+                ))}
+              </div>
+
+              {/* Children Section */}
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-lg md:text-xl font-semibold text-brand-dark">Children Information</h2>
                   <button
                     type="button"
-                    onClick={() => removeChild(idx)}
-                    className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded w-full"
+                    onClick={addChild}
+                    className="bg-accent hover:bg-accent-hov text-brand-light px-4 py-2 rounded-xl font-medium text-sm transition-colors"
                   >
-                    Remove
+                    Add Child
                   </button>
                 </div>
-              </div>
-            ))}
-          </div>
-          {/* PAYMENT METHOD */}
-          <div>
-            <h2 className="text-lg font-semibold mb-4 text-brand-dark">Choose Payment Method</h2>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              {[
-                { method: "paypal", label: "PayPal", icon: CreditCard },
-                { method: "zelle", label: "Zelle", icon: DollarSign },
-                { method: "cheque", label: "Cheque", icon: Mail },
-                { method: "stock", label: "Stock Transfer", icon: TrendingUp },
-              ].map(({ method, label, icon: Icon }) => (
-                <button
-                  type="button"
-                  key={method}
-                  className={`border-soft rounded-xl p-4 text-center transition 
-                    ${paymentMethod === method
-                    ? "border-orange-600 bg-orange-50"
-                    : "border-gray-200 hover:border-orange-300"}`}
-                  onClick={() => { setPaymentMethod(method as PaymentMethod); setPaymentReference(""); }}
-                >
-                  <Icon className="h-8 w-8 mx-auto mb-2 text-accent" />
-                  <div className="text-sm md:text-base font-bold capitalize text-brand-dark">
-                    {label}
-                  </div>
-                </button>
-              ))}
-            </div>
-            {paymentMethod && paymentMethod !== 'paypal' && (
-              <div className="mt-4">
-                <label className="block text-sm font-medium mb-1 text-brand-dark">
-                  {getPaymentRefLabel(paymentMethod)} <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={paymentReference}
-                  onChange={e => setPaymentReference(e.target.value)}
-                  required
-                  className="w-full px-4 py-3 border-soft rounded-xl text-sm md:text-base text-brand-dark focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent"
-                  placeholder={`Enter ${getPaymentRefLabel(paymentMethod)}`}
-                />
-              </div>
-            )}
-            {paymentMethod === "paypal" && (
-              <div className="mt-4 border-soft rounded-xl p-4 bg-brand-light">
-                <form
-                  action="https://www.sandbox.paypal.com/donate"
-                  method="post"
-                  target="_blank"
-                  onSubmit={() => setTimeout(() => setIsSubmitted(true), 1000)}
-                >
-                  <input type="hidden" name="business" value="your-sandbox-paypal@email.com" />
-                  <input type="hidden" name="currency_code" value="USD" />
-                  <input type="hidden" name="amount" value={totalWithFee.toFixed(2)} />
-                  <button className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-6 rounded-xl transition-colors mt-2">
-                    Pay with PayPal
-                  </button>
-                </form>
-              </div>
-            )}
-            {paymentMethod === "zelle" && (
-              <div className="mt-4 border-soft rounded-xl p-4 bg-brand-light text-center">
-                <p className="font-medium text-brand-dark">
-                  Scan the Zelle QR code:
-                </p>
-                {zelleQrUrl ? (
-                  <div className="relative w-[200px] h-[200px] mx-auto mt-2">
-                    <Image src={zelleQrUrl} alt="Zelle QR" fill className="object-contain" />
-                  </div>
-                ) : (
-                  <p className="text-gray-500 mt-2">Zelle QR code not available.</p>
+                
+                {children.length === 0 && (
+                  <p className="text-sm text-brand-dark/70 mb-4">No children added yet. At least one child is required.</p>
                 )}
-                <p className="text-sm text-brand-dark/70 mt-2">
-                  or send to <strong>donate@yourdomain.org</strong>
-                </p>
+                
+                {children.map((child, idx) => (
+                  <div
+                    key={idx}
+                    className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end mb-4 border border-accent/20 rounded-xl bg-brand-white p-4"
+                  >
+                    <div>
+                      <label className="block text-sm font-medium mb-1 text-brand-dark">Child Full Name</label>
+                      <input
+                        type="text"
+                        value={child.fullName}
+                        onChange={e => handleChildChange(idx, 'fullName', e.target.value)}
+                        required
+                        className="w-full px-4 py-3 border-soft rounded-xl text-sm md:text-base text-brand-dark bg-brand-light focus:ring-2 focus:ring-accent/20 focus:border-accent focus:outline-none transition-all duration-300"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-1 text-brand-dark">Child Age</label>
+                      <input
+                        type="text"
+                        value={child.age}
+                        onChange={e => handleChildChange(idx, 'age', e.target.value)}
+                        required
+                        className="w-full px-4 py-3 border-soft rounded-xl text-sm md:text-base text-brand-dark bg-brand-light focus:ring-2 focus:ring-accent/20 focus:border-accent focus:outline-none transition-all duration-300"
+                      />
+                    </div>
+                    <div>
+                      <button
+                        type="button"
+                        onClick={() => removeChild(idx)}
+                        className="w-full bg-accent border-4 border-accent hover:bg-white hover:text-accent hover:border-4 text-white px-3 py-3 rounded-xl font-medium text-sm transition-colors"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
-            )}
-            {paymentMethod === "cheque" && (
-              <div className="mt-4 border-soft rounded-xl p-4 bg-brand-light">
-                <p className="font-medium text-brand-dark mb-2">Mail your cheque to:</p>
-                <div className="bg-brand-white p-3 rounded-xl border-l-4 border-accent">
-                  <p className="font-medium text-brand-dark">
-                    Jain Center
-                    <br />1234 Jain Street
-                    <br />Your City, State ZIP
-                  </p>
+
+              {/* Payment Method Selection */}
+              <div>
+                <h2 className="text-lg md:text-xl font-semibold mb-4 text-brand-dark">Choose Payment Method</h2>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  {[
+                    { method: "paypal", label: "PayPal", icon: CreditCard },
+                    { method: "zelle", label: "Zelle", icon: DollarSign },
+                    { method: "cheque", label: "Cheque", icon: Mail },
+                    { method: "stock", label: "Stock Transfer", icon: TrendingUp },
+                  ].map(({ method, label, icon: Icon }) => (
+                    <button
+                      type="button"
+                      key={method}
+                      className={`border-soft rounded-xl p-4 text-center transition-all ${
+                        paymentMethod === method
+                          ? "border-accent bg-accent/10"
+                          : "border-accent/20 hover:border-accent/40"
+                      }`}
+                      onClick={() => { setPaymentMethod(method as PaymentMethod); setPaymentReference(""); }}
+                    >
+                      <Icon className="h-8 w-8 mx-auto mb-2 text-accent" />
+                      <div className="text-sm md:text-base font-semibold text-brand-dark">
+                        {label}
+                      </div>
+                    </button>
+                  ))}
                 </div>
-                <p className="text-sm text-brand-dark/70 mt-2">
-                  Please make cheque payable to: <strong>"Jain Center"</strong>
-                </p>
-              </div>
-            )}
-            {paymentMethod === "stock" && (
-              <div className="mt-4 border-soft rounded-xl p-4 bg-brand-light">
-                <div className="space-y-4">
-                  <div>
-                    <h3 className="font-medium text-brand-dark mb-2">Stock Transfer Information</h3>
-                    <div className="bg-brand-white p-4 rounded-xl border-l-4 border-green-500">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                        <div>
-                          <p className="font-medium text-brand-dark">Brokerage Firm:</p>
-                          <p className="text-brand-dark/70">{stockInstructions.brokerage}</p>
+
+                {/* Payment Reference Field */}
+                {paymentMethod && paymentMethod !== 'paypal' && (
+                  <div className="mt-4">
+                    <label className="block text-sm font-medium mb-1 text-brand-dark">
+                      {getPaymentRefLabel(paymentMethod)} <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={paymentReference}
+                      onChange={e => setPaymentReference(e.target.value)}
+                      required
+                      className="w-full px-4 py-3 border-soft rounded-xl text-sm md:text-base text-brand-dark bg-brand-white focus:ring-2 focus:ring-accent/20 focus:border-accent focus:outline-none transition-all duration-300"
+                      placeholder={`Enter ${getPaymentRefLabel(paymentMethod)}`}
+                    />
+                  </div>
+                )}
+
+                {/* Payment Method Details */}
+                {paymentMethod === "paypal" && (
+                  <div className="mt-4 border-soft rounded-xl p-4 bg-brand-white">
+                    <form
+                      action="https://www.sandbox.paypal.com/donate"
+                      method="post"
+                      target="_blank"
+                      onSubmit={() => setTimeout(() => setIsSubmitted(true), 1000)}
+                    >
+                      <input type="hidden" name="business" value="your-sandbox-paypal@email.com" />
+                      <input type="hidden" name="currency_code" value="USD" />
+                      <input type="hidden" name="amount" value={totalWithFee.toFixed(2)} />
+                      <button className="bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-xl transition-colors font-medium">
+                        Pay with PayPal
+                      </button>
+                    </form>
+                  </div>
+                )}
+
+                {paymentMethod === "zelle" && (
+                  <div className="mt-4 border-soft rounded-xl p-4 bg-brand-white text-center">
+                    <p className="font-medium text-brand-dark mb-4">
+                      Scan the Zelle QR code:
+                    </p>
+                    {zelleQrUrl ? (
+                      <div className="relative w-[200px] h-[200px] mx-auto mt-2">
+                        <Image src={zelleQrUrl} alt="Zelle QR" fill className="object-contain" />
+                      </div>
+                    ) : (
+                      <p className="text-brand-dark/60 mt-2">Zelle QR code not available.</p>
+                    )}
+                    <p className="text-sm text-brand-dark/80 mt-4">
+                      or send to <strong>donate@yourdomain.org</strong>
+                    </p>
+                  </div>
+                )}
+
+                {paymentMethod === "cheque" && (
+                  <div className="mt-4 border-soft rounded-xl p-4 bg-brand-white">
+                    <p className="font-medium text-brand-dark mb-2">Mail your cheque to:</p>
+                    <div className="bg-brand-light p-3 rounded-xl border-l-4 border-accent">
+                      <p className="font-medium text-brand-dark">
+                        Jain Center
+                        <br />1234 Jain Street
+                        <br />Your City, State ZIP
+                      </p>
+                    </div>
+                    <p className="text-sm text-brand-dark/80 mt-2">
+                      Please make cheque payable to: <strong>"Jain Center"</strong>
+                    </p>
+                  </div>
+                )}
+
+                {paymentMethod === "stock" && (
+                  <div className="mt-4 border-soft rounded-xl p-4 bg-brand-white">
+                    <div className="space-y-4">
+                      <div>
+                        <h3 className="font-medium text-brand-dark mb-2">Stock Transfer Information</h3>
+                        <div className="bg-brand-light p-4 rounded-xl border-l-4 border-green-500">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                            <div>
+                              <p className="font-medium text-brand-dark">Brokerage Firm:</p>
+                              <p className="text-brand-dark/80">{stockInstructions.brokerage}</p>
+                            </div>
+                            <div>
+                              <p className="font-medium text-brand-dark">Account Name:</p>
+                              <p className="text-brand-dark/80">{stockInstructions.accountName}</p>
+                            </div>
+                            <div>
+                              <p className="font-medium text-brand-dark">Account Number:</p>
+                              <p className="text-brand-dark/80">{stockInstructions.accountNumber}</p>
+                            </div>
+                            <div>
+                              <p className="font-medium text-brand-dark">DTC Number:</p>
+                              <p className="text-brand-dark/80">{stockInstructions.dtc}</p>
+                            </div>
+                          </div>
                         </div>
-                        <div>
-                          <p className="font-medium text-brand-dark">Account Name:</p>
-                          <p className="text-brand-dark/70">{stockInstructions.accountName}</p>
-                        </div>
-                        <div>
-                          <p className="font-medium text-brand-dark">Account Number:</p>
-                          <p className="text-brand-dark/70">{stockInstructions.accountNumber}</p>
-                        </div>
-                        <div>
-                          <p className="font-medium text-brand-dark">DTC Number:</p>
-                          <p className="text-brand-dark/70">{stockInstructions.dtc}</p>
-                        </div>
+                      </div>
+                      <div className="bg-blue-50 p-3 rounded-xl border border-blue-200">
+                        <h4 className="font-medium text-blue-800 mb-2">Instructions:</h4>
+                        <ul className="text-sm text-blue-700 space-y-1 text-justify">
+                          <li>• Contact your broker to initiate the stock transfer</li>
+                          <li>• Provide the above account information</li>
+                          <li>• Please notify us at <strong>donate@jaincenter.org</strong> after initiating the transfer</li>
+                          <li>• Include your name, stock symbol, and number of shares in the email</li>
+                        </ul>
+                      </div>
+                      <div className="bg-yellow-50 p-3 rounded-xl border border-yellow-200">
+                        <p className="text-sm text-yellow-800 text-justify">
+                          <strong>Note:</strong> Stock donations may provide additional tax benefits. Please consult your tax advisor for specific guidance.
+                        </p>
                       </div>
                     </div>
                   </div>
-                  <div className="bg-blue-50 p-3 rounded-xl border border-blue-200">
-                    <h4 className="font-medium text-blue-800 mb-2">Instructions:</h4>
-                    <ul className="text-sm text-blue-700 space-y-1 text-justify">
-                      <li>• Contact your broker to initiate the stock transfer</li>
-                      <li>• Provide the above account information</li>
-                      <li>• Please notify us at <strong>donate@jaincenter.org</strong> after initiating the transfer</li>
-                      <li>• Include your name, stock symbol, and number of shares in the email</li>
-                    </ul>
-                  </div>
-                  <div className="bg-yellow-50 p-3 rounded-xl border border-yellow-200">
-                    <p className="text-sm text-yellow-800 text-justify">
-                      <strong>Note:</strong> Stock donations may provide additional tax benefits. Please consult your tax advisor for specific guidance.
-                    </p>
-                  </div>
-                </div>
+                )}
               </div>
-            )}
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                disabled={!canSubmit || submitting}
+                className={`w-full btn-primary text-lg py-4 rounded-xl flex items-center justify-center ${
+                  (!canSubmit || submitting) ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+              >
+                <Heart className="h-5 w-5 mr-2" />
+                {submitting ? "Submitting..." : "Submit Donation Info"}
+              </button>
+            </form>
           </div>
-          <button
-            type="submit"
-            disabled={!canSubmit || submitting}
-            className={`w-full bg-orange-600 hover:bg-orange-700 text-white py-4 rounded font-semibold text-lg flex items-center justify-center${(!canSubmit || submitting) ? " opacity-50 cursor-not-allowed" : ""}`}
-          >
-            <Heart className="h-5 w-5 mr-2" />
-            {submitting ? "Submitting..." : "Submit Donation Info"}
-          </button>
-        </form>
-      </div>
+        </div>
+      </section>
     </div>
   );
 }

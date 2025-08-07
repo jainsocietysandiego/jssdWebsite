@@ -219,28 +219,6 @@ return (
                   </div>
                 </div>
 
-                {/* Quick Info Card */}
-                <div className="bg-brand-light rounded-xl shadow-soft p-6 border border-accent/10">
-                  <h4 className="font-bold text-accent mb-4 flex items-center gap-2">
-                    <Star className="h-5 w-5" />
-                    Membership Info
-                  </h4>
-                  <div className="space-y-3 text-sm">
-                    <div className="flex justify-between items-center">
-                      <span className="text-brand-dark/70">Plans Available:</span>
-                      <span className="font-medium text-brand-dark">{data.membershipTypes?.length || 'Multiple'}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-brand-dark/70">Starting From:</span>
-                      <span className="font-medium text-accent">${data.membershipTypes?.[data.membershipTypes.length - 1]?.price || 'Contact Us'}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-brand-dark/70">Benefits:</span>
-                      <span className="font-medium text-brand-dark">{data.benefits?.length || 'Multiple'}</span>
-                    </div>
-                  </div>
-                </div>
-
                 {/* Contact Card */}
                 <div className="bg-gradient-to-br from-accent/10 to-brand-light rounded-xl shadow-soft p-6 border border-accent/20">
                   <h4 className="font-bold text-accent mb-4 flex items-center gap-2">

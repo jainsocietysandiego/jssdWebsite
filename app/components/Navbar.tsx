@@ -167,10 +167,9 @@ const Navbar: React.FC = () => {
     { name: 'Pathshala', path: '/pathsala', hasDropdown: true },    
     { name: 'Events', path: '/events', hasDropdown: true },
     { name: 'Membership', path: '/membership', hasDropdown: true },
-    { name: 'Services', path: '', hasDropdown: true },
     { name: 'Groups', path: '', hasDropdown: true },    
     { name: 'Donate', path: '/contribute' },
-    { name: 'Gallery', path: '/gallery' },
+    { name: 'Media', path: '/gallery' },
     { name: 'Jinalay', path: '/jinalay' },
   ];
 
@@ -178,13 +177,7 @@ const Navbar: React.FC = () => {
     { name: 'Membership', path: '/membership' },
     { name: 'Newsletter', path: '/membership/newsletter' },
   ];
-
-  const servicesOptions = [
-    { name: 'Religious Activities', path: '/services/religious-activities' },
-    { name: 'Request Pooja', path: '/services/request-pooja' },
-    { name: 'Private Events Rental', path: '/services/event-rental' },
-  ];
-
+ 
   const aboutUsOptions = [
     { name: 'About Us', path: '/about' },
     { name: 'History', path: '/about/history' },
@@ -216,7 +209,6 @@ const Navbar: React.FC = () => {
     if (itemName === 'Membership') return membershipOptions;
     if (itemName === 'Events') return EventsOptions;
     if (itemName === 'About') return aboutUsOptions;
-    if (itemName === 'Services') return servicesOptions;
     return [];
   };
 
@@ -238,15 +230,15 @@ const Navbar: React.FC = () => {
       }`}
     >
       <div className="mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-[14vh]">
+        <div className="flex justify-between items-center h-[8vh] sm:h-[12vh]">
           {/* Logo */}
           <Link href="/" className="flex items-center text-2xl font-bold text-orange-600 hover:text-orange-700">
             <Image
               src="/logo3.png"
               alt="JSSD Logo"
-              width={160}
-              height={60}
-              className="h-12 w-auto sm:h-20 transition-all duration-200"
+              width={150}
+              height={50}
+              className="h-8 w-auto sm:h-16 transition-all duration-200"
               priority
             />
           </Link>

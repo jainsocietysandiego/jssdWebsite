@@ -195,7 +195,7 @@ return (
           <aside className="lg:col-span-4">
             <div className="sticky top-8 space-y-6">
               {/* Main CTA Card */}
-              <div className="bg-brand-dark rounded-2xl shadow-lg p-6 text-center transform hover:scale-105 transition-transform duration-300">
+              <div className="bg-[#EA580C] rounded-2xl shadow-lg p-6 text-center transform hover:scale-105 transition-transform duration-300">
                 <div className="w-16 h-16 bg-brand-light rounded-full flex items-center justify-center mx-auto mb-4">
                   <Users className="h-8 w-8 text-accent" />
                 </div>
@@ -218,28 +218,6 @@ return (
                   >
                     Ask Questions
                   </a>
-                </div>
-              </div>
-
-              {/* Quick Info Card */}
-              <div className="bg-brand-light rounded-xl shadow-soft p-6 border border-accent/10">
-                <h4 className="font-bold text-accent mb-4 flex items-center gap-2">
-                  <Clock className="h-5 w-5" />
-                  Quick Info
-                </h4>
-                <div className="space-y-3 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-brand-dark/70">Level:</span>
-                    <span className="font-medium text-brand-dark">{data.Level}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-brand-dark/70">Duration:</span>
-                    <span className="font-medium text-brand-dark">{data.Duration}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-brand-dark/70">Fee:</span>
-                    <span className="font-medium text-accent">{data.Fees}</span>
-                  </div>
                 </div>
               </div>
             </div>

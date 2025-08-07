@@ -206,9 +206,9 @@ const Home: React.FC = () => {
   return (
     <div className="min-h-screen bg-brand-light">
       <main>
-        <div className="pt-[14vh]">
+        <div className="pt-[8vh] sm:pt-[12vh]">
           {/* Enhanced Hero Carousel */}
-          <section className="relative h-[86vh] overflow-hidden">
+          <section className="relative h-[92vh] sm:h-[88vh] overflow-hidden">
             {/* Carousel Container */}
             <div className="absolute inset-0">
               {data.slides && Array.isArray(data.slides) && data.slides.map((slide: any, i: number) => (
@@ -223,7 +223,7 @@ const Home: React.FC = () => {
                   <img
                     src={slide.url || ""}
                     alt={slide.alt || `Slide ${i + 1}`}
-                    className="w-full h-[86vh] object-cover"
+                    className="w-full h-[92vh] sm:h-[88vh] object-cover"
                     loading={i === 0 ? "eager" : "lazy"}
                   />
                   <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/30 to-black/60"></div>
@@ -310,7 +310,7 @@ const Home: React.FC = () => {
           <section id="about" className="py-16 md:py-20 bg-brand-white">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="text-center mb-12 md:mb-16">
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-accent mb-4">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-black mb-4">
                   {data.aboutHeading || ""}
                 </h2>
                 <div className="w-16 md:w-24 h-1 bg-accent mx-auto mb-8 rounded-full"></div>
@@ -347,7 +347,7 @@ const Home: React.FC = () => {
                 
                 {/* Our Mission Box*/}
                 <div className="relative lg:top-[-78px] md:top-[-20px] sm:top-0">
-                  <div className="bg-brand-dark p-6 md:p-8 rounded-2xl shadow-soft hover:shadow-lg transition-all duration-300">
+                  <div className="bg-[#EA580C] p-6 md:p-8 rounded-2xl shadow-soft hover:shadow-lg transition-all duration-300">
                     <h3 className="text-xl md:text-2xl font-bold text-brand-light mb-4 md:mb-6">
                       {data.missionHeading || ""}
                     </h3>

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { ChevronLeft, ChevronRight, ArrowDown } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation"; 
 import MailingListForm from "./mailingListSection";
@@ -511,6 +511,8 @@ const Home: React.FC = () => {
                       required
                       className="w-full border-soft rounded-xl px-4 md:px-6 py-3 md:py-4 text-sm md:text-base text-brand-dark bg-brand-light focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all duration-300 shadow-soft resize-none"
                     ></textarea>
+                    <div>
+                  </div>
                     <button
                       type="submit"
                       className="w-full btn-primary text-sm md:text-lg py-3 md:py-4 rounded-xl"

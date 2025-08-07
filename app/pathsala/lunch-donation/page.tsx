@@ -3,9 +3,11 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { CreditCard, DollarSign, Mail, TrendingUp, Heart, CheckCircle } from 'lucide-react';
+import ReCAPTCHA from 'react-google-recaptcha';  // Added captcha import
+
 
 // Endpoints
-const ZELLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzIHxb91BTRhLhjOr4an8hcgHBzjOOFWRDPiJgGMlfDEpxGA3yksX0RGjwqE3luzNNDlw/exec';
+const ZELLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzIHxb91BTRhLhjOr4an8hcgHBzjOOFWRDPiJgGMlfDEpxGA3ysX0RGjwqE3luzNNDlw/exec';
 const SUBMIT_API_URL = 'https://script.google.com/macros/s/AKfycbzWIqCs1aQm3u6w9_JNHQ1LNa7DFFhkzORarM7NNXh6OJ0z-8eLe_xbyydz7JRE1L_6-w/exec';
 const LUNCH_DONATION_BASE_FEE = 50;
 
@@ -50,6 +52,10 @@ const cacheFetch = async (key: string, fetcher: () => Promise<any>, maxAgeMs = 6
   }
 };
 
+// === Use your actual reCAPTCHA v2 site key (same as previous page) ===
+const RECAPTCHA_SITE_KEY = '6LdGip0rAAAAAKsHaqNZGhLnKNCQjmqYqOnIWI9G';
+
+
 export default function LunchDonationPage() {
   const [formData, setFormData] = useState(initialFormData);
   const [children, setChildren] = useState<ChildInfo[]>([]);
@@ -59,6 +65,8 @@ export default function LunchDonationPage() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [zelleQrUrl, setZelleQrUrl] = useState('');
+  
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
 
   // Fetch Zelle QR code
   useEffect(() => {
@@ -88,6 +96,7 @@ export default function LunchDonationPage() {
     children.length > 0 &&
     children.every(c => c.fullName.trim() && c.age.trim()) &&
     paymentMethod !== null &&
+    captchaToken !== null &&  // Captcha must be solved
     (
       paymentMethod === "paypal" ||
       (["zelle", "cheque", "stock"].includes(paymentMethod!)
@@ -153,6 +162,7 @@ export default function LunchDonationPage() {
       finalTotal: totalWithFee,
       paymentMethod,
       paymentReference,
+      captchaToken,  // Passing captcha token to backend
     };
 
     try {
@@ -168,6 +178,11 @@ export default function LunchDonationPage() {
     } finally {
       setSubmitting(false);
     }
+  }
+
+  // On captcha change handler
+  const handleCaptchaChange = (token: string | null) => {
+    setCaptchaToken(token);
   }
 
   if (isSubmitted) {
@@ -186,16 +201,15 @@ export default function LunchDonationPage() {
   return (
     <div className="min-h-screen bg-white pt-[14vh]">
       {/* ───── HERO BANNER ───── */}
-      <section className="relative flex items-center justify-center
-                              h-40 sm:h-48 md:h-56 lg:h-60 overflow-hidden">
-            <Image
-              src="/images/hero-banner.jpg"
-              alt="Make a Donation"
-              fill
-              priority
-              quality={85}
-              className="object-cover"
-            />        
+      <section className="relative flex items-center justify-center h-40 sm:h-48 md:h-56 lg:h-60 overflow-hidden">
+        <Image
+          src="/images/hero-banner.jpg"
+          alt="Make a Donation"
+          fill
+          priority
+          quality={85}
+          className="object-cover"
+        />
         <div className="relative z-10 text-center px-4">
           <h1 className="font-bold text-brand-light text-3xl sm:text-4xl md:text-5xl">
             Lunch Donation Registration
@@ -206,8 +220,8 @@ export default function LunchDonationPage() {
       {/* ───── MAIN FORM ───── */}
       <section className="bg-brand-white">
         <div className="max-w-5xl mx-auto px-4">
-          <div className=" bg-brand-white rounded-xl shadow-xl p-6 md:p-8 space-y-8 border-4 border-[#FFF7ED] sm:mt-10 relative z-10">
-            
+          <div className="bg-brand-white rounded-xl shadow-xl p-6 md:p-8 space-y-8 border-4 border-[#FFF7ED] sm:mt-10 relative z-10">
+
             {/* 3% Fee Notice */}
             <div className="bg-yellow-50 p-4 rounded-xl border border-yellow-200">
               <label className="flex items-start space-x-2">
@@ -264,11 +278,11 @@ export default function LunchDonationPage() {
                     Add Child
                   </button>
                 </div>
-                
+
                 {children.length === 0 && (
                   <p className="text-sm text-brand-dark/70 mb-4">No children added yet. At least one child is required.</p>
                 )}
-                
+
                 {children.map((child, idx) => (
                   <div
                     key={idx}
@@ -307,6 +321,15 @@ export default function LunchDonationPage() {
                 ))}
               </div>
 
+              {/* CAPTCHA here - before Payment Method */}
+              <div className="mt-4">
+                <ReCAPTCHA
+                  sitekey={RECAPTCHA_SITE_KEY}
+                  onChange={handleCaptchaChange}
+                  theme="light"
+                />
+              </div>
+
               {/* Payment Method Selection */}
               <div>
                 <h2 className="text-lg md:text-xl font-semibold mb-4 text-brand-dark">Choose Payment Method</h2>
@@ -321,21 +344,16 @@ export default function LunchDonationPage() {
                       type="button"
                       key={method}
                       className={`border-soft rounded-xl p-4 text-center transition-all ${
-                        paymentMethod === method
-                          ? "border-accent bg-accent/10"
-                          : "border-accent/20 hover:border-accent/40"
+                        paymentMethod === method ? "border-accent bg-accent/10" : "border-accent/20 hover:border-accent/40"
                       }`}
                       onClick={() => { setPaymentMethod(method as PaymentMethod); setPaymentReference(""); }}
                     >
                       <Icon className="h-8 w-8 mx-auto mb-2 text-accent" />
-                      <div className="text-sm md:text-base font-semibold text-brand-dark">
-                        {label}
-                      </div>
+                      <div className="text-sm md:text-base font-semibold text-brand-dark">{label}</div>
                     </button>
                   ))}
                 </div>
 
-                {/* Payment Reference Field */}
                 {paymentMethod && paymentMethod !== 'paypal' && (
                   <div className="mt-4">
                     <label className="block text-sm font-medium mb-1 text-brand-dark">
@@ -345,21 +363,19 @@ export default function LunchDonationPage() {
                       type="text"
                       value={paymentReference}
                       onChange={e => setPaymentReference(e.target.value)}
-                      required
+                      required={paymentMethod === 'zelle' || paymentMethod === 'cheque' || paymentMethod === 'stock'}
                       className="w-full px-4 py-3 border-soft rounded-xl text-sm md:text-base text-brand-dark bg-brand-white focus:ring-2 focus:ring-accent/20 focus:border-accent focus:outline-none transition-all duration-300"
                       placeholder={`Enter ${getPaymentRefLabel(paymentMethod)}`}
                     />
                   </div>
                 )}
 
-                {/* Payment Method Details */}
                 {paymentMethod === "paypal" && (
                   <div className="mt-4 border-soft rounded-xl p-4 bg-brand-white">
                     <form
                       action="https://www.sandbox.paypal.com/donate"
                       method="post"
                       target="_blank"
-                      onSubmit={() => setTimeout(() => setIsSubmitted(true), 1000)}
                     >
                       <input type="hidden" name="business" value="your-sandbox-paypal@email.com" />
                       <input type="hidden" name="currency_code" value="USD" />
@@ -373,9 +389,7 @@ export default function LunchDonationPage() {
 
                 {paymentMethod === "zelle" && (
                   <div className="mt-4 border-soft rounded-xl p-4 bg-brand-white text-center">
-                    <p className="font-medium text-brand-dark mb-4">
-                      Scan the Zelle QR code:
-                    </p>
+                    <p className="font-medium text-brand-dark mb-4">Scan the Zelle QR code:</p>
                     {zelleQrUrl ? (
                       <div className="relative w-[200px] h-[200px] mx-auto mt-2">
                         <Image src={zelleQrUrl} alt="Zelle QR" fill className="object-contain" />
@@ -391,7 +405,7 @@ export default function LunchDonationPage() {
 
                 {paymentMethod === "cheque" && (
                   <div className="mt-4 border-soft rounded-xl p-4 bg-brand-white">
-                    <p className="font-medium text-brand-dark mb-2">Mail your cheque to:</p>
+                    <p className="text-brand-dark mb-2">Mail your cheque to:</p>
                     <div className="bg-brand-light p-3 rounded-xl border-l-4 border-accent">
                       <p className="font-medium text-brand-dark">
                         Jain Center
@@ -448,9 +462,9 @@ export default function LunchDonationPage() {
                     </div>
                   </div>
                 )}
+
               </div>
 
-              {/* Submit Button */}
               <button
                 type="submit"
                 disabled={!canSubmit || submitting}

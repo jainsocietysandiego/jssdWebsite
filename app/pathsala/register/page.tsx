@@ -251,7 +251,7 @@ const PathshalaRegister: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white pt-[14vh] pb-10">
+    <div className="min-h-screen bg-white pt-[8vh] sm:pt-[12vh] pb-10">
       {/* ───── HERO ───── */}
       <section
         className="relative flex items-center justify-center

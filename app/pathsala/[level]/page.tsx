@@ -116,28 +116,27 @@ const PathsalaLevel: React.FC = () => {
   if (!data) return <div className="min-h-screen text-center pt-20 text-red-600">Level not found.</div>;
 
 return (
-  <div className="min-h-screen bg-brand-light pt-[14vh]">
+  <div className="min-h-screen bg-brand-light pt-[8vh] sm:pt-[12vh]">
     {/* ───── HERO ───── */}
     <section className="relative flex items-center justify-center
-                        h-40 sm:h-48 md:h-56 lg:h-60 overflow-hidden">
-      <Image
-        src="/images/hero-banner.jpg"
-        alt="Pathshala Hero"
-        fill
-        priority
-        quality={85}
-        className="object-cover"
-      />
-      <div className="relative z-10 text-center px-4">
-          <h1 className="font-bold text-brand-light text-3xl sm:text-4xl md:text-5xl
-                         ">
-            Pathshala Level {data.Level}
-          </h1>
-          <h2 className="mt-3 text-white text-lg sm:text-xl md:text-2xl max-w-4xl mx-auto">
-            {data.Title} — {data.Description}
-          </h2>
-      </div>
-    </section>
+                                  h-40 sm:h-48 md:h-56 lg:h-60 overflow-hidden">
+                <Image
+                  src="/images/hero-banner.jpg"
+                  alt="Pathshala Program"
+                  fill
+                  priority
+                  quality={85}
+                  className="object-cover"
+                />
+                <div className="relative z-10 text-center px-4">
+                  <h1 className="font-bold text-brand-light text-3xl sm:text-4xl md:text-5xl">
+                    Pathshala Level {data.Level}
+                  </h1>
+                  <p className="mt-2 max-w-4xl mx-auto text-white text-lg sm:text-base md:text-2xl text-center">
+                   {data.Title} — {data.Description}
+                  </p>
+                </div>
+              </section>
 
     {/* ───── DETAIL SECTION ───── */}
     <main className="py-12 md:py-16 bg-brand-white relative">
@@ -195,7 +194,7 @@ return (
           <aside className="lg:col-span-4">
             <div className="sticky top-8 space-y-6">
               {/* Main CTA Card */}
-              <div className="bg-[#EA580C] rounded-2xl shadow-lg p-6 text-center transform hover:scale-105 transition-transform duration-300">
+              <div className="bg-gradient-to-br from-[#EA580C] via-[#D3490C] to-[#C2410C] rounded-2xl shadow-lg p-6 text-center transform hover:scale-105 transition-transform duration-300">
                 <div className="w-16 h-16 bg-brand-light rounded-full flex items-center justify-center mx-auto mb-4">
                   <Users className="h-8 w-8 text-accent" />
                 </div>
@@ -211,12 +210,6 @@ return (
                     className="block bg-brand-light hover:bg-brand-white text-brand-dark hover:text-accent py-3 px-6 rounded-xl font-semibold text-center text-sm md:text-base transition-all duration-300 hover:scale-105"
                   >
                     Register Now
-                  </a>
-                  <a
-                    href="/#feedback"
-                    className="block bg-transparent border-2 border-brand-light text-brand-light hover:bg-brand-light hover:text-brand-dark py-3 px-6 rounded-xl font-semibold text-center text-sm md:text-base transition-all duration-300"
-                  >
-                    Ask Questions
                   </a>
                 </div>
               </div>

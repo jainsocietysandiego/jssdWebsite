@@ -209,102 +209,103 @@ const Home: React.FC = () => {
         <div className="pt-[8vh] sm:pt-[12vh]">
           {/* Enhanced Hero Carousel */}
           <section className="relative h-[92vh] sm:h-[88vh] overflow-hidden">
-            {/* Carousel Container */}
-            <div className="absolute inset-0">
-              {data.slides && Array.isArray(data.slides) && data.slides.map((slide: any, i: number) => (
-                <div
-                  key={`slide-${i}`}
-                  className={`absolute inset-0 transition-all duration-700 ease-in-out transform ${
-                    i === currentSlide 
-                      ? "opacity-100 scale-100 z-10" 
-                      : "opacity-0 scale-105 z-0"
-                  }`}
-                >
-                  <img
-                    src={slide.url || ""}
-                    alt={slide.alt || `Slide ${i + 1}`}
-                    className="w-full h-[92vh] sm:h-[88vh] object-cover"
-                    loading={i === 0 ? "eager" : "lazy"}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/30 to-black/60"></div>
+                {/* Carousel Container */}
+                <div className="absolute inset-0">
+                  {data.slides && Array.isArray(data.slides) && data.slides.map((slide: any, i: number) => (
+                    <div
+                      key={`slide-${i}`}
+                      className={`absolute inset-0 transition-all duration-700 ease-in-out transform ${
+                        i === currentSlide 
+                          ? "opacity-100 scale-100 z-10" 
+                          : "opacity-0 scale-105 z-0"
+                      }`}
+                    >
+                      <img
+                        src={slide.url || ""}
+                        alt={slide.alt || `Slide ${i + 1}`}
+                        className="w-full h-[92vh] sm:h-[88vh] object-cover"
+                        loading={i === 0 ? "eager" : "lazy"}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/30 to-black/60"></div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
 
-            {/* Content Overlay */}
-            <div className="relative z-20 flex items-center justify-center h-full pt-48 sm:pt-72">
-              <div className="text-center text-brand-light px-4 max-w-5xl">
-                <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold  md:mb-4 animate-fade-in drop-shadow-2xl">
-                  {data.heroHeading || ""}
-                </h2>
-                <p className="text-md  md:text-xl lg:text-2xl mb-4 md:mb-6 animate-fade-in-delay drop-shadow-lg font-light text-center">
-                  {data.heroTagline || ""}
-                </p>
-                <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full md:w-auto justify-center">
-                  <a
-                    href="/membership"
-                    className="btn-primary hover:bg-white hover:text-accent hover:border-2 hover:border-accent transition-all duration-300 flex items-center justify-center text-sm md:text-lg px-6 md:px-10 py-3 md:py-4 rounded-xl w-full md:w-auto"
-                  >
-                    Become a JSSD Member
-                  </a>
-                  <a
-                    href="/contribute"
-                    className="w-full sm:w-auto bg-white text-accent px-6 md:px-10 py-3 md:py-4 rounded-xl font-semibold transition-all duration-300 hover:bg-[#EA580C] hover:text-white hover:scale-105 shadow-[0_2px_4px_rgba(0,0,0,0.06)] hover:border-2 hover:border-accent text-sm md:text-lg text-center"
-                  >
-                    Donate Now
-                  </a>                
+                {/* Content Overlay - Modified for bottom positioning */}
+                <div className="relative z-20 flex items-end justify-center h-full pb-16 md:pb-20">
+                  <div className="text-center text-brand-light px-4 max-w-5xl">
+                    <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold md:mb-4 animate-fade-in drop-shadow-2xl">
+                      {data.heroHeading || ""}
+                    </h2>
+                    <p className="text-md md:text-xl lg:text-2xl mb-4 md:mb-6 animate-fade-in-delay drop-shadow-lg font-light text-center">
+                      {data.heroTagline || ""}
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full md:w-auto justify-center">
+                      <a
+                        href="/membership"
+                        className="btn-primary hover:bg-white hover:text-accent hover:border-2 hover:border-accent transition-all duration-300 flex items-center justify-center text-sm md:text-lg px-6 md:px-10 py-3 md:py-4 rounded-xl w-full md:w-auto"
+                      >
+                        Become a JSSD Member
+                      </a>
+                      <a
+                        href="/contribute"
+                        className="w-full sm:w-auto bg-white text-accent px-6 md:px-10 py-3 md:py-4 rounded-xl font-semibold transition-all duration-300 hover:bg-[#D3490C] hover:text-white hover:scale-105 shadow-[0_2px_4px_rgba(0,0,0,0.06)] hover:border-2 hover:border-accent text-sm md:text-lg text-center"
+                      >
+                        Donate Now
+                      </a>                
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
 
-            {/* Navigation Arrows */}
-            {data.slides && Array.isArray(data.slides) && data.slides.length > 1 && (
-              <>
-                <button
-                  onClick={handlePrevSlide}
-                  className="absolute left-2 md:left-6 top-1/2 transform -translate-y-1/2 bg-white/15 hover:bg-white/25 backdrop-blur-md text-brand-light p-2 md:p-4 rounded-full transition-all duration-300 hover:scale-110 z-30 shadow-soft border border-white/20"
-                  aria-label="Previous slide"
-                >
-                  <ChevronLeft className="h-4 w-4 md:h-7 md:w-7" />
-                </button>
-                <button
-                  onClick={handleNextSlide}
-                  className="absolute right-2 md:right-6 top-1/2 transform -translate-y-1/2 bg-white/15 hover:bg-white/25 backdrop-blur-md text-brand-light p-2 md:p-4 rounded-full transition-all duration-300 hover:scale-110 z-30 shadow-soft border border-white/20"
-                  aria-label="Next slide"
-                >
-                  <ChevronRight className="h-4 w-4 md:h-7 md:w-7" />
-                </button>
-              </>
-            )}
+                {/* Navigation Arrows */}
+                {data.slides && Array.isArray(data.slides) && data.slides.length > 1 && (
+                  <>
+                    <button
+                      onClick={handlePrevSlide}
+                      className="absolute left-2 md:left-6 top-1/2 transform -translate-y-1/2 bg-white/15 hover:bg-white/25 backdrop-blur-md text-brand-light p-2 md:p-4 rounded-full transition-all duration-300 hover:scale-110 z-30 shadow-soft border border-white/20"
+                      aria-label="Previous slide"
+                    >
+                      <ChevronLeft className="h-4 w-4 md:h-7 md:w-7" />
+                    </button>
+                    <button
+                      onClick={handleNextSlide}
+                      className="absolute right-2 md:right-6 top-1/2 transform -translate-y-1/2 bg-white/15 hover:bg-white/25 backdrop-blur-md text-brand-light p-2 md:p-4 rounded-full transition-all duration-300 hover:scale-110 z-30 shadow-soft border border-white/20"
+                      aria-label="Next slide"
+                    >
+                      <ChevronRight className="h-4 w-4 md:h-7 md:w-7" />
+                    </button>
+                  </>
+                )}
 
-            {/* Enhanced Dot Indicators */}
-            {data.slides && Array.isArray(data.slides) && data.slides.length > 1 && (
-              <div className="absolute bottom-6 md:bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2 md:space-x-4 z-30">
-                {data.slides.map((_: any, index: number) => (
-                  <button
-                    key={`dot-${index}`}
-                    onClick={() => handleDotClick(index)}
-                    className={`w-3 h-3 md:w-4 md:h-4 rounded-full transition-all duration-300 transform hover:scale-125 border-2 ${
-                      index === currentSlide 
-                        ? "bg-white border-white shadow-soft scale-125" 
-                        : "bg-white/40 border-white/60 hover:bg-white/70"
-                    }`}
-                    aria-label={`Go to slide ${index + 1}`}
-                  />
-                ))}
-              </div>
-            )}
+                {/* Enhanced Dot Indicators */}
+                {data.slides && Array.isArray(data.slides) && data.slides.length > 1 && (
+                  <div className="absolute bottom-6 md:bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2 md:space-x-4 z-30">
+                    {data.slides.map((_: any, index: number) => (
+                      <button
+                        key={`dot-${index}`}
+                        onClick={() => handleDotClick(index)}
+                        className={`w-3 h-3 md:w-4 md:h-4 rounded-full transition-all duration-300 transform hover:scale-125 border-2 ${
+                          index === currentSlide 
+                            ? "bg-white border-white shadow-soft scale-125" 
+                            : "bg-white/40 border-white/60 hover:bg-white/70"
+                        }`}
+                        aria-label={`Go to slide ${index + 1}`}
+                      />
+                    ))}
+                  </div>
+                )}
 
-            {/* Progress bar */}
-            {data.slides && Array.isArray(data.slides) && data.slides.length > 1 && (
-              <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20 z-30">
-                <div 
-                  key={`progress-${currentSlide}`}
-                  className="h-full bg-accent animate-progress"
-                />
-              </div>
-            )}
-          </section>
+                {/* Progress bar */}
+                {data.slides && Array.isArray(data.slides) && data.slides.length > 1 && (
+                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20 z-30">
+                    <div 
+                      key={`progress-${currentSlide}`}
+                      className="h-full bg-accent animate-progress"
+                    />
+                  </div>
+                )}
+              </section>
+
 
           {/* About Section */}
           <section id="about" className="py-16 md:py-20 bg-brand-white">
@@ -347,7 +348,7 @@ const Home: React.FC = () => {
                 
                 {/* Our Mission Box*/}
                 <div className="relative lg:top-[-78px] md:top-[-20px] sm:top-0">
-                  <div className="bg-[#EA580C] p-6 md:p-8 rounded-2xl shadow-soft hover:shadow-lg transition-all duration-300">
+                  <div className="bg-gradient-to-br from-[#EA580C] via-[#D3490C] to-[#C2410C] p-6 md:p-8 h-full rounded-2xl shadow-soft hover:shadow-lg transition-all duration-300">
                     <h3 className="text-xl md:text-2xl font-bold text-brand-light mb-4 md:mb-6">
                       {data.missionHeading || ""}
                     </h3>

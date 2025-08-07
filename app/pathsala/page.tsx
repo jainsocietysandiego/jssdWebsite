@@ -243,7 +243,7 @@ const Pathsala: React.FC = () => {
     <Navbar />
     <div className="min-h-screen bg-brand-light">
       <main>
-        <div className="pt-[14vh]">
+        <div className="pt-[8vh] sm:pt-[12vh] ">
           {/* Hero Section */}
           <section className="relative flex items-center justify-center
                               h-40 sm:h-48 md:h-56 lg:h-60 overflow-hidden">
@@ -256,11 +256,10 @@ const Pathsala: React.FC = () => {
               className="object-cover"
             />
             <div className="relative z-10 text-center px-4">
-              <h1 className="font-bold text-brand-light text-3xl sm:text-4xl md:text-5xl
-                             ">
+              <h1 className="font-bold text-brand-light text-3xl sm:text-4xl md:text-5xl">
                 Pathshala Program
               </h1>
-              <p className="mt-2 max-w-3xl mx-auto text-white text-sm sm:text-base md:text-lg text-center">
+              <p className="mt-2 max-w-4xl mx-auto text-white text-sm sm:text-base md:text-lg text-center">
                 Nurturing young minds with Jain values, philosophy, and cultural heritage
               </p>
             </div>
@@ -272,6 +271,7 @@ const Pathsala: React.FC = () => {
                 <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-brand-dark mb-4">
                   About Our Pathshala
                 </h2>
+                <div className="w-16 md:w-24 h-1 bg-accent mx-auto mb-4 rounded-full"></div>
                 <p className="text-brand-dark/80 max-w-4xl mx-auto text-sm md:text-base text-center">
                   Our Pathshala program provides comprehensive Jain education
                   from childhood through young adulthood. Each level builds

@@ -199,7 +199,7 @@ export default function LunchDonationPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white pt-[14vh]">
+    <div className="min-h-screen bg-white pt-[8vh] sm:pt-[12vh]">
       {/* ───── HERO BANNER ───── */}
       <section className="relative flex items-center justify-center h-40 sm:h-48 md:h-56 lg:h-60 overflow-hidden">
         <Image

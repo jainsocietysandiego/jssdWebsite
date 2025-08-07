@@ -100,7 +100,7 @@ export default function CommitteePage() {
 
   return (
     <div className="min-h-screen bg-brand-light">
-      <main className="pt-[14vh]">
+      <main className="pt-[8vh] sm:pt-[12vh]">
         <div className="pb-12">
           <div className="relative h-40 sm:h-48 md:h-56 lg:h-60 w-full overflow-hidden">
             <img src={imageUrl} alt={title} className="w-full h-full object-cover" />

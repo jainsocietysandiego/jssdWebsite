@@ -213,7 +213,7 @@ if (!eventData) {
 }
 
 return (
-  <div className="min-h-screen bg-brand-light flex flex-col pt-[14vh]">
+  <div className="min-h-screen bg-brand-light flex flex-col pt-[8vh] sm:pt-[12vh]">
     <main className="flex-1 py-8 md:py-12">
       <div className="max-w-2xl mx-auto px-4">
         <div className="bg-brand-white shadow-soft rounded-3xl overflow-hidden animate-fade-in">

@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Mail, Clock, MapPin, Users } from 'lucide-react';
 import Image from 'next/image';
+import { get } from 'http';
 
 const API_URL =
   'https://script.google.com/macros/s/AKfycby4gsDwefTyRV7yzdlw0LFgNe0ROpWfi97Y_hnlODDtJa8CuO2QyLqqumv5CSCk8roLTg/exec';
@@ -103,24 +104,26 @@ const AboutPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-brand-light">
-      <main className="pt-[14vh]">
-
+      <main className="pt-[8vh] sm:pt-[12vh]">
         <section className="relative flex items-center justify-center
-                            h-40 sm:h-48 md:h-56 lg:h-60 overflow-hidden">
-          <Image
-            src="/images/hero-banner.jpg"
-            alt="Hero banner background"
-            fill
-            priority
-            quality={85}
-            className="object-cover"
-          />
-          <h1 className="relative z-10 px-4 text-center font-bold text-brand-light
-                         text-3xl sm:text-4xl md:text-5xl lg:text-6xl
-                         ">
-            {getContent('hero', 'Title')}
-          </h1>
-        </section>
+                                      h-40 sm:h-48 md:h-56 lg:h-60 overflow-hidden">
+                    <Image
+                      src="/images/hero-banner.jpg"
+                      alt="Pathshala Program"
+                      fill
+                      priority
+                      quality={85}
+                      className="object-cover"
+                    />
+                    <div className="relative z-10 text-center px-4">
+                      <h1 className="font-bold text-brand-light text-3xl sm:text-4xl md:text-5xl">
+                        {getContent('hero', 'Title')}
+                      </h1>
+                      <p className="mt-2 max-w-4xl mx-auto text-white text-sm sm:text-base md:text-lg text-center">
+                        Journey through our legacy of upholding ahimsa, truth, and spiritual wisdom
+                      </p>
+                    </div>
+                  </section>
 
         <section className="py-16 md:py-20 bg-brand-white">
           <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
@@ -158,9 +161,9 @@ const AboutPage: React.FC = () => {
               {/* e-mails */}
               <div className="bg-brand-white p-6 rounded-xl shadow-soft text-center border-soft">
                 <Mail className="w-7 h-7 mx-auto text-accent mb-3" />
-                <h3 className="font-semibold mb-1">Emails</h3>
+                <h3 className="font-semibold mb-1 text-lg">Emails</h3>
                 {getList('contact', 'Emails').map((e, i) => (
-                  <p key={i} className="break-words text-sm">{e}</p>
+                  <p key={i} className="break-words text-md">{e}</p>
                 ))}
               </div>
             </div>
@@ -174,7 +177,7 @@ const AboutPage: React.FC = () => {
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-brand-dark">
                 Organizational Structure
               </h2>
-              <p className="text-brand-dark max-w-3xl mx-auto text-justify">
+              <p className="text-brand-dark max-w-4xl mx-auto text-center">
                 JSSD is governed by a constitution and managed by dedicated volunteers elected by our members.
               </p>
             </header>
@@ -232,8 +235,8 @@ const ContactCard = ({
 }) => (
   <div className="bg-brand-white p-6 rounded-xl shadow-soft text-center border-soft space-y-1 break-words">
     <Icon className="w-7 h-7 mx-auto text-accent mb-2" />
-    <h3 className="font-semibold">{label}</h3>
-    <p className="text-sm">{value}</p>
+    <h3 className="font-semibold text-lg">{label}</h3>
+    <p className="text-md">{value}</p>
   </div>
 );
 

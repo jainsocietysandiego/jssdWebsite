@@ -73,27 +73,29 @@ const Jinalay: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-brand-light pt-[14vh]">
+    <div className="min-h-screen bg-brand-light pt-[8vh] sm:pt-[12vh]">
       {/* ────────── HERO ────────── */}
-<section className="relative flex items-center justify-center 
-                    h-40 sm:h-48 md:h-56 lg:h-60 overflow-hidden">
-  <Image
-    src="/images/hero-banner.jpg"
-    alt="Jinalay Project hero"
-    fill
-    priority
-    quality={85}
-    className="object-cover"
-  />
-  <div className="relative z-10 text-center px-4">
-    <h1 className="font-bold text-brand-light text-3xl sm:text-4xl md:text-5xl">
-      Jinalay Project
-    </h1>
-    <p className="mt-2 text-white text-sm sm:text-base md:text-lg max-w-3xl mx-auto text-justify">
-      Building a sacred space for future generations – our new temple complex
-    </p>
-  </div>
-</section>
+
+<section className="relative flex items-center justify-center
+                              h-40 sm:h-48 md:h-56 lg:h-60 overflow-hidden">
+            <Image
+              src="/images/hero-banner.jpg"
+              alt="Pathshala Program"
+              fill
+              priority
+              quality={85}
+              className="object-cover"
+            />
+            <div className="relative z-10 text-center px-4">
+              <h1 className="font-bold text-brand-light text-3xl sm:text-4xl md:text-5xl">
+                Jinalay Project
+              </h1>
+              <p className="mt-2 max-w-4xl mx-auto text-white text-sm sm:text-base md:text-lg text-center">
+                Building a sacred space for future generations - our new temple complex
+              </p>
+            </div>
+          </section>
+
 
      
 

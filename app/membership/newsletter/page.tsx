@@ -156,28 +156,26 @@ const NewsletterPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-brand-light pt-[14vh]">
+    <div className="min-h-screen bg-brand-light pt-[8vh] sm:pt-[12vh]">      
       <section className="relative flex items-center justify-center
-                          h-40 sm:h-48 md:h-56 lg:h-60 overflow-hidden">
-        <Image
-          src="/images/hero-banner.jpg"
-          alt="Newsletter hero"
-          fill
-          priority
-          quality={85}
-          className="object-cover"
-        />
-        
-        <div className="relative z-10 max-w-7xl mx-auto px-4 text-center">
-          <h1 className="font-bold text-brand-light text-3xl sm:text-4xl md:text-5xl
-                         ">
-            Newsletter
-          </h1>
-          <p className="mt-2 text-white text-sm sm:text-base md:text-lg">
-            Read the latest and previous editions
-          </p>
-        </div>
-      </section>
+                                    h-40 sm:h-48 md:h-56 lg:h-60 overflow-hidden">
+                  <Image
+                    src="/images/hero-banner.jpg"
+                    alt="Pathshala Program"
+                    fill
+                    priority
+                    quality={85}
+                    className="object-cover"
+                  />
+                  <div className="relative z-10 text-center px-4">
+                    <h1 className="font-bold text-brand-light text-3xl sm:text-4xl md:text-5xl">
+                      Newsletter
+                    </h1>
+                    <p className="mt-2 max-w-4xl mx-auto text-white text-sm sm:text-base md:text-lg text-center">
+                      Read the latest and previous editions
+                    </p>
+                  </div>
+                </section>
 
       <main className="max-w-5xl mx-auto pt-20 px-2 pb-24">      
           <>

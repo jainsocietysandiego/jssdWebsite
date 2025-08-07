@@ -129,31 +129,27 @@ const PoliciesPage: React.FC = () => {
 
   return (
   <div className="min-h-screen bg-brand-light">
-    <main className="pt-[14vh]">
+    <main className="pt-[8vh] sm:pt-[12vh]">
 
       <section className="relative flex items-center justify-center
-                         h-40 sm:h-48 md:h-56 lg:h-60 overflow-hidden overflow-hidden">
-        <Image
-          src="/images/hero-banner.jpg"
-          alt="Hero banner background"
-          fill
-          priority
-          quality={85}
-          className="object-cover"
-        />
-
-        <div className="relative z-10 px-4 text-center">
-          <h1 className="font-bold text-brand-light
-                         text-3xl sm:text-5xl ">
-            {data.heading}
-          </h1>
-
-          <p className="mt-4 max-w-2xl mx-auto text-center
-                        text-xs md:text-lg text-brand-light">
-            {data.description}
-          </p>
-        </div>
-      </section>
+                                    h-40 sm:h-48 md:h-56 lg:h-60 overflow-hidden">
+                  <Image
+                    src="/images/hero-banner.jpg"
+                    alt="Pathshala Program"
+                    fill
+                    priority
+                    quality={85}
+                    className="object-cover"
+                  />
+                  <div className="relative z-10 text-center px-4">
+                    <h1 className="font-bold text-brand-light text-3xl sm:text-4xl md:text-5xl">
+                      {data.heading}
+                    </h1>
+                    <p className="mt-2 max-w-5xl mx-auto text-white text-sm sm:text-base md:text-lg text-center">
+                      {data.description}
+                    </p>
+                  </div>
+                </section>
 
       <section className="py-16 md:py-20 bg-brand-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

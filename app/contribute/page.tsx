@@ -234,20 +234,27 @@ const DonatePage = () => {
     );
 
   return (
-    <div className="min-h-screen bg-white pt-[14vh] pb-10">
-      <section className="relative h-40 sm:h-48 md:h-56 lg:h-60 overflow-hidden flex items-center justify-center">
-        <Image
-          src="/images/hero-banner.jpg"
-          alt="Make a Donation"
-          fill
-          className="object-cover"
-          priority
-          quality={85}
-        />
-        <div className="relative z-10 max-w-7xl px-4 text-center">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-brand-light">Make a Donation</h1>
-        </div>
-      </section>
+    <div className="min-h-screen bg-white pt-[8vh] sm:pt-[12vh] pb-10">
+      <section className="relative flex items-center justify-center
+                                    h-40 sm:h-48 md:h-56 lg:h-60 overflow-hidden">
+                  <Image
+                    src="/images/hero-banner.jpg"
+                    alt="Pathshala Program"
+                    fill
+                    priority
+                    quality={85}
+                    className="object-cover"
+                  />
+                  <div className="relative z-10 text-center px-4">
+                    <h1 className="font-bold text-brand-light text-3xl sm:text-4xl md:text-5xl">
+                      Make a Donation
+                    </h1>
+                    <p className="mt-2 max-w-4xl mx-auto text-white text-sm sm:text-base md:text-lg text-center">
+                      Participate in our sacred seva by making a dharmic donation to our spiritual mission
+                    </p>
+                  </div>
+                </section>
+      
 
       <div className="max-w-5xl mx-auto bg-brand-white rounded-xl shadow-xl p-6 md:p-8 space-y-8 border-4 border-[#FFF7ED] mt-10 relative z-10">
         {/* Categories */}

@@ -280,21 +280,27 @@ const MembershipPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white pt-[14vh] pb-10">
+    <div className="min-h-screen bg-white pt-[8vh] sm:pt-[12vh] pb-10">
       {/* ───── HERO ───── */}
-      <section className="relative flex items-center justify-center h-40 sm:h-48 md:h-56 lg:h-60 overflow-hidden">
-        <Image
-          src="/images/hero-banner.jpg"
-          alt="Membership Registration"
-          fill
-          priority
-          quality={85}
-          className="object-cover"
-        />
-        <div className="relative z-10 max-w-7xl mx-auto px-4 text-center">
-          <h1 className="font-bold text-brand-light text-3xl sm:text-4xl md:text-5xl">Membership Registration</h1>
-        </div>
-      </section>
+      <section className="relative flex items-center justify-center
+                                    h-40 sm:h-48 md:h-56 lg:h-60 overflow-hidden">
+                  <Image
+                    src="/images/hero-banner.jpg"
+                    alt="Pathshala Program"
+                    fill
+                    priority
+                    quality={85}
+                    className="object-cover"
+                  />
+                  <div className="relative z-10 text-center px-4">
+                    <h1 className="font-bold text-brand-light text-3xl sm:text-4xl md:text-5xl">
+                      Membership Registration
+                    </h1>
+                    <p className="mt-2 max-w-4xl mx-auto text-white text-sm sm:text-base md:text-lg text-center">
+                      Register to unite with fellow devotees in our mission of dharmic service
+                    </p>
+                  </div>
+                </section>            
 
       <div className="max-w-5xl mx-auto bg-brand-white rounded-xl shadow-xl p-6 md:p-8 space-y-8 border-4 border-[#FFF7ED] sm:mt-10 relative z-10">
 

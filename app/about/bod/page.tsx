@@ -126,24 +126,28 @@ const BODPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-brand-light">
-  <main className="pt-[14vh]">
+  <main className="pt-[8vh] sm:pt-[12vh]">
     
     {/* Hero Banner Section */}
     <section className="relative flex items-center justify-center
-                        h-32 sm:h-40 md:h-44 lg:h-48 overflow-hidden">
-      <Image
-        src="/images/hero-banner.jpg"
-        alt="Board banner"
-        fill
-        priority
-        quality={85}
-        className="object-cover"
-      />
-      <h1 className="relative z-10 font-bold text-brand-light
-                     text-2xl sm:text-3xl md:text-4xl">
-        {bannerTitle}
-      </h1>
-    </section>
+                                  h-40 sm:h-48 md:h-56 lg:h-60 overflow-hidden">
+                <Image
+                  src="/images/hero-banner.jpg"
+                  alt="Pathshala Program"
+                  fill
+                  priority
+                  quality={85}
+                  className="object-cover"
+                />
+                <div className="relative z-10 text-center px-4">
+                  <h1 className="font-bold text-brand-light text-3xl sm:text-4xl md:text-5xl">
+                    {bannerTitle || 'Executive Committee & BOD'}
+                  </h1>
+                  <p className="mt-2 max-w-4xl mx-auto text-white text-sm sm:text-base md:text-lg text-center">
+                    Meet our devoted leaders committed to serving the Jain community with dedication
+                  </p>
+                </div>
+              </section>
 
     {/* Intro Section */}
     {intro && (

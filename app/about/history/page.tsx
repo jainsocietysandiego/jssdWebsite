@@ -133,24 +133,27 @@ const HistoryPage: React.FC = () => {
 
   return (
   <div className="min-h-screen bg-brand-light">
-    <main className="pt-[14vh]">
+    <main className="pt-[8vh] sm:pt-[12vh]">
 
       <section className="relative flex items-center justify-center
-                          h-40 sm:h-48 md:h-56 lg:h-60 overflow-hidden">
-        <Image
-          src="/images/hero-banner.jpg"          // keep this banner everywhere
-          alt="History banner background"
-          fill
-          priority
-          quality={85}
-          className="object-cover"
-        />
-        {/* <div className="absolute inset-0 z-0 bg-black/20 " /> */}
-        <h1 className="relative z-10 font-bold text-brand-light
-                       text-3xl sm:text-4xl md:text-5xl ">
-          {getContent('banner','Title') || 'Our History'}
-        </h1>
-      </section>
+                                            h-40 sm:h-48 md:h-56 lg:h-60 overflow-hidden">
+                          <Image
+                            src="/images/hero-banner.jpg"
+                            alt="Pathshala Program"
+                            fill
+                            priority
+                            quality={85}
+                            className="object-cover"
+                          />
+                          <div className="relative z-10 text-center px-4">
+                            <h1 className="font-bold text-brand-light text-3xl sm:text-4xl md:text-5xl">
+                              {getContent('banner', 'Title')}
+                            </h1>
+                            <p className="mt-2 max-w-4xl mx-auto text-white text-sm sm:text-base md:text-lg text-center">
+                              Learn about our commitment to dharma, seva, and spiritual guidance
+                            </p>
+                          </div>
+                        </section>
 
       <section className="py-16 bg-brand-white">
         <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row gap-10 items-center">

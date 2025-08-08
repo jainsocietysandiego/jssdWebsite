@@ -152,7 +152,7 @@ const BODPage: React.FC = () => {
     {/* Intro Section */}
     {intro && (
       <section className="py-8 bg-brand-white">
-        <div className="max-w-7xl mx-auto px-4">
+        <div className="max-w-6xl mx-auto px-4">
           <p className="text-brand-dark leading-relaxed text-justify whitespace-pre-line
                         text-sm md:text-base">
             {intro}
@@ -162,7 +162,7 @@ const BODPage: React.FC = () => {
     )}
 
     {/* Board Members Sections */}
-    <div className="max-w-7xl mx-auto px-4 py-8 space-y-12">
+    <div className="max-w-6xl mx-auto px-4 py-8 space-y-12">
       {sectionOrder.map(sec => {
         const people = members.filter(m => m.Section === sec);
         if (!people.length) return null;

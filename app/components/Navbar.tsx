@@ -238,7 +238,7 @@ const Navbar: React.FC = () => {
               alt="JSSD Logo"
               width={150}
               height={50}
-              className="h-8 w-auto sm:h-16 transition-all duration-200"
+              className="h-full  w-auto transition-all duration-200"
               priority
             />
           </Link>

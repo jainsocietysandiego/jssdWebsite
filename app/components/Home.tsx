@@ -437,7 +437,7 @@ const Home: React.FC = () => {
                   </div>
                   <div className="bg-brand-white rounded-2xl shadow-soft border-soft overflow-hidden hover:shadow-lg transition-shadow duration-300">
                     <iframe
-                      src="https://calendar.google.com/calendar/embed?src=jainsocietyofsandiego%40gmail.com&ctz=Asia%2FKolkata"
+                      src="https://calendar.google.com/calendar/embed?src=jainsocietyofsandiego%40gmail.com&ctz=Asia%2FKolkata&bgcolor=%23ffffff&color=%23B1440E"
                       style={{ border: 0 }}
                       width="100%"
                       height="600"

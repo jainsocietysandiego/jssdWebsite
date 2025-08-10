@@ -1,1 +1,33 @@
-{"headerTitle":"JAI JINENDRA SAKAL SANGH","heroHeading":"Welcome to JSSD","heroTagline":"Practicing, Promoting, and Preserving Jain Values","slides":[{"url":"https://jssd.org/wp-content/uploads/2025/01/home_1.jpg","alt":"JSSD Community Gathering"},{"url":"https://jssd.org/wp-content/uploads/2025/01/home_3.jpg","alt":"JSSD Cultural Event"}],"aboutHeading":"About JSSD","aboutDescription":"The Jain Society of San Diego is a 501(c)(3) non-profit religious organization to pursue a goal of practicing, promoting, and preserving the Jain religion. It is governed by a constitution and managed by a Trustee Committee and an Executive Committee consisting of President, Vice President, Secretary, Treasurer, who are elected by the Jain Center members for a term of two years.","aboutQuote":"\"Ahimsa paramo dharma\" - Non-violence is the highest dharma","stats":[{"number":"500+","label":"Community Members"},{"number":"25+","label":"Years of Service"}],"missionHeading":"Our Mission","missionPoints":["Practice and promote Jain principles in daily life","Preserve Jain culture and traditions for future generations","Foster community unity and spiritual growth","Educate youth through our Pathshala program",""],"feedbackHeading":"Get in touch for any questions or leave us a feedback","ctaHeading":"Join Our Community","ctaTagline":"Be part of our growing family and help preserve Jain traditions"}
+{
+  "headerTitle": "JAI JINENDRA SAKAL SANGH",
+  "heroHeading": "Welcome to JSSD",
+  "heroTagline": "Practicing, Promoting, and Preserving Jain Values",
+  "slides": [
+    {
+      "url": "https://jssd.org/wp-content/uploads/2025/01/home_1.jpg",
+      "alt": "JSSD Community Gathering"
+    },
+    {
+      "url": "https://jssd.org/wp-content/uploads/2025/01/home_3.jpg",
+      "alt": "JSSD Cultural Event"
+    }
+  ],
+  "aboutHeading": "About JSSD",
+  "aboutDescription": "The Jain Society of San Diego is a 501(c)(3) non-profit religious organization to pursue a goal of practicing, promoting, and preserving the Jain religion. It is governed by a constitution and managed by a Trustee Committee and an Executive Committee consisting of President, Vice President, Secretary, Treasurer, who are elected by the Jain Center members for a term of two years.",
+  "aboutQuote": "\"Ahimsa paramo dharma\" - Non-violence is the highest dharma",
+  "stats": [
+    { "number": "500+", "label": "Community Members" },
+    { "number": "25+", "label": "Years of Service" }
+  ],
+  "missionHeading": "Our Mission",
+  "missionPoints": [
+    "Practice and promote Jain principles in daily life",
+    "Preserve Jain culture and traditions for future generations",
+    "Foster community unity and spiritual growth",
+    "Educate youth through our Pathshala program",
+    ""
+  ],
+  "feedbackHeading": "Get in touch for any questions or leave us a feedback",
+  "ctaHeading": "Join Our Community",
+  "ctaTagline": "Be part of our growing family and help preserve Jain traditions"
+}

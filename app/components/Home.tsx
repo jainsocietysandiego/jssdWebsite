@@ -6,7 +6,7 @@ import MailingListForm from "./mailingListSection";
 import ReCAPTCHA from "react-google-recaptcha";
 
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbyaIHcv54dtaQjZXzxc3crjVuhDypC1BUq5uQ3cNA4Vio0gRH9skehKgjF6lcSgoNQO/exec";
+  "https://script.google.com/macros/s/AKfycbxVc4h4RqXQ_IytUf1tkZG4bP_-GW3KFdD1Gr2iXqX-B4sqRElF_qwAHLQ2ar2rHB2hiQ/exec";
 const CACHE_KEY = "homepage-api";
 const CACHE_TTL = 1 * 60 * 1000; // 1 minute
 
@@ -539,8 +539,7 @@ const Home: React.FC = () => {
                     {data.feedbackHeading || ""}
                   </h2>
                   <p className="text-base md:text-lg text-brand-dark leading-relaxed text-justify">
-                    We'd love to hear from you! Share your thoughts,
-                    suggestions, or questions with us.
+                    {data.feedbackSubHeading || ""}
                   </p>
                 </div>
 

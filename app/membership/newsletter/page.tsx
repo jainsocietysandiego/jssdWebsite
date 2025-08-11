@@ -27,7 +27,6 @@ function toPreviewUrl(url: string): string {
   return `https://drive.google.com/file/d/${match[1]}/preview`;
 }
 
-// UPDATED FUNCTION - UTC-based date comparison for consistent timezone behavior
 function getCurrentAndPrevious(newsletters: Newsletter[]): [Newsletter | null, Newsletter[]] {
   if (!newsletters?.length) return [null, []];
 
@@ -35,38 +34,26 @@ function getCurrentAndPrevious(newsletters: Newsletter[]): [Newsletter | null, N
     .map(n => ({ ...n, dateObj: new Date(n.Date) }))
     .sort((a, b) => b.dateObj.getTime() - a.dateObj.getTime());
 
-  // Use UTC dates for consistent comparison across timezones
   const now = new Date();
-  const utcYear = now.getUTCFullYear();
-  const utcMonth = now.getUTCMonth();
+  now.setHours(0, 0, 0, 0);
+
+  const thisYear = now.getFullYear();
+  const thisMonth = now.getMonth();
 
   let current: (typeof sorted)[0] | null = null;
   for (const n of sorted) {
     const d = n.dateObj as Date;
-    if (d.getUTCFullYear() === utcYear && d.getUTCMonth() === utcMonth) {
+    if (d.getFullYear() === thisYear && d.getMonth() === thisMonth) {
       current = n;
       break;
     }
   }
-  
   if (!current) {
-    // Fallback: find most recent newsletter up to today (UTC)
-    const nowUtcMidnight = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
-    current = sorted.find(n => {
-      const d = n.dateObj as Date;
-      const dUtcMidnight = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
-      return dUtcMidnight <= nowUtcMidnight;
-    }) || sorted[0];
+    current = sorted.find(n => n.dateObj.getTime() <= now.getTime()) || sorted[0];
   }
 
-  // Filter previous newsletters using UTC comparison
-  const nowUtcMidnight = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
   const prev = sorted
-    .filter(n => {
-      const d = n.dateObj as Date;
-      const dUtcMidnight = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
-      return dUtcMidnight < nowUtcMidnight && (current ? n.Date !== current.Date : true);
-    })
+    .filter(n => n.dateObj.getTime() < now.getTime() && (current ? n.Date !== current.Date : true))
     .map(({ dateObj, ...rest }) => rest);
 
   const cur = current

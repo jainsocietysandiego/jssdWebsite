@@ -125,59 +125,24 @@ const MembershipPage: React.FC = () => {
     loadData();
   }, []);
   // Autofill personal info when selecting member from dropdown (only if isMember === 'yes')
-  useEffect(() => {
-    if (isMember !== 'yes') return;
+ useEffect(() => {
+  if (isMember !== 'yes') return;
 
-    if (!formData.fullName) {
-      // Clear all personal info if no member selected
-      setFormData({
-        fullName: '',
-        email: '',
-        phone: '',
-        address: '',
-        city: '',
-        state: '',
-        zipCode: '',
-        familyMembers: '',
-      });
-      return;
-    }
+  if (!formData.fullName) {
+    // Always clear other fields when no name is selected
+    setFormData(prev => ({
+      ...prev,
+      email: '',
+      phone: '',
+      address: '',
+      city: '',
+      state: '',
+      zipCode: '',
+      familyMembers: '',
+    }));
+  }
+}, [formData.fullName, isMember]);
 
-    // formData.fullName is "Name||Email"
-    const [selectedName, selectedEmail] = formData.fullName.split('||');
-
-    // Find matching record by name & email
-    const found = allMembersData.find(row => {
-      const name = String(row['Full Name'] || row.fullName || row.fullname || '').trim();
-      const email = String(row['Email'] || row.email || '').trim();
-      return name === selectedName && email === selectedEmail;
-    });
-
-    if (found) {
-      setFormData({
-        fullName: formData.fullName, // keep unique value string
-        email: String(found['Email'] || ''),
-        phone: String(found['Phone'] || ''),
-        address: String(found['Address'] || ''),
-        city: String(found['City'] || ''),
-        state: String(found['State'] || ''),
-        zipCode: String(found['Zip Code'] || ''),
-        familyMembers: String(found['Family Members'] || ''),
-      });
-    } else {
-      // Clear fields if no match
-      setFormData(prev => ({
-        ...prev,
-        email: '',
-        phone: '',
-        address: '',
-        city: '',
-        state: '',
-        zipCode: '',
-        familyMembers: '',
-      }));
-    }
-  }, [formData.fullName, isMember, allMembersData]);
 
   // On input change handler (for text inputs and textarea)
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {

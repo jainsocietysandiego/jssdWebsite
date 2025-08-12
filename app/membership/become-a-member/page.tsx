@@ -1,19 +1,18 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect, useRef } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { CheckCircle, Heart } from 'lucide-react';
-import ReCAPTCHA from 'react-google-recaptcha';
+import React, { useState, useEffect, useRef } from "react";
+import Image from "next/image";
+import { CheckCircle, Heart } from "lucide-react";
+import ReCAPTCHA from "react-google-recaptcha";
 
-const FETCH_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx33ldKE6dib3hJFA6xYw0ShWDzwV2hZNV-loY2l6SfOxqRGvvh9cgdPRmeufgdrWSrAw/exec';
-const SUBMIT_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxF0DPusGE0Ve8I4XimnrAeEHv7pfXeZgeLhjdCbCUiI0shJYKQOFRbTRhUGW7dFS1w/exec';
+const FETCH_SCRIPT_URL =
+  "https://script.google.com/macros/s/AKfycbx33ldKE6dib3hJFA6xYw0ShWDzwV2hZNV-loY2l6SfOxqRGvvh9cgdPRmeufgdrWSrAw/exec";
+const SUBMIT_SCRIPT_URL =
+  "https://script.google.com/macros/s/AKfycbxF0DPusGE0Ve8I4XimnrAeEHv7pfXeZgeLhjdCbCUiI0shJYKQOFRbTRhUGW7dFS1w/exec";
+const RECAPTCHA_SITE_KEY = "6LdGip0rAAAAAKsHaqNZGhLnKNCQjmqYqOnIWI9G";
 
-// === Your actual reCAPTCHA site key here ===
-const RECAPTCHA_SITE_KEY = '6LdGip0rAAAAAKsHaqNZGhLnKNCQjmqYqOnIWI9G';
-
-type PaymentMethod = 'paypal' | 'zelle' | 'cheque' | 'stock';
-
+type PaymentMethod = "paypal" | "zelle" | "cheque" | "stock";
+type MemberOption = { label: string; value: string; data: any };
 
 const Loading = () => (
   <div className="min-h-screen bg-brand-light flex items-center justify-center">
@@ -24,190 +23,161 @@ const Loading = () => (
           <div className="absolute inset-1 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
           <div
             className="absolute inset-2 border-4 border-brand-dark/30 border-r-transparent rounded-full"
-            style={{ animation: 'spin 1s linear infinite reverse' }}
+            style={{ animation: "spin 1s linear infinite reverse" }}
           ></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-accent rounded-full flex items-center justify-center animate-pulse">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-accent rounded-full flex items-center justify-center animate-pulse">
             <div className="w-5 h-5 md:w-6 md:h-6 bg-white rounded-full"></div>
           </div>
         </div>
-        <h3 className="text-lg md:text-xl font-semibold text-brand-dark mb-2">Jai Jinendra</h3>
-        <p className="text-sm md:text-base text-accent animate-pulse">Ahimsa Parmo Dharma</p>
-        <div className="flex justify-center space-x-1 mt-4">
-          <div className="w-2 h-2 bg-accent rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-          <div className="w-2 h-2 bg-accent rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-          <div className="w-2 h-2 bg-accent rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
-        </div>
+        <h3 className="text-lg md:text-xl font-semibold text-brand-dark mb-2">
+          Jai Jinendra
+        </h3>
+        <p className="text-sm md:text-base text-accent animate-pulse">
+          Ahimsa Parmo Dharma
+        </p>
       </div>
     </div>
   </div>
 );
 
-type MemberOption = { label: string; value: string }; // value format: "Name||Email"
-
-const MembershipPage: React.FC = () => {
-  const [isMember, setIsMember] = useState<'' | 'yes' | 'no'>('');
-  const [allMembersData, setAllMembersData] = useState<any[]>([]);
+export default function MembershipPage() {
+  const [isMember, setIsMember] = useState<"" | "yes" | "no">("");
   const [memberOptions, setMemberOptions] = useState<MemberOption[]>([]);
   const [membershipTypes, setMembershipTypes] = useState<any[]>([]);
-  const [selectedMembership, setSelectedMembership] = useState<string>('');
+  const [selectedMembership, setSelectedMembership] = useState<string>("");
   const [addFees, setAddFees] = useState(true);
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(null);
-  const [paymentReference, setPaymentReference] = useState('');
-  const [zelleQrUrl, setZelleQrUrl] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(
+    null
+  );
+  const [paymentReference, setPaymentReference] = useState("");
+  const [zelleQrUrl, setZelleQrUrl] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [loading, setLoading] = useState(true);
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const recaptchaRef = useRef<ReCAPTCHA>(null);
 
   const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    phone: '',
-    address: '',
-    city: '',
-    state: '',
-    zipCode: '',
-    familyMembers: '',
+    fullName: "",
+    email: "",
+    phone: "",
+    address: "",
+    city: "",
+    state: "",
+    zipCode: "",
+    familyMembers: "",
   });
 
+  // Load data from both sources
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
       try {
-        const res = await fetch(FETCH_SCRIPT_URL);
-        const json = await res.json();
-        const memberships = json.content.filter((item: any) => item.Section === 'membership_type');
-        const qr = json.content.find((item: any) => item.Section === 'zelle_qr');
-        setMembershipTypes(memberships.map((item: any) => ({ id: item.ID, name: item.Name, amount: Number(item.Amount), description: item.Description, highlight: item.Highlight === 'TRUE' })));
-        setZelleQrUrl(qr?.ImageURL || '');
+        // Get QR from FETCH_SCRIPT_URL
+        const qrRes = await fetch(FETCH_SCRIPT_URL);
+        const qrJson = await qrRes.json();
+        const qr = qrJson.content.find(
+          (item: any) => item.Section === "zelle_qr"
+        );
+        setZelleQrUrl(qr?.ImageURL || "");
 
-        const membersRes = await fetch(SUBMIT_SCRIPT_URL);
-        const membersJson = await membersRes.json();
-        const membersRows: any[] = Array.isArray(membersJson) ? membersJson : (membersJson.data || []);
+        // Get members+plans from SUBMIT_SCRIPT_URL
+        const sheetRes = await fetch(SUBMIT_SCRIPT_URL);
+        const sheetJson = await sheetRes.json();
+        const rows: any[] = Array.isArray(sheetJson)
+          ? sheetJson
+          : sheetJson.data || [];
 
+        // Build plans from sheet
+        const planMap = new Map();
+        rows.forEach((row) => {
+          const planName = String(row["Membership Plan"] || "").trim();
+          const baseAmount = Number(row["Base Amount"] || 0);
+          if (planName && !planMap.has(planName)) {
+            planMap.set(planName, {
+              id: planName.toLowerCase().replace(/\s+/g, "-"),
+              name: planName,
+              amount: baseAmount,
+              description: "",
+              highlight: false,
+            });
+          }
+        });
+        setMembershipTypes(Array.from(planMap.values()));
+
+        // Build unique members
         const seen = new Set();
-        const uniqueMembers = membersRows.filter(row => {
-          const key = [
-            String(row['Full Name'] || row.fullName || row.fullname || '').trim().toLowerCase(),
-            String(row['Email'] || row.email || '').trim().toLowerCase(),
-            String(row['Phone'] || row.phone || '').trim().toLowerCase(),
-            String(row['Address'] || row.address || '').trim().toLowerCase(),
-            String(row['City'] || row.city || '').trim().toLowerCase(),
-            String(row['State'] || row.state || '').trim().toLowerCase(),
-            String(row['Zip Code'] || row.zipCode || row.zipcode || '').trim().toLowerCase(),
-          ].join('|');
+        const uniqueMembers = rows.filter((row) => {
+          const key = `${String(row["Full Name"] || "")
+            .trim()
+            .toLowerCase()}|${String(row["Email"] || "")
+            .trim()
+            .toLowerCase()}`;
           if (seen.has(key)) return false;
           seen.add(key);
           return true;
         });
-
-        const options: MemberOption[] = uniqueMembers.map(row => {
-          const name = String(row['Full Name'] || row.fullName || row.fullname || '').trim();
-          const email = String(row['Email'] || row.email || '').trim();
-          return {
-            label: email ? `${name} - ${email}` : name,
-            value: `${name}||${email}`,
-          };
-        }).filter(opt => opt.label.length > 0);
-
-        setMemberOptions(options);
-        setAllMembersData(uniqueMembers);
-      } catch (e) {
-        console.error('Error loading data:', e);
+        setMemberOptions(
+          uniqueMembers.map((row) => ({
+            label: String(row["Full Name"] || "").trim(),
+            value: String(row["Full Name"] || "").trim(),
+            data: row,
+          }))
+        );
+      } catch (err) {
+        console.error("Error loading data", err);
         setMembershipTypes([]);
-        setZelleQrUrl('');
         setMemberOptions([]);
-        setAllMembersData([]);
+        setZelleQrUrl("");
       } finally {
         setLoading(false);
       }
     };
     loadData();
   }, []);
-  // Autofill personal info when selecting member from dropdown (only if isMember === 'yes')
- useEffect(() => {
-  if (isMember !== 'yes') return;
 
-  if (!formData.fullName) {
-    // Always clear other fields when no name is selected
-    setFormData(prev => ({
-      ...prev,
-      email: '',
-      phone: '',
-      address: '',
-      city: '',
-      state: '',
-      zipCode: '',
-      familyMembers: '',
-    }));
-  }
-}, [formData.fullName, isMember]);
-
-
-  // On input change handler (for text inputs and textarea)
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  function getPaymentRefLabel(pm: PaymentMethod | null): string {
-    switch (pm) {
-      case 'zelle': return 'Zelle T Id';
-      case 'cheque': return 'Cheque No';
-      case 'stock': return 'Stock Transfer No';
-      default: return '';
+  function getPaymentRefLabel(method: PaymentMethod | null) {
+    switch (method) {
+      case "zelle":
+        return "Zelle T Id";
+      case "cheque":
+        return "Cheque No";
+      case "stock":
+        return "Stock Transfer No";
+      default:
+        return "";
     }
   }
 
-  const selectedPlan = membershipTypes.find(m => m.id === selectedMembership);
+  const selectedPlan = membershipTypes.find((p) => p.id === selectedMembership);
   const baseTotal = selectedPlan?.amount || 0;
   const totalWithFee = addFees ? baseTotal * 1.03 : baseTotal;
 
-  const onCaptchaChange = (token: string | null) => {
-    setCaptchaToken(token);
-  };
+  const onCaptchaChange = (token: string | null) => setCaptchaToken(token);
 
   const canSubmit =
-    isMember !== '' &&
+    isMember !== "" &&
     !!formData.fullName.trim() &&
-    !!formData.email.trim() &&
-    !!formData.phone.trim() &&
-    !!formData.address.trim() &&
-    !!formData.city.trim() &&
-    !!formData.state.trim() &&
-    !!formData.zipCode.trim() &&
-    paymentMethod !== null &&
     !!selectedPlan &&
+    baseTotal > 0 &&
+    paymentMethod !== null &&
     captchaToken &&
-    (paymentMethod === 'paypal' ||
-      (['zelle', 'cheque', 'stock'].includes(paymentMethod)
-        ? paymentReference.trim() !== ''
-        : true));
+    (paymentMethod === "paypal" ||
+      (["zelle", "cheque", "stock"].includes(paymentMethod) &&
+        paymentReference.trim() !== ""));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!selectedPlan) {
-      alert('Please select a membership type.');
-      return;
-    }
-    if (paymentMethod === null) {
-      alert('Please select a payment method.');
-      return;
-    }
-    if (['zelle', 'cheque', 'stock'].includes(paymentMethod) && !paymentReference.trim()) {
-      alert(`Please enter ${getPaymentRefLabel(paymentMethod)}.`);
-      return;
-    }
-    if (!captchaToken) {
-      alert('Please complete the CAPTCHA.');
-      return;
-    }
-
     const payload = {
       timestamp: new Date().toISOString(),
       ...formData,
-      selectedMembership: selectedPlan.name,
+      selectedMembership: selectedPlan?.name || "",
       baseTotal,
       add3Percent: addFees,
       finalTotal: totalWithFee.toFixed(2),
@@ -215,17 +185,16 @@ const MembershipPage: React.FC = () => {
       paymentReference,
       captchaToken,
     };
-
     try {
       await fetch(SUBMIT_SCRIPT_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
       setIsSubmitted(true);
     } catch {
-      alert('Something went wrong. Please try again.');
+      alert("Something went wrong.");
     }
   };
 
@@ -236,9 +205,10 @@ const MembershipPage: React.FC = () => {
       <div className="min-h-screen flex items-center justify-center bg-orange-50 p-6">
         <div className="bg-white rounded-lg shadow-lg p-8 text-center max-w-lg w-full">
           <CheckCircle className="h-12 w-12 text-green-600 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-gray-800 mb-2">Thank You for Joining!</h1>
-          <p className="text-gray-700 mb-4">Your membership registration has been submitted successfully.</p>
-          <p className="text-gray-600">You will receive a confirmation email soon.</p>
+          <h1 className="text-2xl font-bold mb-2">Thank You for Joining!</h1>
+          <p className="mb-4">
+            Your membership registration has been submitted successfully.
+          </p>
         </div>
       </div>
     );
@@ -246,172 +216,125 @@ const MembershipPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white pt-[8vh] sm:pt-[12vh] pb-10">
-      {/* ───── HERO ───── */}
-      <section className="relative flex items-center justify-center
-                                    h-40 sm:h-48 md:h-56 lg:h-60 overflow-hidden">
-                  <Image
-                    src="/images/hero-banner.jpg"
-                    alt="Pathshala Program"
-                    fill
-                    priority
-                    quality={85}
-                    className="object-cover"
-                  />
-                  <div className="relative z-10 text-center px-4">
-                    <h1 className="font-bold text-brand-light text-3xl sm:text-4xl md:text-5xl">
-                      Membership Registration
-                    </h1>
-                    <p className="mt-2 max-w-4xl mx-auto text-white text-sm sm:text-base md:text-lg text-center">
-                      Register to unite with fellow devotees in our mission of dharmic service
-                    </p>
-                  </div>
-                </section>            
+      <section className="relative h-40 sm:h-48 overflow-hidden flex items-center justify-center">
+        <Image
+          src="/images/hero-banner.jpg"
+          alt="Hero"
+          fill
+          priority
+          quality={85}
+          className="object-cover"
+        />
+        <div className="relative z-10 text-center px-4">
+          <h1 className="font-bold text-brand-light text-3xl sm:text-4xl md:text-5xl">
+            Membership Registration
+          </h1>
+          <p className="mt-2 text-white">
+            Register to unite with fellow devotees in our mission
+          </p>
+        </div>
+      </section>
 
-      <div className="max-w-5xl mx-auto bg-brand-white rounded-xl shadow-xl p-6 md:p-8 space-y-8 border-4 border-[#FFF7ED] sm:mt-10 relative z-10">
-
-        {/* Are you a member? */}
-        <div className="mb-6">
-          <label className="block text-lg font-semibold mb-4 text-brand-dark">
-            Are you a member?<span className="text-red-500 ml-1">*</span>
+      <div className="max-w-5xl mx-auto bg-white rounded-xl shadow-xl p-6 md:p-8 border-4 border-[#FFF7ED] space-y-8 sm:mt-10">
+        {/* Are you a member */}
+        {/* Are you a member */}
+        <div>
+          <label className="block font-semibold mb-4">
+            Are you a member?<span className="text-red-500">*</span>
           </label>
           <div className="flex gap-5">
-            <label className="flex items-center gap-2 cursor-pointer">
+            {/* YES option */}
+            <label>
               <input
                 type="radio"
                 name="member"
-                value="yes"
-                checked={isMember === 'yes'}
+                checked={isMember === "yes"}
                 onChange={() => {
-                  setIsMember('yes');
-                  setFormData(prev => ({ ...prev, fullName: '' }));
-                  setSelectedMembership('');
+                  setIsMember("yes");
+                  // When switching to yes, you might reset some payment stuff as well
+                  setSelectedMembership("");
                   setPaymentMethod(null);
-                  setPaymentReference('');
+                  setPaymentReference("");
                   setCaptchaToken(null);
                   if (recaptchaRef.current) recaptchaRef.current.reset();
                 }}
-                className="accent-accent"
-              />
-              <span className="font-medium text-md text-brand-dark">Yes</span>
+              />{" "}
+              Yes
             </label>
-            <label className="flex items-center gap-2 cursor-pointer">
+
+            {/* NO option */}
+            <label>
               <input
                 type="radio"
                 name="member"
-                value="no"
-                checked={isMember === 'no'}
+                checked={isMember === "no"}
                 onChange={() => {
-                  setIsMember('no');
+                  setIsMember("no");
+                  // Reset all form fields so no prefill remains
                   setFormData({
-                    fullName: '',
-                    email: '',
-                    phone: '',
-                    address: '',
-                    city: '',
-                    state: '',
-                    zipCode: '',
-                    familyMembers: '',
+                    fullName: "",
+                    email: "",
+                    phone: "",
+                    address: "",
+                    city: "",
+                    state: "",
+                    zipCode: "",
+                    familyMembers: "",
                   });
-                  setSelectedMembership('');
+                  setSelectedMembership("");
                   setPaymentMethod(null);
-                  setPaymentReference('');
+                  setPaymentReference("");
                   setCaptchaToken(null);
                   if (recaptchaRef.current) recaptchaRef.current.reset();
                 }}
-                className="accent-accent"
-              />
-              <span className="font-medium text-md text-brand-dark">No</span>
+              />{" "}
+              No
             </label>
           </div>
         </div>
 
-        {isMember === 'yes' && (
+        {/* YES flow */}
+        {isMember === "yes" && (
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Full Name dropdown with emails */}
             <div>
-              <label className="block text-sm font-medium mb-1 text-brand-dark">
-                Full Name <span className="text-red-500">*</span>
-              </label>
+              <label className="block mb-1">Enter Individual Name / Husband Wife Name *</label>
               <select
-                name="fullName"
                 value={formData.fullName}
-                onChange={e => setFormData(prev => ({ ...prev, fullName: e.target.value }))}
-                required
-                className="w-full px-4 py-3 border-soft rounded-xl text-sm md:text-base text-brand-dark
-                  focus:ring-2 focus:ring-accent/20 focus:border-accent focus:outline-none transition-all duration-300"
+                onChange={(e) => {
+                  const name = e.target.value;
+                  setFormData((prev) => ({ ...prev, fullName: name }));
+                  const member = memberOptions.find((m) => m.value === name);
+                  if (member) {
+                    setFormData({
+                      fullName: member.data["Full Name"] || "",
+                      email: member.data["Email"] || "",
+                      phone: member.data["Phone"] || "",
+                      address: member.data["Address"] || "",
+                      city: member.data["City"] || "",
+                      state: member.data["State"] || "",
+                      zipCode: member.data["Zip Code"] || "",
+                      familyMembers: member.data["Family Members"] || "",
+                    });
+                    const memberType = (member.data["Membership Plan"] || "")
+                      .trim()
+                      .toLowerCase();
+                    const foundPlan = membershipTypes.find(
+                      (p) => p.name.trim().toLowerCase() === memberType
+                    );
+                    if (foundPlan) setSelectedMembership(foundPlan.id);
+                  }
+                }}
+                className="w-full border rounded px-4 py-3"
               >
                 <option value="">-- Select Full Name --</option>
                 {memberOptions.map((opt, i) => (
-                  <option key={i} value={opt.value}>{opt.label}</option>
+                  <option key={i} value={opt.value}>
+                    {opt.label}
+                  </option>
                 ))}
               </select>
             </div>
 
-            {/* Remaining personal info */}
-            <div className="grid md:grid-cols-2 gap-4">
-              {[
-                { name: 'email', label: 'Email' },
-                { name: 'phone', label: 'Phone' },
-                { name: 'address', label: 'Address' },
-                { name: 'city', label: 'City' },
-                { name: 'state', label: 'State' },
-                { name: 'zipCode', label: 'ZIP Code' },
-              ].map(({ name, label }) => (
-                <div key={name}>
-                  <label className="block text-sm font-medium mb-1 text-brand-dark">{label}</label>
-                  <input
-                    type="text"
-                    name={name}
-                    value={(formData as any)[name]}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-4 py-3 border-soft rounded-xl text-sm md:text-base text-brand-dark
-                      focus:ring-2 focus:ring-accent/20 focus:border-accent focus:outline-none transition-all duration-300"
-                  />
-                </div>
-              ))}
-            </div>
-
-            {/* Family Members textarea */}
-            <div>
-              <label className="block text-sm font-medium mb-1 text-brand-dark">Family Members (Names & Ages)</label>
-              <textarea
-                name="familyMembers"
-                rows={3}
-                className="w-full px-4 py-3 border-soft rounded-xl text-sm md:text-base text-brand-dark
-                  focus:ring-2 focus:ring-accent/20 focus:border-accent focus:outline-none transition-all duration-300 resize-none"
-                value={formData.familyMembers}
-                onChange={handleInputChange}
-              />
-            </div>
-
-            {/* Membership Plans */}
-            <div>
-              <h2 className="text-lg md:text-xl font-semibold text-brand-dark mb-4">Choose a Membership Plan</h2>
-              <div className="grid md:grid-cols-3 gap-4">
-                {membershipTypes.map(type => (
-                  <label
-                    key={type.id}
-                    className={`p-4 rounded-xl border-soft transition-all cursor-pointer ${
-                      selectedMembership === type.id ? 'bg-brand-light border-accent' : 'border-accent/20 hover:border-accent/40'
-                    } ${type.highlight ? 'bg-yellow-50 border-yellow-400' : ''}`}
-                  >
-                    <input
-                      type="radio"
-                      name="membershipType"
-                      className="mr-2 accent-accent"
-                      checked={selectedMembership === type.id}
-                      onChange={() => setSelectedMembership(type.id)}
-                    />
-                    <span className="font-semibold text-brand-dark">{type.name}</span>
-                    <div className="text-sm text-brand-dark/70 mt-1 text-justify">{type.description}</div>
-                    <div className="text-accent font-bold mt-1">${type.amount.toFixed(2)}</div>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* CAPTCHA */}
             <div>
               <ReCAPTCHA
                 ref={recaptchaRef}
@@ -421,7 +344,6 @@ const MembershipPage: React.FC = () => {
               />
             </div>
 
-            {/* Optional 3% add fee */}
             <div className="bg-yellow-50 p-4 rounded-xl border border-yellow-200">
               <label className="flex items-start space-x-2">
                 <input
@@ -431,65 +353,94 @@ const MembershipPage: React.FC = () => {
                   className="mt-1 accent-accent"
                 />
                 <span className="text-red-600 font-medium text-sm md:text-base text-justify">
-                  We pay ~3% in fees for online payments. Consider covering that cost so 100% of your contribution supports the community.
+                  We pay ~3% in fees for online payments. Consider covering that
+                  cost so 100% of your contribution supports the community.
                 </span>
               </label>
               <div className="text-right font-semibold mt-2 text-brand-dark">
-                Total: <span className="text-red-600">${totalWithFee.toFixed(2)}</span>
+                Total:{" "}
+                <span className="text-red-600">${totalWithFee.toFixed(2)}</span>
               </div>
             </div>
 
-            {/* Payment Method */}
+            {/* Payment */}
             <div>
-              <h2 className="text-lg md:text-xl font-semibold mb-4 text-brand-dark">Choose Payment Method</h2>
+              <h2 className="text-lg md:text-xl font-semibold mb-4 text-brand-dark">
+                Choose Payment Method
+              </h2>
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                {(['paypal', 'zelle', 'cheque', 'stock'] as PaymentMethod[]).map(method => (
+                {(
+                  ["paypal", "zelle", "cheque", "stock"] as PaymentMethod[]
+                ).map((method) => (
                   <button
                     key={method}
                     type="button"
                     className={`border-soft rounded-xl p-4 text-center transition-all ${
-                      paymentMethod === method ? 'border-accent bg-brand-light' : 'border-accent/20 hover:border-accent/40'
+                      paymentMethod === method
+                        ? "border-accent bg-brand-light"
+                        : "border-accent/20 hover:border-accent/40"
                     }`}
                     onClick={() => {
                       setPaymentMethod(method);
-                      setPaymentReference('');
+                      setPaymentReference("");
                     }}
                   >
-                    <div className="text-sm md:text-base font-bold capitalize text-brand-dark">{method}</div>
+                    <div className="text-sm md:text-base font-bold capitalize text-brand-dark">
+                      {method}
+                    </div>
                   </button>
                 ))}
               </div>
 
               {paymentMethod && (
                 <div className="mt-4">
-                  {paymentMethod === 'paypal' ? (
+                  {paymentMethod === "paypal" ? (
                     <div className="text-brand-dark/70 text-sm md:text-base">
                       No additional information needed for Paypal.
                     </div>
                   ) : (
                     <div>
                       <label className="block text-sm font-medium mb-1 text-brand-dark">
-                        {getPaymentRefLabel(paymentMethod)} <span className="text-red-500">*</span>
+                        {getPaymentRefLabel(paymentMethod)}{" "}
+                        <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="text"
                         value={paymentReference}
-                        onChange={e => setPaymentReference(e.target.value)}
-                        required={paymentMethod === 'zelle' || paymentMethod === 'cheque' || paymentMethod === 'stock'}
+                        onChange={(e) => setPaymentReference(e.target.value)}
+                        required={
+                          paymentMethod === "zelle" ||
+                          paymentMethod === "cheque" ||
+                          paymentMethod === "stock"
+                        }
                         className="w-full px-4 py-3 border-soft rounded-xl text-sm md:text-base text-brand-dark bg-brand-light focus:ring-2 focus:ring-accent/20 focus:border-accent focus:outline-none transition-all duration-300"
-                        placeholder={`Enter ${getPaymentRefLabel(paymentMethod)}`}
+                        placeholder={`Enter ${getPaymentRefLabel(
+                          paymentMethod
+                        )}`}
                       />
                     </div>
                   )}
                 </div>
               )}
 
-              {paymentMethod === 'paypal' && (
+              {paymentMethod === "paypal" && (
                 <div className="mt-4 border-soft rounded-xl p-4 bg-brand-light">
-                  <form action="https://www.paypal.com/donate" method="post" target="_blank">
-                    <input type="hidden" name="business" value="donate@yourdomain.org" />
+                  <form
+                    action="https://www.paypal.com/donate"
+                    method="post"
+                    target="_blank"
+                  >
+                    <input
+                      type="hidden"
+                      name="business"
+                      value="donate@yourdomain.org"
+                    />
                     <input type="hidden" name="currency_code" value="USD" />
-                    <input type="hidden" name="amount" value={totalWithFee.toFixed(2)} />
+                    <input
+                      type="hidden"
+                      name="amount"
+                      value={totalWithFee.toFixed(2)}
+                    />
                     <button className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-6 rounded-xl transition-colors">
                       Pay with PayPal
                     </button>
@@ -497,12 +448,19 @@ const MembershipPage: React.FC = () => {
                 </div>
               )}
 
-              {paymentMethod === 'zelle' && (
+              {paymentMethod === "zelle" && (
                 <div className="mt-4 border-soft rounded-xl p-4 bg-brand-light text-center">
-                  <p className="font-medium text-brand-dark">Scan the Zelle QR code:</p>
+                  <p className="font-medium text-brand-dark">
+                    Scan the Zelle QR code:
+                  </p>
                   {zelleQrUrl && (
                     <div className="relative w-[200px] h-[200px] mx-auto mt-2">
-                      <Image src={zelleQrUrl} alt="Zelle QR" fill className="object-contain" />
+                      <Image
+                        src={zelleQrUrl}
+                        alt="Zelle QR"
+                        fill
+                        className="object-contain"
+                      />
                     </div>
                   )}
                   <p className="text-sm text-brand-dark/70 mt-2">
@@ -511,58 +469,69 @@ const MembershipPage: React.FC = () => {
                 </div>
               )}
 
-              {paymentMethod === 'cheque' && (
+              {paymentMethod === "cheque" && (
                 <div className="mt-4 border-soft rounded-xl p-4 bg-brand-light">
                   <p className="text-brand-dark mb-2">Mail your cheque to:</p>
                   <p className="mt-2 font-medium text-brand-dark">
-                    Jain Center<br />1234 Jain Street<br />Your City, State ZIP
+                    Jain Center
+                    <br />
+                    1234 Jain Street
+                    <br />
+                    Your City, State ZIP
                   </p>
                 </div>
               )}
 
-              {paymentMethod === 'stock' && (
+              {paymentMethod === "stock" && (
                 <div className="mt-4 border-soft rounded-xl p-4 bg-brand-light">
                   <p className="text-brand-dark text-justify">
-                    Please enter your Stock Transfer No above after completing your stock donation. For transfer instructions, contact{' '}
-                    <a href="mailto:donate@yourdomain.org" className="underline text-accent">donate@yourdomain.org</a>.
+                    Please enter your Stock Transfer No above after completing
+                    your stock donation. For transfer instructions, contact{" "}
+                    <a
+                      href="mailto:donate@yourdomain.org"
+                      className="underline text-accent"
+                    >
+                      donate@yourdomain.org
+                    </a>
+                    .
                   </p>
                 </div>
               )}
-
             </div>
 
             <button
-              type="submit"
               disabled={!canSubmit}
-              className={`w-full btn-primary text-lg py-4 flex items-center justify-center ${!canSubmit ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className="btn-primary w-full py-4 flex justify-center items-center"
             >
-              <Heart className="h-5 w-5 mr-2" />
-              Confirm Details
+              <Heart className="h-5 w-5 mr-2" /> Confirm Details
             </button>
-
           </form>
         )}
 
-        {isMember === 'no' && (
+        {/* NO flow */}
+        {isMember === "no" && (
           // Original no-member form with captcha added
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid md:grid-cols-2 gap-4">
               {[
-                { name: 'fullName', label: 'Full Name' },
-                { name: 'email', label: 'Email' },
-                { name: 'phone', label: 'Phone' },
-                { name: 'address', label: 'Address' },
-                { name: 'city', label: 'City' },
-                { name: 'state', label: 'State' },
-                { name: 'zipCode', label: 'ZIP Code' },
-              ].map(({ name, label }) => (
+                { name: "fullName", label: "Enter Individual Name / Husband & Wife Name", placeholder: "John and Jane Doe/John Doe (Individual)" },
+                { name: "email", label: "Email", placeholder: "Enter email address" },
+              { name: "phone", label: "Phone", placeholder: "Enter phone number" },
+              { name: "address", label: "Address", placeholder: "Enter address" },
+              { name: "city", label: "City", placeholder: "Enter city" },
+              { name: "state", label: "State", placeholder: "Enter state" },
+              { name: "zipCode", label: "ZIP Code", placeholder: "Enter ZIP code, Exmaple :401105 " },
+              ].map(({ name, label, placeholder }) => (
                 <div key={name}>
-                  <label className="block text-sm font-medium mb-1 text-brand-dark">{label}</label>
+                  <label className="block text-sm font-medium mb-1 text-brand-dark">
+                    {label}
+                  </label>
                   <input
                     type="text"
                     name={name}
                     value={(formData as any)[name]}
                     onChange={handleInputChange}
+                    placeholder={placeholder}
                     required
                     className="w-full px-4 py-3 border-soft rounded-xl text-sm md:text-base text-brand-dark focus:ring-2 focus:ring-accent/20 focus:border-accent focus:outline-none transition-all duration-300"
                   />
@@ -571,10 +540,13 @@ const MembershipPage: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1 text-brand-dark">Family Members (Names & Ages)</label>
+              <label className="block text-sm font-medium mb-1 text-brand-dark">
+                Family Members (Names & Ages)
+              </label>
               <textarea
                 name="familyMembers"
                 rows={3}
+                placeholder="If you are registering a family, please list all family members with their ages. Example: John (40), Jane (38), Jack (10)"
                 className="w-full px-4 py-3 border-soft rounded-xl text-sm md:text-base text-brand-dark focus:ring-2 focus:ring-accent/20 focus:border-accent focus:outline-none transition-all duration-300 resize-none"
                 value={formData.familyMembers}
                 onChange={handleInputChange}
@@ -582,14 +554,20 @@ const MembershipPage: React.FC = () => {
             </div>
 
             <div>
-              <h2 className="text-lg md:text-xl font-semibold text-brand-dark mb-4">Choose a Membership Plan</h2>
+              <h2 className="text-lg md:text-xl font-semibold text-brand-dark mb-4">
+                Choose a Membership Plan
+              </h2>
               <div className="grid md:grid-cols-3 gap-4">
-                {membershipTypes.map(type => (
+                {membershipTypes.map((type) => (
                   <label
                     key={type.id}
                     className={`p-4 rounded-xl border-soft transition-all cursor-pointer ${
-                      selectedMembership === type.id ? 'bg-brand-light border-accent' : 'border-accent/20 hover:border-accent/40'
-                    } ${type.highlight ? 'bg-yellow-50 border-yellow-400' : ''}`}
+                      selectedMembership === type.id
+                        ? "bg-brand-light border-accent"
+                        : "border-accent/20 hover:border-accent/40"
+                    } ${
+                      type.highlight ? "bg-yellow-50 border-yellow-400" : ""
+                    }`}
                   >
                     <input
                       type="radio"
@@ -598,9 +576,15 @@ const MembershipPage: React.FC = () => {
                       checked={selectedMembership === type.id}
                       onChange={() => setSelectedMembership(type.id)}
                     />
-                    <span className="font-semibold text-brand-dark">{type.name}</span>
-                    <div className="text-sm text-brand-dark/70 mt-1 text-justify">{type.description}</div>
-                    <div className="text-accent font-bold mt-1">${type.amount.toFixed(2)}</div>
+                    <span className="font-semibold text-brand-dark">
+                      {type.name}
+                    </span>
+                    <div className="text-sm text-brand-dark/70 mt-1 text-justify">
+                      {type.description}
+                    </div>
+                    <div className="text-accent font-bold mt-1">
+                      ${type.amount.toFixed(2)}
+                    </div>
                   </label>
                 ))}
               </div>
@@ -625,64 +609,93 @@ const MembershipPage: React.FC = () => {
                   className="mt-1 accent-accent"
                 />
                 <span className="text-red-600 font-medium text-sm md:text-base text-justify">
-                  We pay ~3% in fees for online payments. Consider covering that cost so 100% of your contribution supports the community.
+                  We pay ~3% in fees for online payments. Consider covering that
+                  cost so 100% of your contribution supports the community.
                 </span>
               </label>
               <div className="text-right font-semibold mt-2 text-brand-dark">
-                Total: <span className="text-red-600">${totalWithFee.toFixed(2)}</span>
+                Total:{" "}
+                <span className="text-red-600">${totalWithFee.toFixed(2)}</span>
               </div>
             </div>
 
             <div>
-              <h2 className="text-lg md:text-xl font-semibold mb-4 text-brand-dark">Choose Payment Method</h2>
+              <h2 className="text-lg md:text-xl font-semibold mb-4 text-brand-dark">
+                Choose Payment Method
+              </h2>
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                {(['paypal', 'zelle', 'cheque', 'stock'] as PaymentMethod[]).map(method => (
+                {(
+                  ["paypal", "zelle", "cheque", "stock"] as PaymentMethod[]
+                ).map((method) => (
                   <button
                     key={method}
                     type="button"
                     className={`border-soft rounded-xl p-4 text-center transition-all ${
-                      paymentMethod === method ? 'border-accent bg-brand-light' : 'border-accent/20 hover:border-accent/40'
+                      paymentMethod === method
+                        ? "border-accent bg-brand-light"
+                        : "border-accent/20 hover:border-accent/40"
                     }`}
                     onClick={() => {
                       setPaymentMethod(method);
-                      setPaymentReference('');
+                      setPaymentReference("");
                     }}
                   >
-                    <div className="text-sm md:text-base font-bold capitalize text-brand-dark">{method}</div>
+                    <div className="text-sm md:text-base font-bold capitalize text-brand-dark">
+                      {method}
+                    </div>
                   </button>
                 ))}
               </div>
 
               {paymentMethod && (
                 <div className="mt-4">
-                  {paymentMethod === 'paypal' ? (
+                  {paymentMethod === "paypal" ? (
                     <div className="text-brand-dark/70 text-sm md:text-base">
                       No additional information needed for Paypal.
                     </div>
                   ) : (
                     <div>
                       <label className="block text-sm font-medium mb-1 text-brand-dark">
-                        {getPaymentRefLabel(paymentMethod)} <span className="text-red-500">*</span>
+                        {getPaymentRefLabel(paymentMethod)}{" "}
+                        <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="text"
                         value={paymentReference}
-                        onChange={e => setPaymentReference(e.target.value)}
-                        required={paymentMethod === 'zelle' || paymentMethod === 'cheque' || paymentMethod === 'stock'}
+                        onChange={(e) => setPaymentReference(e.target.value)}
+                        required={
+                          paymentMethod === "zelle" ||
+                          paymentMethod === "cheque" ||
+                          paymentMethod === "stock"
+                        }
                         className="w-full px-4 py-3 border-soft rounded-xl text-sm md:text-base text-brand-dark bg-brand-light focus:ring-2 focus:ring-accent/20 focus:border-accent focus:outline-none transition-all duration-300"
-                        placeholder={`Enter ${getPaymentRefLabel(paymentMethod)}`}
+                        placeholder={`Enter ${getPaymentRefLabel(
+                          paymentMethod
+                        )}`}
                       />
                     </div>
                   )}
                 </div>
               )}
 
-              {paymentMethod === 'paypal' && (
+              {paymentMethod === "paypal" && (
                 <div className="mt-4 border-soft rounded-xl p-4 bg-brand-light">
-                  <form action="https://www.paypal.com/donate" method="post" target="_blank">
-                    <input type="hidden" name="business" value="donate@yourdomain.org" />
+                  <form
+                    action="https://www.paypal.com/donate"
+                    method="post"
+                    target="_blank"
+                  >
+                    <input
+                      type="hidden"
+                      name="business"
+                      value="donate@yourdomain.org"
+                    />
                     <input type="hidden" name="currency_code" value="USD" />
-                    <input type="hidden" name="amount" value={totalWithFee.toFixed(2)} />
+                    <input
+                      type="hidden"
+                      name="amount"
+                      value={totalWithFee.toFixed(2)}
+                    />
                     <button className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-6 rounded-xl transition-colors">
                       Pay with PayPal
                     </button>
@@ -690,12 +703,19 @@ const MembershipPage: React.FC = () => {
                 </div>
               )}
 
-              {paymentMethod === 'zelle' && (
+              {paymentMethod === "zelle" && (
                 <div className="mt-4 border-soft rounded-xl p-4 bg-brand-light text-center">
-                  <p className="font-medium text-brand-dark">Scan the Zelle QR code:</p>
+                  <p className="font-medium text-brand-dark">
+                    Scan the Zelle QR code:
+                  </p>
                   {zelleQrUrl && (
                     <div className="relative w-[200px] h-[200px] mx-auto mt-2">
-                      <Image src={zelleQrUrl} alt="Zelle QR" fill className="object-contain" />
+                      <Image
+                        src={zelleQrUrl}
+                        alt="Zelle QR"
+                        fill
+                        className="object-contain"
+                      />
                     </div>
                   )}
                   <p className="text-sm text-brand-dark/70 mt-2">
@@ -704,40 +724,49 @@ const MembershipPage: React.FC = () => {
                 </div>
               )}
 
-              {paymentMethod === 'cheque' && (
+              {paymentMethod === "cheque" && (
                 <div className="mt-4 border-soft rounded-xl p-4 bg-brand-light">
                   <p className="text-brand-dark mb-2">Mail your cheque to:</p>
                   <p className="mt-2 font-medium text-brand-dark">
-                    Jain Center<br />1234 Jain Street<br />Your City, State ZIP
+                    Jain Center
+                    <br />
+                    1234 Jain Street
+                    <br />
+                    Your City, State ZIP
                   </p>
                 </div>
               )}
 
-              {paymentMethod === 'stock' && (
+              {paymentMethod === "stock" && (
                 <div className="mt-4 border-soft rounded-xl p-4 bg-brand-light">
                   <p className="text-brand-dark text-justify">
-                    Please enter your Stock Transfer No above after completing your stock donation. For transfer instructions, contact{' '}
-                    <a href="mailto:donate@yourdomain.org" className="underline text-accent">donate@yourdomain.org</a>.
+                    Please enter your Stock Transfer No above after completing
+                    your stock donation. For transfer instructions, contact{" "}
+                    <a
+                      href="mailto:donate@yourdomain.org"
+                      className="underline text-accent"
+                    >
+                      donate@yourdomain.org
+                    </a>
+                    .
                   </p>
                 </div>
               )}
-
             </div>
 
             <button
               type="submit"
               disabled={!canSubmit}
-              className={`w-full btn-primary text-lg py-4 flex items-center justify-center ${!canSubmit ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`w-full btn-primary text-lg py-4 flex items-center justify-center ${
+                !canSubmit ? "opacity-50 cursor-not-allowed" : ""
+              }`}
             >
               <Heart className="h-5 w-5 mr-2" />
               Confirm Details
             </button>
           </form>
         )}
-
       </div>
     </div>
   );
-};
-
-export default MembershipPage;
+}

@@ -34,9 +34,10 @@ const MailingListForm = () => {
     body.append('firstName', formData.firstName);
     body.append('lastName', formData.lastName);
     body.append('email', formData.email);
+    body.append('captchaToken', captchaToken);
 
     try {
-      await fetch('https://script.google.com/macros/s/AKfycbyBNKnyPDc36tAdOn_KIrONyOUzKgpx9Fud5IXyzUP6_mf6LEbU-OTHh0SqZYbCcrAqZQ/exec', {
+      await fetch('https://script.google.com/macros/s/AKfycbwwDDYq5G2tmGF6OpBCswO5Af02-Oz7B6zDMOuKrgeZH1x3_KyaAq4KNtcXcYk29NqDew/exec', {
         method: 'POST',
         body,
         mode: 'no-cors'

@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Users, Star, Mail } from "lucide-react";
+import { Users, Star, Mail, BookOpen  } from "lucide-react";
 
 // ─── constants ─────────────────────────────────────────────────────
 const API_URL =
@@ -188,45 +188,75 @@ return (
 
             {/* Enhanced Sidebar - Sticky Registration Card */}
             <aside className="lg:col-span-4">
-              <div className="sticky top-8 space-y-6">
-                {/* Main CTA Card */}
-                <div className="bg-gradient-to-br from-[#EA580C] via-[#D3490C] to-[#C2410C] rounded-2xl shadow-lg p-6 text-center transform hover:scale-105 transition-transform duration-300">
-                  <div className="w-16 h-16 bg-brand-light rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Users className="h-8 w-8 text-accent" />
-                  </div>
-                  <h3 className="text-xl font-bold text-brand-light mb-3">
-                    Ready to Join?
-                  </h3>
-                  <p className="text-white mb-6 text-sm text-center leading-relaxed">
-                    {data.heroSection.buttonText && "Join our community and unlock exclusive benefits designed just for you."}
-                  </p>
-                  <div className="space-y-3">
-                    <Link href="/membership/become-a-member">
-                      <button className="block w-full bg-brand-light hover:bg-brand-white text-brand-dark hover:text-accent py-3 px-6 rounded-xl font-semibold text-center text-sm md:text-base transition-all duration-300 hover:scale-105">
-                        {data.heroSection.buttonText || "Become a Member"}
-                      </button>
-                    </Link>
-                  </div>
-                </div>
+  <div className="sticky top-8 space-y-6">
+    {/* Main Membership CTA */}
+    <div className="bg-gradient-to-br from-orange-500 via-orange-600 to-orange-700 rounded-2xl shadow-xl p-6 text-center relative overflow-hidden">
+      
+      <div className="relative z-10">
+        <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-4">
+          <Users className="h-8 w-8 text-white" />
+        </div>
+        <h3 className="text-xl font-bold text-white mb-3">
+          Join Our Community
+        </h3>
+        <p className="text-white/90 mb-6 text-sm leading-relaxed">
+          Unlock exclusive benefits, connect with like-minded members, and be part of something bigger.
+        </p>
+        <Link href="/membership/become-a-member">
+          <button className="w-full bg-white hover:bg-gray-50 text-orange-600 hover:text-orange-700 py-3 px-6 rounded-xl font-semibold text-sm md:text-base transition-all duration-300 hover:scale-105 shadow-lg">
+            Become a Member
+          </button>
+        </Link>
+      </div>
+    </div>
 
-                {/* Contact Card */}
-                <div className="bg-gradient-to-br from-accent/10 to-brand-light rounded-xl shadow-soft p-6 border border-accent/20">
-                  <h4 className="font-bold text-accent mb-4 flex items-center gap-2">
-                    <Mail className="h-5 w-5" />
-                    Need Help?
-                  </h4>
-                  <p className="text-brand-dark/80 text-sm mb-4 leading-relaxed">
-                    Have questions about membership? We're here to help!
-                  </p>
-                  <a 
-                    href={`mailto:${data.contactEmail}`}
-                    className="block w-full bg-accent hover:bg-accent/90 text-white py-2 px-4 rounded-lg font-medium text-center text-sm transition-colors"
-                  >
-                    Contact Us
-                  </a>
-                </div>
-              </div>
-            </aside>
+{/* Pathshala Quick Access */}
+<div className="bg-brand-light rounded-xl shadow-soft p-6 border-soft">
+  <div className="flex items-center gap-3 mb-4">
+    <div className="w-12 h-12 bg-accent/20 rounded-lg flex items-center justify-center">
+      <BookOpen className="h-6 w-6 text-accent" />
+    </div>
+    <div>
+      <h4 className="font-bold text-brand-dark">Pathshala Program</h4>
+      <p className="text-accent text-xs">Educational Excellence</p>
+    </div>
+  </div>
+  <p className="text-brand-dark/70 text-sm mb-4 leading-relaxed">
+    Explore our structured learning programs designed to nurture knowledge and skills.
+  </p>
+  <a
+    href="/pathsala/register"
+    className="block w-full bg-accent hover:bg-[#B45309] text-brand-light py-2.5 px-4 rounded-lg font-medium text-center text-sm transition-all duration-300 hover:scale-105 shadow-soft"
+  >
+    Register for Pathshala
+  </a>
+</div>
+
+{/* Contact & Support */}
+<div className="bg-brand-white rounded-xl shadow-soft p-6 border-soft">
+  <div className="flex items-center gap-3 mb-4">
+    <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
+      <Mail className="h-5 w-5 text-accent" />
+    </div>
+    <h4 className="font-bold text-brand-dark">Need Assistance?</h4>
+  </div>
+  <p className="text-brand-dark/70 text-sm mb-4 leading-relaxed">
+    Questions about membership or programs? Our team is here to help you every step of the way.
+  </p>
+  <div className="space-y-2">
+    <a 
+      href={`mailto:${data.contactEmail}`}
+      className="block w-full bg-accent hover:bg-[#B45309] text-brand-light py-2.5 px-4 rounded-lg font-medium text-center text-sm transition-all duration-300"
+    >
+      Send Email
+    </a>
+  </div>
+</div>
+
+
+  </div>
+</aside>
+
           </div>
         </div>
       </section>

@@ -170,7 +170,7 @@ const Navbar: React.FC = () => {
     { name: 'Groups', path: '', hasDropdown: true },    
     { name: 'Donate', path: '/contribute' },
     { name: 'Media', path: '/gallery' },
-    { name: 'Jinalay', path: '/jinalay' },
+    // { name: 'Jinalay', path: '/jinalay' },
   ];
 
   const membershipOptions = [
@@ -229,18 +229,24 @@ const Navbar: React.FC = () => {
         isScrolled ? "bg-white/95 backdrop-blur-md shadow-lg" : "bg-white/80 backdrop-blur-sm"
       }`}
     >
-      <div className="mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto px-4 sm:px-6 lg:px-8 ">
         <div className="flex justify-between items-center h-[8vh] sm:h-[12vh]">
           {/* Logo */}
           <Link href="/" className="flex items-center text-2xl font-bold text-orange-600 hover:text-orange-700">
             <Image
-              src="/logo3.png"
-              alt="JSSD Logo"
-              width={150}
-              height={50}
-              className="h-full  w-auto transition-all duration-200"
-              priority
-            />
+  src="/logo3.png"
+  alt="JSSD Logo"
+  width={150}
+  height={50}
+  className="w-auto transition-all duration-200"
+  priority
+  style={{ 
+    height: 'clamp(6vh, 8vh, 10vh)',
+    maxHeight: '80%'
+  }}
+/>
+
+
           </Link>
 
           {/* Desktop Nav - Improved spacing */}
@@ -258,7 +264,7 @@ const Navbar: React.FC = () => {
                       {item.path ? (
                         <Link
                           href={item.path}
-                          className={`inline-flex items-center px-3 py-2 text-base font-medium transition-colors whitespace-nowrap ${
+                          className={`inline-flex items-center px-3 py-2 text-sm xl:text-base font-medium transition-colors whitespace-nowrap ${
                             pathname === item.path
                               ? "text-orange-600 border-b-2 border-orange-600"
                               : "text-gray-700 hover:text-orange-600"
@@ -268,7 +274,7 @@ const Navbar: React.FC = () => {
                           <ChevronDown className="ml-1 h-4 w-4" />
                         </Link>
                       ) : (
-                        <span className="inline-flex items-center px-3 py-2 text-base font-medium text-gray-700 hover:text-orange-600 cursor-pointer whitespace-nowrap">
+                        <span className="inline-flex items-center px-3 py-2 text-sm xl:text-base font-medium text-gray-700 hover:text-orange-600 cursor-pointer whitespace-nowrap">
                           {item.name}
                           <ChevronDown className="ml-1 h-4 w-4" />
                         </span>
@@ -280,7 +286,7 @@ const Navbar: React.FC = () => {
                               <Link
                                 key={opt.name}
                                 href={opt.path}
-                                className="block px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600"
+                                className="block px-4 py-2 text-sm xl:text-base text-gray-700 hover:bg-orange-50 hover:text-orange-600"
                               >
                                 {opt.name}
                               </Link>

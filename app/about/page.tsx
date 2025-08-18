@@ -145,30 +145,31 @@ const AboutPage: React.FC = () => {
         </section>
 
         {/* CONTACT INFO ----------------------------------------------- */}
-        <section className="py-16 bg-brand-light">
-          <div className="max-w-6xl mx-auto px-4">
-            <h2 className="text-center text-accent font-bold text-2xl sm:text-3xl mb-10">
-              Contact Information
-            </h2>
+       <section className="py-16 bg-brand-light">
+  <div className="max-w-7xl mx-auto px-4">
+    <h2 className="text-center text-accent font-bold text-3xl sm:text-4xl mb-10">
+      Contact Information
+    </h2>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              <ContactCard icon={MapPin}  label="Address"          value={getContent('contact', 'Address')} />
-              <ContactCard icon={Clock}   label="Regular Hours"    value={getContent('contact', 'Regular Hours')} />
-              <ContactCard icon={Clock}   label="Pathshala Hours"  value={getContent('contact', 'Pathshala Hours')} />
-              <ContactCard icon={Users}   label="Mailing Address"  value={getContent('contact', 'Mailing Address')} />
-              <ContactCard icon={Mail}    label="Event Contact"    value={getContent('contact', 'Event Contact')} />
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <ContactCard icon={MapPin}  label="Address"          value={getContent('contact', 'Address')} />
+      <ContactCard icon={Clock}   label="Regular Hours"    value={getContent('contact', 'Regular Hours')} />
+      <ContactCard icon={Clock}   label="Pathshala Hours"  value={getContent('contact', 'Pathshala Hours')} />
+      <ContactCard icon={Users}   label="Mailing Address"  value={getContent('contact', 'Mailing Address')} />
+      <ContactCard icon={Mail}    label="Event Contact"    value={getContent('contact', 'Event Contact')} />
 
-              {/* e-mails */}
-              <div className="bg-brand-white p-6 rounded-xl shadow-soft text-center border-soft">
-                <Mail className="w-7 h-7 mx-auto text-accent mb-3" />
-                <h3 className="font-semibold mb-1 text-lg">Emails</h3>
-                {getList('contact', 'Emails').map((e, i) => (
-                  <p key={i} className="break-words text-md">{e}</p>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
+      {/* e-mails */}
+      <div className="bg-brand-white p-6 rounded-xl shadow-soft text-center border-soft">
+        <Mail className="w-8 h-8 mx-auto text-accent mb-3" />
+        <h3 className="font-semibold mb-1 text-xl">Emails</h3>
+        {getList('contact', 'Emails').map((e, i) => (
+          <p key={i} className="break-words text-lg">{e}</p>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
 
         {/* ORG STRUCTURE ---------------------------------------------- */}
         <section className="py-16 bg-brand-white">
@@ -234,10 +235,11 @@ const ContactCard = ({
   value: string;
 }) => (
   <div className="bg-brand-white p-6 rounded-xl shadow-soft text-center border-soft space-y-1 break-words">
-    <Icon className="w-7 h-7 mx-auto text-accent mb-2" />
-    <h3 className="font-semibold text-lg">{label}</h3>
-    <p className="text-md">{value}</p>
+    <Icon className="w-8 h-8 mx-auto text-accent mb-2" />
+    <h3 className="font-semibold text-xl">{label}</h3>
+    <p className="text-lg">{value}</p>
   </div>
 );
+
 
 export default AboutPage;

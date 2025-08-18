@@ -20,7 +20,7 @@ interface SheetEntry extends Member {}
 /* ───── constants ───── */
 const EXCLUDED_SECTIONS = ['banner', 'intro'];
 const API_URL =
-  'https://script.google.com/macros/s/AKfycbxMb9YRpNURrdMoCpkqQGD0h1WAWJOzoN94qgvNxnz6-zkQPXCjKI9ksePbMrHaMELe/exec';
+  'https://script.google.com/macros/s/AKfycbwXQMksXvLgq3wBV8bR9ZLZ6cCQZ7-7EPEsqHOj9NoVF1YCjapmhIEOzwRN9nTlv3w1mw/exec';
 // const FALLBACK_JSON = '/BOD.json';
 const CACHE_KEY = 'bod-data';
 const CACHE_TTL = 10 * 60 * 1_000;           // 10 min
@@ -104,12 +104,12 @@ const BODPage: React.FC = () => {
       }
 
       /* 2️⃣ fallback */
-      // if (mounted && loading) {
-      //   fetch(FALLBACK_JSON)
-      //     .then(r => r.json())
-      //     .then(j => { if (mounted) { populate(j.content || j); setLoading(false); }})
-      //     .catch(() => setLoading(false));
-      // }
+    //   if (mounted && loading) {
+    //     fetch(FALLBACK_JSON)
+    //       .then(r => r.json())
+    //       .then(j => { if (mounted) { populate(j.content || j); setLoading(false); }})
+    //       .catch(() => setLoading(false));
+    //   }
 
       /* 3️⃣ background refresh */
       axios.get(API_URL).then(res => {

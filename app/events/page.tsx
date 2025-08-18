@@ -15,6 +15,7 @@ import Image from 'next/image';
 const API_KEY = 'AIzaSyD0MBBXb6oamBJQaEe_FF7T8i0DDzx3UTg';
 const CALENDAR_ID = 'jainsocietyofsandiego@gmail.com';
 const PACIFIC_TZ = 'America/Los_Angeles';
+
 const Loading = () => (
   <div className="min-h-screen bg-brand-light flex items-center justify-center">
     <div className="text-center px-4">
@@ -122,18 +123,17 @@ const EventsPage = () => {
   const [pageLoading, setPageLoading] = useState(true);
 
   useEffect(() => {
-  setLoading(true);
-  setPageLoading(true); // Set page loading to true
-  const minIso = new Date(currentMonth.getFullYear() - 1, 0, 1).toISOString();
-  const maxIso = new Date(currentMonth.getFullYear() + 1, 11, 31).toISOString();
-  fetchCalendarEvents(minIso, maxIso)
-    .then(setEvents)
-    .finally(() => {
-      setLoading(false);
-      setPageLoading(false); // Set page loading to false when done
-    });
-}, [currentMonth]);
-
+    setLoading(true);
+    setPageLoading(true);
+    const minIso = new Date(currentMonth.getFullYear() - 1, 0, 1).toISOString();
+    const maxIso = new Date(currentMonth.getFullYear() + 1, 11, 31).toISOString();
+    fetchCalendarEvents(minIso, maxIso)
+      .then(setEvents)
+      .finally(() => {
+        setLoading(false);
+        setPageLoading(false);
+      });
+  }, [currentMonth]);
 
   // --- Pacific today ---
   const now = new Date();
@@ -153,8 +153,17 @@ const EventsPage = () => {
   // --- Filtering ---
   const beforeToday = (dateStr: string) => pacificDateFromString(dateStr).getTime() < todayPacific.getTime();
   const isUpcoming = (dateStr: string) => !beforeToday(dateStr);
-  const upcomingEvents = events.filter(e => isUpcoming(e.date));
-  const pastEvents = events.filter(e => beforeToday(e.date));
+  
+  // Limit to maximum 4 events each
+  const upcomingEvents = events
+    .filter(e => isUpcoming(e.date))
+    .sort((a, b) => pacificDateFromString(a.date).getTime() - pacificDateFromString(b.date).getTime())
+    .slice(0, 4); // Limit to 4 upcoming events
+    
+  const pastEvents = events
+    .filter(e => beforeToday(e.date))
+    .sort((a, b) => pacificDateFromString(b.date).getTime() - pacificDateFromString(a.date).getTime())
+    .slice(0, 4); // Limit to 4 past events
 
   // --- Calendar grid creation ---
   const startDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).getDay();
@@ -173,8 +182,8 @@ const EventsPage = () => {
   }
 
   if (pageLoading) {
-  return <Loading />;
-}
+    return <Loading />;
+  }
 
   // --- Render ---
   return (
@@ -200,7 +209,6 @@ const EventsPage = () => {
                   </div>
                 </section>
 
-
       {/* Upcoming Events */}
       <section className="py-16 bg-brand-white">
         <div className="max-w-7xl mx-auto px-4">
@@ -219,48 +227,46 @@ const EventsPage = () => {
               {upcomingEvents.length === 0 && (
                 <div className="col-span-2 text-center text-brand-dark/60">No upcoming events.</div>
               )}
-              {upcomingEvents
-                .sort((a, b) => pacificDateFromString(a.date).getTime() - pacificDateFromString(b.date).getTime())
-                .map(e => (
-                  <div
-                    key={e.id}
-                    className="bg-brand-light rounded-xl shadow-soft hover:shadow-lg transition-shadow p-6"
-                  >
-                    <div className="flex items-start justify-between mb-4">
-                      <div>
-                        <h3 className="text-lg md:text-xl font-semibold text-accent mb-2">{e.title}</h3>
-                        <div className="flex items-center text-brand-dark/70 mb-2">
-                          <Calendar className="h-4 w-4 mr-2" />
-                          <span className="text-sm md:text-base">{pacificDisplayLabel(e.date, e.isAllDay)}</span>
-                        </div>
-                        <div className="flex items-center text-brand-dark/70 mb-2">
-                          <Clock className="h-4 w-4 mr-2" />
-                          <span className="text-sm md:text-base">{e.time}</span>
-                        </div>
-                        {e.location && (
-                          <div className="flex items-center text-brand-dark/70 mb-2">
-                            <MapPin className="h-4 w-4 mr-2" />
-                            <span className="text-sm md:text-base">{e.location}</span>
-                          </div>
-                        )}
+              {upcomingEvents.map(e => (
+                <div
+                  key={e.id}
+                  className="bg-brand-light rounded-xl shadow-soft hover:shadow-lg transition-shadow p-6"
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div>
+                      <h3 className="text-lg md:text-xl font-semibold text-accent mb-2">{e.title}</h3>
+                      <div className="flex items-center text-brand-dark/70 mb-2">
+                        <Calendar className="h-4 w-4 mr-2" />
+                        <span className="text-sm md:text-base">{pacificDisplayLabel(e.date, e.isAllDay)}</span>
                       </div>
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${eventBadge()} mb-2`}>Calendar</span>
+                      <div className="flex items-center text-brand-dark/70 mb-2">
+                        <Clock className="h-4 w-4 mr-2" />
+                        <span className="text-sm md:text-base">{e.time}</span>
+                      </div>
+                      {e.location && (
+                        <div className="flex items-center text-brand-dark/70 mb-2">
+                          <MapPin className="h-4 w-4 mr-2" />
+                          <span className="text-sm md:text-base">{e.location}</span>
+                        </div>
+                      )}
                     </div>
-                    <p className="text-brand-dark/80 mb-4 text-sm md:text-base text-justify">{e.description}</p>
-                    <div className="flex space-x-3">
-                      <button
-                        onClick={() => router.push(`/events/register?event=${e.id}`)}
-                        style={{
-                          backgroundColor: 'var(--color-accent)',
-                          color: 'var(--color-text-light)'
-                        }}
-                        className="hover:bg-accent-hov px-4 py-2 rounded-xl font-medium transition-colors text-sm md:text-base"
-                      >
-                        Register
-                      </button>
-                    </div>
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${eventBadge()} mb-2`}>Calendar</span>
                   </div>
-                ))}
+                  <p className="text-brand-dark/80 mb-4 text-sm md:text-base text-justify">{e.description}</p>
+                  <div className="flex space-x-3">
+                    <button
+                      onClick={() => router.push(`/events/register?event=${e.id}`)}
+                      style={{
+                        backgroundColor: 'var(--color-accent)',
+                        color: 'var(--color-text-light)'
+                      }}
+                      className="hover:bg-accent-hov px-4 py-2 rounded-xl font-medium transition-colors text-sm md:text-base"
+                    >
+                      Register
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </div>
@@ -304,33 +310,31 @@ const EventsPage = () => {
               {pastEvents.length === 0 && (
                 <div className="col-span-2 text-center text-brand-dark/60">No past events.</div>
               )}
-              {pastEvents
-                .sort((a, b) => pacificDateFromString(b.date).getTime() - pacificDateFromString(a.date).getTime())
-                .map(e => (
-                  <div key={e.id} className="bg-brand-light rounded-xl shadow-soft hover:shadow-lg transition-shadow p-6">
-                    <div className="flex items-start justify-between mb-4">
-                      <div>
-                        <h3 className="text-lg md:text-xl font-semibold text-accent mb-2">{e.title}</h3>
-                        <div className="flex items-center text-brand-dark/70 mb-2">
-                          <Calendar className="h-4 w-4 mr-2" />
-                          <span className="text-sm md:text-base">{pacificDisplayLabel(e.date, e.isAllDay)}</span>
-                        </div>
-                        <div className="flex items-center text-brand-dark/70 mb-2">
-                          <Clock className="h-4 w-4 mr-2" />
-                          <span className="text-sm md:text-base">{e.time}</span>
-                        </div>
-                        {e.location && (
-                          <div className="flex items-center text-brand-dark/70 mb-2">
-                            <MapPin className="h-4 w-4 mr-2" />
-                            <span className="text-sm md:text-base">{e.location}</span>
-                          </div>
-                        )}
+              {pastEvents.map(e => (
+                <div key={e.id} className="bg-brand-light rounded-xl shadow-soft hover:shadow-lg transition-shadow p-6">
+                  <div className="flex items-start justify-between mb-4">
+                    <div>
+                      <h3 className="text-lg md:text-xl font-semibold text-accent mb-2">{e.title}</h3>
+                      <div className="flex items-center text-brand-dark/70 mb-2">
+                        <Calendar className="h-4 w-4 mr-2" />
+                        <span className="text-sm md:text-base">{pacificDisplayLabel(e.date, e.isAllDay)}</span>
                       </div>
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${eventBadge()} mb-2`}>Calendar</span>
+                      <div className="flex items-center text-brand-dark/70 mb-2">
+                        <Clock className="h-4 w-4 mr-2" />
+                        <span className="text-sm md:text-base">{e.time}</span>
+                      </div>
+                      {e.location && (
+                        <div className="flex items-center text-brand-dark/70 mb-2">
+                          <MapPin className="h-4 w-4 mr-2" />
+                          <span className="text-sm md:text-base">{e.location}</span>
+                        </div>
+                      )}
                     </div>
-                    <p className="text-brand-dark/80 mb-4 text-sm md:text-base text-justify">{e.description}</p>
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${eventBadge()} mb-2`}>Calendar</span>
                   </div>
-                ))}
+                  <p className="text-brand-dark/80 mb-4 text-sm md:text-base text-justify">{e.description}</p>
+                </div>
+              ))}
             </div>
           )}
         </div>

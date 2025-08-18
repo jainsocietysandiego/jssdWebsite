@@ -182,7 +182,8 @@ const Navbar: React.FC = () => {
     { name: 'About Us', path: '/about' },
     { name: 'History', path: '/about/history' },
     { name: 'JSSD Policies', path: '/about/policies' },
-    { name: 'EC & BOD', path: '/about/bod' },
+    { name: 'Executive Committee', path: '/about/ec' },
+    { name: 'Board of Directors', path: '/about/bod' },
   ];
 
   const EventsOptions = [
@@ -241,7 +242,7 @@ const Navbar: React.FC = () => {
   className="w-auto transition-all duration-200"
   priority
   style={{ 
-    height: 'clamp(6vh, 8vh, 10vh)',
+    height: 'clamp(6vh, 7vh, 10vh)',
     maxHeight: '80%'
   }}
 />

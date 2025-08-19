@@ -8,7 +8,7 @@ const API_URL =
   'https://script.google.com/macros/s/AKfycbyvRvMW0wBhim-kMRXg13LhyR8vDLeUvwgFnTrNDrCWhtvQMI3_Qc48w0aOQwaE-01I/exec';
 const FALLBACK_JSON = '/group.json';
 const CACHE_KEY = 'committee-data';
-const CACHE_TTL = 10 * 60 * 1000;
+const CACHE_TTL = 1 * 60 * 1000;
 
 const EXCLUDED_KEYS = ['Slug'];
 const CONTACT_KEYS = [

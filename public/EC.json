@@ -1,0 +1,103 @@
+{
+  "content": [
+    {
+      "Section": "banner",
+      "Name": "Executive Committee",
+      "Role": "",
+      "Email": "",
+      "Testing": "",
+      "Testing2": "",
+      "Term End": "",
+      "Image Name": "",
+      "ImageURL": ""
+    },
+    {
+      "Section": "intro",
+      "Name": "One is an Executive Committee (EC) and the second is a Board of Directors (BoD) consisting of eleven directors (seven + four from EC).\n\nThe Executive Committee is responsible for the general day-to-day operations of JCSC. The Executive Committee is responsible for organizing and coordinating religious and cultural activities, managing the Derasar and the library, organizing and scheduling JCYC classes, and more.\n\nThe Board of Directors is involved with broad policy and setting future goals and direction for the Center. Specifically, they are responsible for future facility expansions, management of existing assets, and coordinating major repairs and renovations. Four officers of the Executive Committee, namely, the President, the Vice-President, the Secretary, and the Treasurer also serve on the Board of Directors.\n\nThe Executive Committee consists of 15 members including five officers: the President, the Vice-President, the Secretary, the Treasurer, and the Public Relations Officer. All members including the five officers have a two-year term.\n\nPlease contact any of the Board/EC members below if you have any questions, comments or suggestions regarding our Jain Center.\n\nA voice message for JCSC EC can be left by selecting option 9 on our main # 714 523 5246. A voice message for any of the EC/BOD member can be left by dialing the 3 digit extension on our main # 714 523 5246.",
+      "Role": "",
+      "Email": "",
+      "Testing": "",
+      "Testing2": "",
+      "Term End": "",
+      "Image Name": "",
+      "ImageURL": ""
+    },
+    {
+      "Section": "top_members",
+      "Name": "Sameer Shah",
+      "Role": "President",
+      "Email": "sameer@jssd.org",
+      "Testing": "Test example",
+      "Testing2": "Test example",
+      "Term End": "2025-11-30T18:30:00.000Z",
+      "Image Name": "sameer_shah.jpg",
+      "ImageURL": "https://drive.google.com/uc?export=view&id=1dm3TtnTkGwHSCQUoo6V59qH5xYir9oJg"
+    },
+    {
+      "Section": "top_members2",
+      "Name": "Deep Jain",
+      "Role": "Vice President",
+      "Email": "sameer@jssd.org",
+      "Testing": "Test example",
+      "Testing2": "Test example",
+      "Term End": "2025-11-30T18:30:00.000Z",
+      "Image Name": "sameer_shah.jpg",
+      "ImageURL": "https://drive.google.com/uc?export=view&id=1dm3TtnTkGwHSCQUoo6V59qH5xYir9oJg"
+    },
+    {
+      "Section": "top_members",
+      "Name": "Bhavin Modi",
+      "Role": "Treasurer",
+      "Email": "bhavin@jssd.org",
+      "Testing": "Test example",
+      "Testing2": "Test example",
+      "Term End": "2025-11-30T18:30:00.000Z",
+      "Image Name": "bhavin_modi.jpg",
+      "ImageURL": ""
+    },
+    {
+      "Section": "executive_committee",
+      "Name": "Twinkle Variya",
+      "Role": "Education Coordinator",
+      "Email": "twinkle@jssd.org",
+      "Testing": "Test example",
+      "Testing2": "Test example",
+      "Term End": "2025-11-30T18:30:00.000Z",
+      "Image Name": "twinkle.jpg",
+      "ImageURL": "https://drive.google.com/uc?export=view&id=16w7grtaJuYWEiQO4qa3sgIEY6HaijgPK"
+    },
+    {
+      "Section": "executive_committee",
+      "Name": "Neha Shah",
+      "Role": "Cultural Coordinator",
+      "Email": "neha@jssd.org",
+      "Testing": "Test example",
+      "Testing2": "Test example",
+      "Term End": "2025-11-30T18:30:00.000Z",
+      "Image Name": "neha_shah.jpg",
+      "ImageURL": ""
+    },
+    {
+      "Section": "executive_committee",
+      "Name": "Pooja Doshi",
+      "Role": "Youth Leader",
+      "Email": "pooja@jssd.org",
+      "Testing": "Test example",
+      "Testing2": "Test example",
+      "Term End": "2025-11-30T18:30:00.000Z",
+      "Image Name": "pooja_doshi.jpg",
+      "ImageURL": ""
+    },
+    {
+      "Section": "past_president",
+      "Name": "Ramesh Patel",
+      "Role": "Immediate Past President",
+      "Email": "ramesh@jssd.org",
+      "Testing": "Test example",
+      "Testing2": "Test example",
+      "Term End": "2024-11-30T18:30:00.000Z",
+      "Image Name": "ramesh_patel.jpg",
+      "ImageURL": "https://drive.google.com/uc?export=view&id=1C-uRe4AzPcfwAefZfCIA1p0O6U57DGzd"
+    }
+  ]
+}

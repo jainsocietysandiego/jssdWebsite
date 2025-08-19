@@ -21,7 +21,7 @@ interface SheetEntry extends Member {}
 const EXCLUDED_SECTIONS = ['banner', 'intro'];
 const API_URL =
   'https://script.google.com/macros/s/AKfycbxMb9YRpNURrdMoCpkqQGD0h1WAWJOzoN94qgvNxnz6-zkQPXCjKI9ksePbMrHaMELe/exec';
-// const FALLBACK_JSON = '/BOD.json';
+const FALLBACK_JSON = '/BOD.json';
 const CACHE_KEY = 'bod-data';
 const CACHE_TTL = 10 * 60 * 1_000;           // 10 min
 
@@ -91,6 +91,8 @@ const BODPage: React.FC = () => {
     let mounted = true;
 
     const load = async () => {
+      let hasData = false;
+
       /* 1️⃣ cache */
       const cached = localStorage.getItem(CACHE_KEY);
       if (cached) {
@@ -99,25 +101,35 @@ const BODPage: React.FC = () => {
           if (Date.now() - timestamp < CACHE_TTL) {
             populate(data);
             setLoading(false);
+            hasData = true;
           }
         } catch {/* ignore */}
       }
 
-      /* 2️⃣ fallback */
-      // if (mounted && loading) {
-      //   fetch(FALLBACK_JSON)
-      //     .then(r => r.json())
-      //     .then(j => { if (mounted) { populate(j.content || j); setLoading(false); }})
-      //     .catch(() => setLoading(false));
-      // }
+      /* 2️⃣ fallback (only if still loading & no data yet) */
+      if (!hasData) {
+        try {
+          const res = await fetch(FALLBACK_JSON);
+          if (res.ok) {
+            const j = await res.json();
+            populate(j.content || j);
+            setLoading(false);
+            hasData = true;
+          }
+        } catch {/* ignore */}
+      }
 
-      /* 3️⃣ background refresh */
+      /* 3️⃣ background refresh (always attempt latest API) */
       axios.get(API_URL).then(res => {
         const rows = res.data.content || [];
         localStorage.setItem(CACHE_KEY, JSON.stringify({ data: rows, timestamp: Date.now() }));
         if (mounted) populate(rows);
-      }).catch(() => {/* ignore */});
+        if (mounted && loading) setLoading(false);
+      }).catch(() => {
+        if (!hasData && mounted) setLoading(false);
+      });
     };
+
     load();
     return () => { mounted = false; };
   }, [loading]);

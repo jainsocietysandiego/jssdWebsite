@@ -177,48 +177,73 @@ const NewsletterPage: React.FC = () => {
                   </div>
                 </section>
 
-      <main className="max-w-5xl mx-auto pt-20 px-2 pb-24">      
+      <main className="max-w-5xl mx-auto pt-10 sm:pt-20 px-2 pb-24">      
           <>
-            <section className="mb-20">
-              <div className="text-xl md:text-2xl font-bold text-accent mb-5">
-                Present Newsletter
-              </div>
-              {!current ? (
-                <div className="rounded-2xl bg-brand-light py-14 text-center text-brand-dark/60 text-lg md:text-2xl font-semibold shadow-soft">
-                  No newsletter available for this month.
-                </div>
-              ) : (
-                <div className="p-6 md:p-8 bg-brand-white rounded-3xl shadow-soft">
-                  <div className="font-extrabold text-2xl md:text-3xl lg:text-4xl text-brand-dark text-center mb-2">
-                    {current['PDF File Name']}
-                  </div>
-                  <div className="text-lg md:text-xl mb-3 text-center text-accent font-semibold">
-                    {current.Month}
-                  </div>
-                  <div className="flex flex-col items-center mt-2 mb-4">
-                    <iframe
-                      src={toPreviewUrl(current['Newsletter URL (PDF)'])}
-                      title={current['PDF File Name']}
-                      className="rounded-xl border-soft shadow-soft"
-                      width="100%"
-                      height="700"
-                      style={{ minHeight: 700, maxWidth: 1100 }}
-                      allow="autoplay"
-                    />
-                  </div>
-                  <div className="text-center mt-3">
-                    <a
-                      className="text-accent font-bold underline text-sm md:text-lg"
-                      href={toPreviewUrl(current['Newsletter URL (PDF)'])}
-                      rel="noopener noreferrer"
-                      target="_blank"
-                    >
-                      Download the Newsletter PDF
-                    </a>
-                  </div>
-                </div>
-              )}
-            </section>
+           <section className="mb-12 md:mb-20"> 
+  {!current ? (
+    <div className="rounded-xl md:rounded-2xl bg-brand-light py-8 md:py-14 text-center text-brand-dark/60 text-sm md:text-lg lg:text-2xl font-semibold shadow-soft mx-2 md:mx-0">
+      No newsletter available for this month.
+    </div>
+  ) : (
+    <div className="p-3 sm:p-4 md:p-6 lg:p-8 bg-brand-white rounded-2xl md:rounded-3xl shadow-soft mx-2 md:mx-0">
+      <div className="font-extrabold text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-brand-dark text-center mb-2">
+        {current['PDF File Name']}
+      </div>
+      <div className="text-base md:text-lg lg:text-xl mb-3 text-center text-accent font-semibold">
+        {current.Month}
+      </div>
+      
+      {/* Enhanced Mobile PDF Viewer Container */}
+      <div className="flex flex-col items-center mt-2 mb-4">
+        <div className="w-full relative overflow-hidden rounded-lg md:rounded-xl border-soft shadow-soft">
+          <iframe
+            src={toPreviewUrl(current['Newsletter URL (PDF)'])}
+            title={current['PDF File Name']}
+            className="w-full rounded-lg md:rounded-xl"
+            height="400"
+            style={{ 
+              minHeight: '400px',
+              maxHeight: '500px',
+              width: '100%'
+            }}
+            allow="autoplay"
+          />
+        </div>        
+      </div>
+      
+      {/* Enhanced Download Section */}
+      <div className="text-center mt-3 space-y-3">
+        <a
+          className="inline-flex items-center gap-2 bg-accent hover:bg-[#B45309] text-white px-4 md:px-6 py-2.5 md:py-3 rounded-lg md:rounded-xl font-semibold text-sm md:text-base transition-all duration-300 hover:scale-105 shadow-soft"
+          href={toPreviewUrl(current['Newsletter URL (PDF)'])}
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          Download Newsletter PDF
+        </a>
+        
+        {/* Alternative: Open in new tab for mobile */}
+        <div className="block md:hidden">
+          <a
+            className="inline-flex items-center gap-2 text-accent hover:text-[#B45309] font-medium text-sm underline transition-colors duration-300"
+            href={toPreviewUrl(current['Newsletter URL (PDF)'])}
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+            Open in New Tab
+          </a>
+        </div>
+      </div>
+    </div>
+  )}
+</section>
+
 
             <section>
               <div className="text-xl md:text-2xl font-bold text-accent mb-5">

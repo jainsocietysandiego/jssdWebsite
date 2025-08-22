@@ -236,9 +236,8 @@ const Pathsala: React.FC = () => {
       <div className="min-h-screen bg-brand-light">
         <main>
           <div className="pt-[8vh] sm:pt-[12vh]">
-            {/* Hero Section - UNCHANGED */}
-            <section className="relative flex items-center justify-center
-                                h-40 sm:h-48 md:h-56 lg:h-60 overflow-hidden">
+            {/* Hero Section */}
+            <section className="relative flex items-center justify-center h-40 sm:h-48 md:h-56 lg:h-60 overflow-hidden">
               <Image
                 src="/images/hero-banner.jpg"
                 alt="Pathshala Program"
@@ -248,23 +247,23 @@ const Pathsala: React.FC = () => {
                 className="object-cover"
               />
               <div className="relative z-10 text-center px-4">
-                <h1 className="font-bold text-brand-light text-3xl sm:text-4xl md:text-5xl">
+                <h1 className="font-bold text-brand-light text-2xl sm:text-3xl md:text-4xl lg:text-5xl">
                   Pathshala Program
                 </h1>
-                <p className="mt-2 max-w-4xl mx-auto text-white text-sm sm:text-base md:text-lg text-center">
+                <p className="mt-2 max-w-4xl mx-auto text-white text-xs sm:text-sm md:text-base lg:text-lg text-center">
                   Nurturing young minds with Jain values, philosophy, and cultural heritage
                 </p>
               </div>
             </section>
 
-            <section className="py-16 md:py-20 bg-brand-white">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="text-center mb-12 md:mb-16">
-                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-brand-dark mb-4">
+            <section className="py-8 sm:py-12 md:py-16 lg:py-20 bg-brand-white">
+              <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
+                <div className="text-center mb-8 sm:mb-10 md:mb-12 lg:mb-16">
+                  <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-brand-dark mb-3 sm:mb-4">
                     About Our Pathshala
                   </h2>
-                  <div className="w-16 md:w-24 h-1 bg-accent mx-auto mb-4 rounded-full"></div>
-                  <p className="text-brand-dark/80 max-w-4xl mx-auto text-sm md:text-base text-center">
+                  <div className="w-12 sm:w-16 md:w-20 lg:w-24 h-1 bg-accent mx-auto mb-3 sm:mb-4 rounded-full"></div>
+                  <p className="text-brand-dark/80 max-w-4xl mx-auto text-xs sm:text-sm md:text-base text-center leading-relaxed">
                     Our Pathshala program provides comprehensive Jain education
                     from childhood through young adulthood. Each level builds
                     upon the previous, creating a strong foundation in Jain
@@ -272,116 +271,195 @@ const Pathsala: React.FC = () => {
                   </p>
                 </div>
 
-                {/* NEW: Two Column Layout - Levels + Sidebar */}
-                <div className="grid lg:grid-cols-12 gap-8 mb-16">
-                    <div className="hidden lg:block absolute left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-accent/20 to-transparent transform -translate-x-1/2"></div>
+                {/* Mobile: Show Register Card First, Desktop: Side-by-side layout */}
+                
+                {/* Mobile-only Register Card - Show before levels */}
+                <div className="block lg:hidden mb-6">
+                  <div className="bg-gradient-to-br from-[#EA580C] via-[#D3490C] to-[#C2410C] rounded-xl shadow-lg p-4 sm:p-6 text-center transform hover:scale-105 transition-transform duration-300">
+                    <div className="w-12 h-12 sm:w-16 sm:h-16 bg-brand-light rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                      <Users className="h-6 w-6 sm:h-8 sm:w-8 text-accent" />
+                    </div>
+                    <h3 className="text-lg sm:text-xl font-bold text-brand-light mb-2 sm:mb-3">
+                      Ready to Join?
+                    </h3>
+                    <p className="text-white mb-4 sm:mb-6 text-xs sm:text-sm text-center leading-relaxed">
+                      Register for this level or contact us for more information about our Pathshala program.
+                    </p>
+                    <div className="space-y-3">
+                      <a
+                        href="/pathsala/register"
+                        className="block bg-brand-light hover:bg-brand-white text-brand-dark hover:text-accent py-2 sm:py-3 px-4 sm:px-6 rounded-xl font-semibold text-center text-sm sm:text-base transition-all duration-300 hover:scale-105"
+                      >
+                        Register Now
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-8 lg:space-y-0 lg:grid lg:grid-cols-12 lg:gap-8 mb-8 sm:mb-12 md:mb-16">
                   
-                  {/* Left Side: Original Levels Grid - UNCHANGED except grid layout */}
+                  {/* Levels Section - Full width on mobile, 8 cols on desktop */}
                   <div className="lg:col-span-8">
-                    <div className="space-y-5">
-  {levels.map((level) => (
-    <div
-      key={level.Level}
-      className="bg-brand-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.08)] border border-gray-100 hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] hover:border-gray-200 transition-all duration-300 overflow-hidden group"
-    >
-      <div className="flex items-stretch p-6 sm:p-7">
-        
-        {/* Level Indicator */}
-        <div className="flex-shrink-0 w-1 bg-gradient-to-b from-accent to-orange-600 rounded-full"></div>
+                    <div className="space-y-4 sm:space-y-5">
+                      {levels.map((level) => (
+                        <div
+                          key={level.Level}
+                          className="bg-brand-white rounded-xl sm:rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.08)] border border-gray-100 hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] hover:border-gray-200 transition-all duration-300 overflow-hidden group"
+                        >
+                          {/* Mobile Layout: Stack vertically */}
+                          <div className="block sm:hidden p-4">
+                            {/* Mobile Header */}
+                            <div className="flex items-center gap-2 mb-3">
+                              <div className="w-1 h-12 bg-gradient-to-b from-accent to-orange-600 rounded-full flex-shrink-0"></div>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex flex-col gap-2">
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-sm font-semibold text-accent bg-accent/10 px-2 py-1 rounded-md whitespace-nowrap">
+                                      Level {level.Level}
+                                    </span>
+                                    <div className="bg-gradient-to-r from-orange-50 to-orange-100 text-accent px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap border border-orange-200">
+                                      {level["Age Group"]}
+                                    </div>
+                                  </div>
+                                  <h4 className="text-lg font-bold text-brand-dark group-hover:text-accent transition-colors duration-300 leading-tight">
+                                    {level.Title}
+                                  </h4>
+                                </div>
+                              </div>
+                            </div>
 
-        {/* Main Content */}
-        <div className="flex-1 min-w-0 pl-6 flex flex-col justify-between">
-          
-         {/* Title Row */}
-        <div className="flex flex-wrap items-center gap-3 mb-3">
-          <h4 className="flex items-center gap-3 text-xl font-bold text-brand-dark group-hover:text-accent transition-colors duration-300">
-            <span className="text-lg sm:text-xl font-semibold text-accent bg-accent/10 px-3 py-1 rounded-lg">
-              Level {level.Level}
-            </span>
-            {level.Title}
-          </h4>
-          
-          <div className="bg-gradient-to-r from-orange-50 to-orange-100 text-accent px-3 py-1 rounded-full text-sm font-semibold whitespace-nowrap border border-orange-200">
-            {level["Age Group"]}
-          </div>
-        </div>
+                            {/* Mobile Description */}
+                            <p className="text-brand-dark/70 text-sm leading-relaxed mb-4">
+                              {level.Description}
+                            </p>
 
+                            {/* Mobile Meta Data - Stack vertically */}
+                            <div className="space-y-2 mb-4">
+                              <div className="flex items-center gap-2 bg-accent/5 px-3 py-2 rounded-lg border border-accent/10">
+                                <Star className="h-4 w-4 text-accent flex-shrink-0" />
+                                <span className="font-medium text-sm">{level.Fees}</span>
+                              </div>
+                              <div className="flex items-center gap-2 bg-accent/5 px-3 py-2 rounded-lg border border-accent/10">
+                                <Clock className="h-4 w-4 text-accent flex-shrink-0" />
+                                <span className="font-medium text-sm">{level.Duration}</span>
+                              </div>
+                              <div className="flex items-center gap-2 bg-accent/5 px-3 py-2 rounded-lg border border-accent/10">
+                                <Users className="h-4 w-4 text-accent flex-shrink-0" />
+                                <span className="font-medium text-sm">{level.Students} enrolled</span>
+                              </div>
+                            </div>
 
-          {/* Description */}
-          <p className="text-brand-dark/70 text-sm leading-relaxed line-clamp-2 mb-4 font-medium">
-            {level.Description}
-          </p>
+                            {/* Mobile Action Button */}
+                            <button
+                              onClick={() => {
+                                sessionStorage.setItem(
+                                  `pathsala-level-${level.Level}`,
+                                  JSON.stringify(level)
+                                );
+                                router.push(`/pathsala/level-${level.Level}`);
+                              }}
+                              className="w-full bg-gradient-to-r from-accent to-orange-600 hover:from-orange-600 hover:to-red-600 text-white py-3 px-4 rounded-xl font-semibold transition-all duration-300 text-sm shadow-lg hover:shadow-xl"
+                            >
+                              View Details
+                            </button>
+                          </div>
 
-          {/* Meta Data */}
-          <div className="flex flex-wrap gap-4 text-sm text-brand-dark/60">
-            <div className="flex items-center gap-2 bg-accent/5 px-3 py-1.5 rounded-lg border border-accent/10">
-              <Star className="h-4 w-4 text-accent" />
-              <span className="font-medium">{level.Fees}</span>
-            </div>
-            <div className="flex items-center gap-2 bg-accent/5 px-3 py-1.5 rounded-lg border border-accent/10">
-              <Clock className="h-4 w-4 text-accent" />
-              <span className="font-medium">{level.Duration}</span>
-            </div>
-            <div className="flex items-center gap-2 bg-accent/5 px-3 py-1.5 rounded-lg border border-accent/10">
-              <Users className="h-4 w-4 text-accent" />
-              <span className="font-medium">{level.Students} enrolled</span>
-            </div>
-          </div>
-        </div>
+                          {/* Desktop Layout: Horizontal */}
+                          <div className="hidden sm:flex items-stretch p-4 sm:p-6 lg:p-7">
+                            
+                            {/* Level Indicator */}
+                            <div className="flex-shrink-0 w-1 bg-gradient-to-b from-accent to-orange-600 rounded-full"></div>
 
-        {/* Action Button */}
-        <div className="flex-shrink-0 self-center ml-8">
-          <button
-            onClick={() => {
-              sessionStorage.setItem(
-                `pathsala-level-${level.Level}`,
-                JSON.stringify(level)
-              );
-              router.push(`/pathsala/level-${level.Level}`);
-            }}
-            className="bg-gradient-to-r from-accent to-orange-600 hover:from-orange-600 hover:to-red-600 text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 text-sm whitespace-nowrap shadow-lg hover:shadow-xl hover:scale-105 hover:-translate-y-0.5"
-          >
-            View Details
-          </button>
-        </div>
-      </div>
-    </div>
-  ))}
-</div>
+                            {/* Main Content */}
+                            <div className="flex-1 min-w-0 pl-4 sm:pl-6 flex flex-col justify-between">
+                              
+                             {/* Title Row */}
+                            <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-3">
+                              <h4 className="flex items-center gap-2 sm:gap-3 text-lg sm:text-xl font-bold text-brand-dark group-hover:text-accent transition-colors duration-300">
+                                <span className="text-sm sm:text-lg font-semibold text-accent bg-accent/10 px-2 sm:px-3 py-1 rounded-lg whitespace-nowrap">
+                                  Level {level.Level}
+                                </span>
+                                <span className="break-words">{level.Title}</span>
+                              </h4>
+                              
+                              <div className="bg-gradient-to-r from-orange-50 to-orange-100 text-accent px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-semibold whitespace-nowrap border border-orange-200">
+                                {level["Age Group"]}
+                              </div>
+                            </div>
 
+                              {/* Description */}
+                              <p className="text-brand-dark/70 text-sm leading-relaxed line-clamp-2 mb-4 font-medium">
+                                {level.Description}
+                              </p>
+
+                              {/* Meta Data */}
+                              <div className="flex flex-wrap gap-2 sm:gap-4 text-sm text-brand-dark/60">
+                                <div className="flex items-center gap-2 bg-accent/5 px-2 sm:px-3 py-1.5 rounded-lg border border-accent/10">
+                                  <Star className="h-4 w-4 text-accent flex-shrink-0" />
+                                  <span className="font-medium text-xs sm:text-sm">{level.Fees}</span>
+                                </div>
+                                <div className="flex items-center gap-2 bg-accent/5 px-2 sm:px-3 py-1.5 rounded-lg border border-accent/10">
+                                  <Clock className="h-4 w-4 text-accent flex-shrink-0" />
+                                  <span className="font-medium text-xs sm:text-sm">{level.Duration}</span>
+                                </div>
+                                <div className="flex items-center gap-2 bg-accent/5 px-2 sm:px-3 py-1.5 rounded-lg border border-accent/10">
+                                  <Users className="h-4 w-4 text-accent flex-shrink-0" />
+                                  <span className="font-medium text-xs sm:text-sm">{level.Students} enrolled</span>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Action Button */}
+                            <div className="flex-shrink-0 self-center ml-4 sm:ml-6 lg:ml-8">
+                              <button
+                                onClick={() => {
+                                  sessionStorage.setItem(
+                                    `pathsala-level-${level.Level}`,
+                                    JSON.stringify(level)
+                                  );
+                                  router.push(`/pathsala/level-${level.Level}`);
+                                }}
+                                className="bg-gradient-to-r from-accent to-orange-600 hover:from-orange-600 hover:to-red-600 text-white py-2 sm:py-3 px-3 sm:px-4 lg:px-6 rounded-xl font-semibold transition-all duration-300 text-xs sm:text-sm whitespace-nowrap shadow-lg hover:shadow-xl hover:scale-105 hover:-translate-y-0.5"
+                              >
+                                View Details
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
 
-                  {/* NEW: Right Side Sidebar */}
-                  <aside className="lg:col-span-4">
-                    <div className="sticky top-8 space-y-6">
-                      {/* Pathshala Registration CTA */}
-                      <div className="bg-gradient-to-br from-[#EA580C] via-[#D3490C] to-[#C2410C] rounded-2xl shadow-lg p-6 text-center transform hover:scale-105 transition-transform duration-300">
-                            <div className="w-16 h-16 bg-brand-light rounded-full flex items-center justify-center mx-auto mb-4">
-                            <Users className="h-8 w-8 text-accent" />
-                            </div>
-                            <h3 className="text-xl font-bold text-brand-light mb-3">
-                            Ready to Join?
-                            </h3>
-                            <p className="text-white mb-6 text-sm text-center">
-                            Register for this level or contact us for more information about our Pathshala program.
-                            </p>
-                                      <div className="space-y-3">
-                                        <a
-                                          href="/pathsala/register"
-                                          className="block bg-brand-light hover:bg-brand-white text-brand-dark hover:text-accent py-3 px-6 rounded-xl font-semibold text-center text-sm md:text-base transition-all duration-300 hover:scale-105"
-                                        >
-                                          Register Now
-                                        </a>
-                                      </div>
-                                    </div>                     
-                      
+                  {/* Desktop-only Sidebar - Hidden on mobile, 4 cols on desktop */}
+                  <aside className="hidden lg:block lg:col-span-4">
+                    <div className="lg:sticky lg:top-8 space-y-6">
+                      {/* Pathshala Registration CTA - Desktop only */}
+                      <div className="bg-gradient-to-br from-[#EA580C] via-[#D3490C] to-[#C2410C] rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 text-center transform hover:scale-105 transition-transform duration-300">
+                        <div className="w-12 h-12 sm:w-16 sm:h-16 bg-brand-light rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                          <Users className="h-6 w-6 sm:h-8 sm:w-8 text-accent" />
+                        </div>
+                        <h3 className="text-lg sm:text-xl font-bold text-brand-light mb-2 sm:mb-3">
+                          Ready to Join?
+                        </h3>
+                        <p className="text-white mb-4 sm:mb-6 text-xs sm:text-sm text-center leading-relaxed">
+                          Register for this level or contact us for more information about our Pathshala program.
+                        </p>
+                        <div className="space-y-3">
+                          <a
+                            href="/pathsala/register"
+                            className="block bg-brand-light hover:bg-brand-white text-brand-dark hover:text-accent py-2 sm:py-3 px-4 sm:px-6 rounded-xl font-semibold text-center text-sm sm:text-base transition-all duration-300 hover:scale-105"
+                          >
+                            Register Now
+                          </a>
+                        </div>
+                      </div>                     
                     </div>
                   </aside>
                 </div>
 
-                {/* Your existing features section - UNCHANGED */}
-                <div className="bg-brand-light rounded-xl p-6 md:p-8 mb-16">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {/* Features section */}
+                <div className="bg-brand-light rounded-xl p-4 sm:p-6 md:p-8 mb-8 sm:mb-12 md:mb-16">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
                     {[
                       {
                         icon: BookOpen,
@@ -400,55 +478,55 @@ const Pathsala: React.FC = () => {
                       },
                     ].map((item, idx) => (
                       <div key={idx} className="text-center">
-                        <div className="bg-accent text-brand-light p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                          <item.icon className="h-8 w-8" />
+                        <div className="bg-accent text-brand-light p-3 rounded-full w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 flex items-center justify-center">
+                          <item.icon className="h-6 w-6 sm:h-8 sm:w-8" />
                         </div>
-                        <h3 className="text-lg md:text-xl font-bold text-brand-dark mb-2">
+                        <h3 className="text-base sm:text-lg md:text-xl font-bold text-brand-dark mb-2">
                           {item.title}
                         </h3>
-                        <p className="text-gray-700 text-sm md:text-md text-center">{item.desc}</p>
+                        <p className="text-gray-700 text-xs sm:text-sm md:text-base text-center leading-relaxed">{item.desc}</p>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                {/* Your existing lunch section - UNCHANGED */}
-                <div className="bg-brand-light rounded-xl p-6 md:p-8 border-soft shadow-soft">
+                {/* Lunch section */}
+                <div className="bg-brand-light rounded-xl p-4 sm:p-6 md:p-8 border-soft shadow-soft">
                   <div className="flex flex-col lg:flex-row items-center lg:items-start justify-between">
-                    <div className="lg:w-2/3">
-                      <div className="flex items-center mb-6">
-                        <div className="bg-[rgba(234,88,12,0.1)] p-3 rounded-full mr-4">
-                          <Utensils className="h-8 w-8 text-accent" />
+                    <div className="max-w-2xl">
+                      <div className="flex items-center mb-4 sm:mb-6">
+                        <div className="bg-[rgba(234,88,12,0.1)] p-2 sm:p-3 rounded-full mr-3 sm:mr-4 flex-shrink-0">
+                          <Utensils className="h-6 w-6 sm:h-8 sm:w-8 text-accent" />
                         </div>
-                        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-accent">
+                        <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-accent leading-tight">
                           {lunchContent.lunch_heading}
                         </h2>
                       </div>
-                      <p className="text-brand-dark text-base md:text-md leading-relaxed mb-4 text-justify">
+                      <p className="text-brand-dark text-sm sm:text-base md:text-md leading-relaxed mb-3 sm:mb-4 text-justify">
                         {lunchContent.lunch_intro}
                       </p>
-                      <p className="text-brand-dark/80 text-sm md:text-md text-justify">
+                      <p className="text-brand-dark/80 text-xs sm:text-sm md:text-md text-justify leading-relaxed">
                         {lunchContent.lunch_call}
                       </p>
                     </div>
                     
-                    <div className="lg:w-1/3 flex flex-row gap-4 w-full lg:w-auto lg:self-center mt-6 lg:mt-0">
+                    <div className="lg:w-1/3 w-full flex flex-col sm:flex-row lg:flex-col gap-3 sm:gap-4 lg:self-center mt-4 sm:mt-6 lg:mt-0">
                       <button
                         onClick={() => setIsLunchModalOpen(true)}
-                        className="group flex items-center justify-center px-4 md:px-6 py-3 bg-brand-white border-2 border-accent text-accent rounded-xl font-semibold hover:bg-accent hover:text-white transition-all duration-300 shadow-soft hover:shadow-lg flex-1 text-sm md:text-base"
+                        className="group flex items-center justify-center px-3 sm:px-4 md:px-6 py-2 sm:py-3 bg-brand-white border-2 border-accent text-accent rounded-xl font-semibold hover:bg-accent hover:text-white transition-all duration-300 shadow-soft hover:shadow-lg flex-1 lg:flex-none text-xs sm:text-sm md:text-base"
                       >
-                        <BookOpen className="h-5 w-5 mr-2 group-hover:scale-110 transition-transform" />
-                        {lunchContent.button_one ?? "Know More"}
+                        <BookOpen className="h-4 w-4 sm:h-5 sm:w-5 mr-2 group-hover:scale-110 transition-transform flex-shrink-0" />
+                        <span className="truncate">{lunchContent.button_one ?? "Know More"}</span>
                       </button>
                       
                       <button
                         onClick={() => {
                           router.push('/pathsala/lunch-donation');
                         }}
-                        className="group flex items-center justify-center px-4 md:px-6 py-3 bg-brand-white border-2 border-green-600 text-green-600 rounded-xl font-semibold hover:bg-green-600 hover:text-white transition-all duration-300 shadow-soft hover:shadow-lg flex-1 text-sm md:text-base"
+                        className="group flex items-center justify-center px-3 sm:px-4 md:px-6 py-2 sm:py-3 bg-brand-white border-2 border-green-600 text-green-600 rounded-xl font-semibold hover:bg-green-600 hover:text-white transition-all duration-300 shadow-soft hover:shadow-lg flex-1 lg:flex-none text-xs sm:text-sm md:text-base"
                       >
-                        <Heart className="h-5 w-5 mr-2 group-hover:scale-110 transition-transform" />
-                        {lunchContent.button_two ?? "Donate"}
+                        <Heart className="h-4 w-4 sm:h-5 sm:w-5 mr-2 group-hover:scale-110 transition-transform flex-shrink-0" />
+                        <span className="truncate">{lunchContent.button_two ?? "Donate"}</span>
                       </button>
                     </div>
                   </div>

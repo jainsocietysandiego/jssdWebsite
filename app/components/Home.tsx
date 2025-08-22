@@ -60,6 +60,8 @@ const Home: React.FC = () => {
     "idle" | "submitting" | "submitted"
   >("idle");
  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+ const [showScrollIndicator, setShowScrollIndicator] = useState(false);
+ const scrollContainerRef = useRef<HTMLDivElement>(null);
   const recaptchaRef = useRef<ReCAPTCHA>(null);
   const siteKey = "6LdGip0rAAAAAKsHaqNZGhLnKNCQjmqYqOnIWI9G";
 
@@ -188,6 +190,31 @@ const Home: React.FC = () => {
   const handleDotClick = (index: number) => {
     setCurrentSlide(index);
   };
+  
+ useEffect(() => {
+  // Exit early if data is not available
+  if (!data) {
+    setShowScrollIndicator(false);
+    return;
+  }
+
+  const container = scrollContainerRef.current;
+  if (container) {
+    // Check if content is scrollable
+    const isScrollable = container.scrollHeight > container.clientHeight;
+    setShowScrollIndicator(isScrollable);
+
+    const handleScroll = () => {
+      const { scrollTop } = container;
+      // Hide indicator after scrolling down 20px
+      setShowScrollIndicator(scrollTop < 20 && isScrollable);
+    };
+
+    container.addEventListener('scroll', handleScroll);
+    return () => container.removeEventListener('scroll', handleScroll);
+  }
+}, [data]); // Depend on entire data object
+
 
   const scrollToAbout = () =>
     document.getElementById("about")?.scrollIntoView({ behavior: "smooth" });
@@ -450,203 +477,238 @@ const Home: React.FC = () => {
                 </div>
 
                 {/* Announcements - Right Column (30% width) */}
-                <div className="lg:col-span-3 space-y-4">
-                  <div className="text-center lg:text-left">
-                    <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-accent mb-5">
-                      {data.announcementsHeading || "Latest Announcements"}
-                    </h2>
-                  </div>
+    <div className="lg:col-span-3 space-y-4">
+      <div className="text-center lg:text-left">
+        <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-accent mb-5">
+          {data.announcementsHeading || "Latest Announcements"}
+        </h2>
+      </div>
 
-                  <div className="bg-brand-white rounded-2xl shadow-soft border-soft p-4 h-[600px] overflow-y-auto scrollbar-hide">
-                    {/* WhatsApp Button */}
-                    <div className="mb-4 p-2">
-                      <a
-                        href={data.whatsappLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-full bg-green-600 hover:bg-green-700 text-brand-light font-medium py-2.5 px-4 rounded-xl transition-all duration-300 flex items-center justify-center space-x-2 shadow-soft hover:shadow-lg hover:scale-105 text-xs md:text-sm"
-                      >
-                        <svg
-                          className="w-4 h-4"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488" />
-                        </svg>
-                        <span>Join WhatsApp Group</span>
-                      </a>
-                    </div>
+      <div className="relative">
+        <div 
+          ref={scrollContainerRef}
+          className="bg-brand-white rounded-2xl shadow-soft border-soft p-4 h-[600px] overflow-y-auto scrollbar-hide"
+        >
+          {/* WhatsApp Button */}
+          <div className="mb-4 p-2">
+            <a
+              href={data.whatsappLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full bg-green-600 hover:bg-green-700 text-brand-light font-medium py-2.5 px-4 rounded-xl transition-all duration-300 flex items-center justify-center space-x-2 shadow-soft hover:shadow-lg hover:scale-105 text-xs md:text-sm"
+            >
+              <svg
+                className="w-4 h-4"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488" />
+              </svg>
+              <span>Join WhatsApp Group</span>
+            </a>
+          </div>
 
-                    {data.announcements &&
-                    Array.isArray(data.announcements) &&
-                    data.announcements.length > 0 ? (
-                      <div className="space-y-3">
-                        {data.announcements.map(
-                          (announcement: any, index: number) => (
-                            <div
-                              key={index}
-                              className="bg-brand-light rounded-xl p-3 shadow-soft border-soft hover:shadow-lg transition-all duration-300 hover:scale-105"
-                            >
-                              <h3 className="text-sm md:text-base font-semibold text-accent mb-2 leading-tight">
-                                {announcement.title ||
-                                  announcement.Title ||
-                                  `Announcement ${index + 1}`}
-                              </h3>
-                              <p className="text-xs md:text-sm text-brand-dark leading-relaxed text-justify">
-                                {announcement.content ||
-                                  announcement.Content ||
-                                  announcement.description ||
-                                  announcement.Description ||
-                                  "No content available"}
-                              </p>
-                            </div>
-                          )
-                        )}
-                      </div>
-                    ) : (
-                      <div className="flex flex-col items-center justify-center h-full">
-                        <div className="text-center mb-6">
-                          <div className="w-12 md:w-16 h-12 md:h-16 mx-auto mb-4 bg-accent/10 rounded-full flex items-center justify-center">
-                            <svg
-                              className="w-6 md:w-8 h-6 md:h-8 text-accent"
-                              fill="currentColor"
-                              viewBox="0 0 20 20"
-                            >
-                              <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                          </div>
-                          <h3 className="text-sm md:text-base font-medium text-accent mb-2">
-                            No Announcements
-                          </h3>
-                          <p className="text-xs md:text-sm text-brand-dark text-justify">
-                            Check back later for updates.
-                          </p>
-                        </div>
-                      </div>
-                    )}
+          {data.announcements &&
+          Array.isArray(data.announcements) &&
+          data.announcements.length > 0 ? (
+            <div className="space-y-3">
+              {data.announcements.map(
+                (announcement: any, index: number) => (
+                  <div
+                    key={index}
+                    className="bg-brand-light rounded-xl p-3 shadow-soft border-soft hover:shadow-lg transition-all duration-300 hover:scale-105"
+                  >
+                    <h3 className="text-sm md:text-base font-semibold text-accent mb-2 leading-tight">
+                      {announcement.title ||
+                        announcement.Title ||
+                        `Announcement ${index + 1}`}
+                    </h3>
+                    <p className="text-xs md:text-sm text-brand-dark leading-relaxed text-justify">
+                      {announcement.content ||
+                        announcement.Content ||
+                        announcement.description ||
+                        announcement.Description ||
+                        "No content available"}
+                    </p>
                   </div>
+                )
+              )}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center h-full">
+              <div className="text-center mb-6">
+                <div className="w-12 md:w-16 h-12 md:h-16 mx-auto mb-4 bg-accent/10 rounded-full flex items-center justify-center">
+                  <svg
+                    className="w-6 md:w-8 h-6 md:h-8 text-accent"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
                 </div>
+                <h3 className="text-sm md:text-base font-medium text-accent mb-2">
+                  No Announcements
+                </h3>
+                <p className="text-xs md:text-sm text-brand-dark text-justify">
+                  Check back later for updates.
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+
+    {/* Scroll Indicator */}
+    {showScrollIndicator && (
+      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-10">
+        <div className="bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-lg border border-gray-200/50 animate-bounce">
+          <svg 
+            className="w-4 h-4 text-accent" 
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              strokeWidth={2} 
+              d="M19 14l-7 7m0 0l-7-7m7 7V3" 
+            />
+          </svg>
+        </div>
+      </div>
+    )}
+  </div>
+</div>
+
               </div>
             </div>
           </section>
 
           {/* Feedback */}
-          <section id="feedback" className="bg-brand-light py-12 md:py-16">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
-                <div className="text-center md:text-left">
-                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-accent mb-4 md:mb-6">
-                    {data.feedbackHeading || ""}
-                  </h2>
-                  <p className="text-base md:text-lg text-brand-dark leading-relaxed text-justify">
-                    {data.feedbackSubHeading || ""}
-                  </p>
-                </div>
+          <section id="feedback" className="bg-brand-light py-12 md:py-16 overflow-x-hidden">
+  <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+    <div className="grid md:grid-cols-2 gap-6 md:gap-8 lg:gap-12 items-center">
+      <div className="text-center md:text-left px-2 sm:px-0">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-accent mb-4 md:mb-6">
+          {data.feedbackHeading || ""}
+        </h2>
+        <p className="text-base md:text-lg text-brand-dark leading-relaxed text-justify">
+          {data.feedbackSubHeading || ""}
+        </p>
+      </div>
 
-                <div className="bg-brand-white p-6 md:p-8 rounded-2xl shadow-soft">
-                  <form
-                    onSubmit={handleFeedbackSubmit}
-                    className="space-y-4 md:space-y-6"
-                  >
-                    <input
-                      type="text"
-                      name="name"
-                      placeholder="Your Name*"
-                      required
-                      className="w-full border-soft rounded-xl px-4 md:px-6 py-3 md:py-4 text-sm md:text-base text-brand-dark bg-brand-light focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all duration-300 shadow-soft"
-                    />
-                    <input
-                      type="email"
-                      name="email"
-                      placeholder="Your Email*"
-                      required
-                      className="w-full border-soft rounded-xl px-4 md:px-6 py-3 md:py-4 text-sm md:text-base text-brand-dark bg-brand-light focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all duration-300 shadow-soft"
-                    />
-                    <select
-                      name="category"
-                      required
-                      className="w-full border-soft rounded-xl px-4 md:px-6 py-3 md:py-4 text-sm md:text-base text-brand-dark bg-brand-light focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all duration-300 shadow-soft"
-                    >
-                      <option value="">--Please choose an option--</option>
-                      <option>Any</option>
-                      <option>Religious</option>
-                      <option>Cultural</option>
-                      <option>Education</option>
-                      <option>Facilities</option>
-                      <option>Technology</option>
-                      <option>Rental</option>
-                      <option>Public Relation</option>
-                      <option>Finance</option>
-                      <option>Kitchen</option>
-                      <option>Library</option>
-                      <option>Other</option>
-                    </select>
-                    <textarea
-                      name="message"
-                      placeholder="Your Message*"
-                      rows={4}
-                      required
-                      className="w-full border-soft rounded-xl px-4 md:px-6 py-3 md:py-4 text-sm md:text-base text-brand-dark bg-brand-light focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all duration-300 shadow-soft resize-none"
-                    ></textarea>
-                    <div></div>
-                    <ReCAPTCHA
+      <div className="bg-brand-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-soft mx-2 sm:mx-0">
+        <form
+          onSubmit={handleFeedbackSubmit}
+          className="space-y-4 md:space-y-6"
+        >
+          <input
+            type="text"
+            name="name"
+            placeholder="Your Name*"
+            required
+            className="w-full border-soft rounded-xl px-3 sm:px-4 md:px-6 py-3 md:py-4 text-sm md:text-base text-brand-dark bg-brand-light focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all duration-300 shadow-soft"
+          />
+          <input
+            type="email"
+            name="email"
+            placeholder="Your Email*"
+            required
+            className="w-full border-soft rounded-xl px-3 sm:px-4 md:px-6 py-3 md:py-4 text-sm md:text-base text-brand-dark bg-brand-light focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all duration-300 shadow-soft"
+          />
+          <select
+            name="category"
+            required
+            className="w-full border-soft rounded-xl px-3 sm:px-4 md:px-6 py-3 md:py-4 text-sm md:text-base text-brand-dark bg-brand-light focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all duration-300 shadow-soft"
+          >
+            <option value="">--Please choose an option--</option>
+            <option>Any</option>
+            <option>Religious</option>
+            <option>Cultural</option>
+            <option>Education</option>
+            <option>Facilities</option>
+            <option>Technology</option>
+            <option>Rental</option>
+            <option>Public Relation</option>
+            <option>Finance</option>
+            <option>Kitchen</option>
+            <option>Library</option>
+            <option>Other</option>
+          </select>
+          <textarea
+            name="message"
+            placeholder="Your Message*"
+            rows={4}
+            required
+            className="w-full border-soft rounded-xl px-3 sm:px-4 md:px-6 py-3 md:py-4 text-sm md:text-base text-brand-dark bg-brand-light focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all duration-300 shadow-soft resize-none"
+          ></textarea>
+          
+          {/* Enhanced ReCAPTCHA container */}
+          <div className="flex justify-center items-center w-full overflow-x-auto">
+            <div className="transform scale-90 sm:scale-100 origin-center">
+              <ReCAPTCHA
                 sitekey={siteKey}
                 onChange={onCaptchaChange}
                 ref={recaptchaRef}
                 theme="light"
               />
-                    <button
-                      type="submit"
-                      disabled={
-                        feedbackStatus === "submitting" ||
-                        feedbackStatus === "submitted"
-                      }
-                      className="w-full btn-primary text-sm md:text-lg py-3 md:py-4 rounded-xl"
-                    >
-                      {feedbackStatus === "submitting"
-                        ? "Submitting..."
-                        : feedbackStatus === "submitted"
-                        ? "Submitted"
-                        : "Send Message"}
-                    </button>
-                  </form>
-                </div>
-              </div>
             </div>
-          </section>
+          </div>
+          
+          <button
+            type="submit"
+            disabled={
+              feedbackStatus === "submitting" ||
+              feedbackStatus === "submitted"
+            }
+            className="w-full btn-primary text-sm md:text-lg py-3 md:py-4 rounded-xl"
+          >
+            {feedbackStatus === "submitting"
+              ? "Submitting..."
+              : feedbackStatus === "submitted"
+              ? "Submitted"
+              : "Send Message"}
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
 
           {/* CTA */}
-          <section className="py-12 md:py-16 bg-brand-white text-brand-light relative overflow-hidden">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-6 md:mb-8 text-accent">
-                {data.ctaHeading || ""}
-              </h2>
-              <p className="text-base sm:text-lg md:text-xl lg:text-2xl mb-8 md:mb-12 opacity-90 font-light max-w-3xl mx-auto text-justify text-gray-700">
-                {data.ctaTagline || ""}
-              </p>
+         <section className="py-12 md:py-16 bg-brand-white text-brand-light relative overflow-hidden">
+  <div className="container mx-auto px-4 sm:px-6 text-center relative z-10">
+    <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-6 md:mb-8 text-accent">
+      {data.ctaHeading || ""}
+    </h2>
+    <p className="text-base sm:text-lg md:text-xl lg:text-2xl mb-8 md:mb-12 opacity-90 font-light max-w-3xl mx-auto text-center text-gray-700">
+      {data.ctaTagline || ""}
+    </p>
 
-              <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center">
-                <a
-                  href="/events"
-                  className="bg-transparent border-2 border-[#EA580C] text-[#EA580C] px-6 md:px-10 py-3 md:py-4 rounded-xl font-semibold transition-all duration-300 hover:bg-[#EA580C] hover:text-white hover:scale-105 shadow-[0_2px_4px_rgba(0,0,0,0.06)] text-sm md:text-lg"
-                >
-                  View Events
-                </a>
-                <a
-                  href="/membership"
-                  className="bg-[#EA580C] text-white px-6 md:px-10 py-3 md:py-4 rounded-xl font-semibold transition-all duration-300 hover:bg-[#B45309] hover:scale-105 shadow-[0_2px_4px_rgba(0,0,0,0.06)] text-sm md:text-lg"
-                >
-                  Become a Member
-                </a>
-                <button
-                  onClick={() => setShowMailingModal(true)}
-                  className="bg-transparent border-2 border-[#EA580C] text-[#EA580C] px-6 md:px-10 py-3 md:py-4 rounded-xl font-semibold transition-all duration-300 hover:bg-[#EA580C] hover:text-white hover:scale-105 shadow-[0_2px_4px_rgba(0,0,0,0.06)] text-sm md:text-lg"
-                >
-                  Join Mailing List
-                </button>
-              </div>
-            </div>
-          </section>
+    <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center items-center sm:max-w-3xl mx-auto">
+      <a
+        href="/events"
+        className="w-full sm:w-auto bg-transparent border-2 border-[#EA580C] text-[#EA580C] px-6 md:px-10 py-3 md:py-4 rounded-xl font-semibold transition-all duration-300 hover:bg-[#EA580C] hover:text-white hover:scale-105 shadow-[0_2px_4px_rgba(0,0,0,0.06)] text-sm md:text-lg text-center min-w-[180px]"
+      >
+        View Events
+      </a>
+      <a
+        href="/membership"
+        className="w-full sm:w-auto bg-[#EA580C] text-white px-6 md:px-10 py-3 md:py-4 rounded-xl font-semibold transition-all duration-300 hover:bg-[#B45309] hover:scale-105 shadow-[0_2px_4px_rgba(0,0,0,0.06)] text-sm md:text-lg text-center min-w-[180px]"
+      >
+        Become a Member
+      </a>
+      <button
+        onClick={() => setShowMailingModal(true)}
+        className="w-full sm:w-auto bg-transparent border-2 border-[#EA580C] text-[#EA580C] px-6 md:px-10 py-3 md:py-4 rounded-xl font-semibold transition-all duration-300 hover:bg-[#EA580C] hover:text-white hover:scale-105 shadow-[0_2px_4px_rgba(0,0,0,0.06)] text-sm md:text-lg text-center min-w-[180px]"
+      >
+        Join Mailing List
+      </button>
+    </div>
+  </div>
+</section>
+
 
           {/* Enhanced Modal */}
           {showMailingModal && (

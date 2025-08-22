@@ -236,7 +236,7 @@ const ContactCard = ({
 }) => (
   <div className="bg-brand-white p-6 rounded-xl shadow-soft text-center border-soft space-y-1 break-words">
     <Icon className="w-8 h-8 mx-auto text-accent mb-2" />
-    <h3 className="font-semibold text-xl">{label}</h3>
+    <h3 className="font-semibold text-xl ">{label}</h3>
     <p className="text-lg">{value}</p>
   </div>
 );

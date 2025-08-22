@@ -59,11 +59,11 @@ const MailingListForm = () => {
   return (
     <section className="bg-orange-50 py-16 px-4 rounded-xl shadow-lg">
       <div className="max-w-5xl mx-auto text-center">
-        <h2 className="text-3xl font-bold text-gray-800 mb-3">Join our Mailing List</h2>
-        <p className="text-gray-600 mb-8">
+        <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-3">Join our Mailing List</h2>
+        <p className="text-sm sm:text-md text-gray-600 mb-8">
           Join the Jain Center mailing list to receive updates on local events, ongoing activities, spiritual sayings, and news.
         </p>
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-4 gap-4 items-center">
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-4 gap-4 items-center text-md sm:text-lg">
           <input
             type="email"
             name="email"

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, Grid, List } from 'lucide-react';
 import Image from 'next/image';
 
 const GOOGLE_SHEET_API =
@@ -36,7 +36,7 @@ interface ApiResponse {
   error?: string;
 }
 
- const Loading = () => (
+const Loading = () => (
   <div className="min-h-screen bg-brand-light flex items-center justify-center">
     <div className="text-center px-4">
       <div className="relative">
@@ -72,6 +72,7 @@ const Gallery: React.FC = () => {
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid'); // New state for view mode
 
   useEffect(() => {
     setLoading(true);
@@ -132,9 +133,7 @@ const Gallery: React.FC = () => {
     : null;
 
   if (loading) {
-    return (
-      <Loading />
-    );
+    return <Loading />;
   }
 
   if (error) {
@@ -156,33 +155,50 @@ const Gallery: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-brand-lightpt-[8vh] sm:pt-[12vh]">
-      {/* Hero */}
+    <div className="min-h-screen bg-brand-light pt-[8vh] sm:pt-[12vh]">
+      {/* Hero - Mobile Optimized */}
       <section className="relative flex items-center justify-center
-                                    h-40 sm:h-48 md:h-56 lg:h-60 overflow-hidden">
-                  <Image
-                    src="/images/hero-banner.jpg"
-                    alt="Pathshala Program"
-                    fill
-                    priority
-                    quality={85}
-                    className="object-cover"
-                  />
-                  <div className="relative z-10 text-center px-4">
-                    <h1 className="font-bold text-brand-light text-3xl sm:text-4xl md:text-5xl">
-                      Media
-                    </h1>
-                    <p className="mt-2 max-w-4xl mx-auto text-white text-sm sm:text-base md:text-lg text-center">
-                     View blessed moments, religious ceremonies, and inspirational content from our Jain community
-                    </p>
-                  </div>
-                </section>
-      
+                          h-32 sm:h-40 md:h-48 lg:h-60 overflow-hidden">
+        <Image
+          src="/images/hero-banner.jpg"
+          alt="Gallery"
+          fill
+          priority
+          quality={85}
+          className="object-cover"
+        />
+        <div className="relative z-10 text-center px-4">
+          <h1 className="font-bold text-brand-light text-xl sm:text-3xl md:text-4xl lg:text-5xl">
+            Media Gallery
+          </h1>
+          <p className="mt-2 max-w-4xl mx-auto text-white text-xs sm:text-sm md:text-base lg:text-lg text-center">
+            View blessed moments, religious ceremonies, and inspirational content from our Jain community
+          </p>
+        </div>
+      </section>
 
-      {/* Category Filter */}
-      <section className="py-12 bg-brand-white">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="flex flex-wrap justify-center gap-4">
+      {/* Mobile-Optimized Category Filter */}
+      <section className="py-6 md:py-12 bg-brand-white">
+        <div className="max-w-6xl mx-auto px-3 md:px-4">
+          {/* Mobile: Horizontal scroll for categories */}
+          <div className="flex md:hidden overflow-x-auto gap-3 pb-2 scrollbar-hide">
+            {categories.map(cat => (
+              <button
+                key={cat.id}
+                onClick={() => setSelectedCategory(cat.id)}
+                className={`px-4 py-2 rounded-full font-medium transition-all duration-300 text-xs whitespace-nowrap flex-shrink-0 ${
+                  selectedCategory === cat.id
+                    ? 'bg-accent text-brand-light shadow-soft'
+                    : 'bg-brand-light text-brand-dark hover:bg-accent/10 hover:text-accent border border-accent/20'
+                }`}
+              >
+                {cat.name} ({cat.count})
+              </button>
+            ))}
+          </div>
+          
+          {/* Desktop: Centered flex wrap */}
+          <div className="hidden md:flex flex-wrap justify-center gap-4">
             {categories.map(cat => (
               <button
                 key={cat.id}
@@ -200,74 +216,174 @@ const Gallery: React.FC = () => {
         </div>
       </section>
 
-      {/* Image Grid */}
-      <section className="py-16 bg-brand-light">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {filteredImages.length === 0 ? (
-              <div className="col-span-full text-center py-12">
-                <p className="text-brand-dark/60 text-lg">No images found for this category.</p>
-              </div>
-            ) : (
-              filteredImages.map(image => (
-                <div
-                  key={image.ID}
-                  className="group cursor-pointer rounded-xl shadow-soft bg-brand-white overflow-hidden 
-                             transition-all duration-300 hover:shadow-lg hover:scale-105 relative h-64"
-                  onClick={() => openLightbox(Number(image.ID))}
-                >
-                  {image.ImageURL && (
-                    <div className="relative w-full h-full">
-                      <Image
-                        src={image.ImageURL.trim()}
-                        alt={image.Title || 'Gallery image'}
-                        fill
-                        className="object-cover"
-                        onError={() => console.error('Failed to load image:', image.ImageURL)}
-                      />
-                    </div>
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent 
-                                  opacity-0 group-hover:opacity-100 transition-opacity duration-300 
-                                  flex items-end justify-center p-4">
-                    <div className="text-brand-light text-center">
-                      <h3 className="font-semibold text-base mb-1">{image.Title}</h3>
-                      <p className="text-xs text-brand-light/80">{image.Description}</p>
-                    </div>
-                  </div>
-                </div>
-              ))
-            )}
+      {/* View Mode Toggle - Mobile Only */}
+      <section className="md:hidden py-3 bg-brand-white border-t border-accent/10">
+        <div className="max-w-6xl mx-auto px-3">
+          <div className="flex justify-center gap-2">
+            <button
+              onClick={() => setViewMode('grid')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-medium transition-all ${
+                viewMode === 'grid'
+                  ? 'bg-accent text-white'
+                  : 'bg-brand-light text-brand-dark hover:bg-accent/10'
+              }`}
+            >
+              <Grid size={14} />
+              Grid
+            </button>
+            <button
+              onClick={() => setViewMode('list')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-medium transition-all ${
+                viewMode === 'list'
+                  ? 'bg-accent text-white'
+                  : 'bg-brand-light text-brand-dark hover:bg-accent/10'
+              }`}
+            >
+              <List size={14} />
+              List
+            </button>
           </div>
         </div>
       </section>
 
-      {/* Lightbox */}
+      {/* Enhanced Image Grid/List */}
+      <section className="py-8 md:py-16 bg-brand-light">
+        <div className="max-w-7xl mx-auto px-3 md:px-4">
+          {filteredImages.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-brand-dark/60 text-base md:text-lg">No images found for this category.</p>
+            </div>
+          ) : (
+            <>
+              {/* Mobile Grid View - Smaller images */}
+              <div className={`md:hidden ${viewMode === 'grid' ? 'block' : 'hidden'}`}>
+                <div className="grid grid-cols-2 gap-3">
+                  {filteredImages.map(image => (
+                    <div
+                      key={image.ID}
+                      className="group cursor-pointer rounded-lg shadow-soft bg-brand-white overflow-hidden 
+                                 transition-all duration-300 hover:shadow-lg relative aspect-square"
+                      onClick={() => openLightbox(Number(image.ID))}
+                    >
+                      {image.ImageURL && (
+                        <div className="relative w-full h-full">
+                          <Image
+                            src={image.ImageURL.trim()}
+                            alt={image.Title || 'Gallery image'}
+                            fill
+                            className="object-cover"
+                            sizes="(max-width: 768px) 50vw, 25vw"
+                          />
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent 
+                                      opacity-0 group-hover:opacity-100 transition-opacity duration-300 
+                                      flex items-end justify-center p-2">
+                        <div className="text-brand-light text-center">
+                          <h3 className="font-semibold text-xs mb-1 line-clamp-1">{image.Title}</h3>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Mobile List View - More compact */}
+              <div className={`md:hidden ${viewMode === 'list' ? 'block' : 'hidden'}`}>
+                <div className="space-y-3">
+                  {filteredImages.map(image => (
+                    <div
+                      key={image.ID}
+                      className="group cursor-pointer rounded-lg shadow-soft bg-brand-white overflow-hidden 
+                                 transition-all duration-300 hover:shadow-lg flex gap-3 p-3"
+                      onClick={() => openLightbox(Number(image.ID))}
+                    >
+                      {image.ImageURL && (
+                        <div className="relative w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden">
+                          <Image
+                            src={image.ImageURL.trim()}
+                            alt={image.Title || 'Gallery image'}
+                            fill
+                            className="object-cover"
+                            sizes="80px"
+                          />
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-sm mb-1 text-brand-dark line-clamp-1">{image.Title}</h3>
+                        <p className="text-xs text-brand-dark/70 line-clamp-2">{image.Description}</p>
+                        <span className="text-xs text-accent font-medium">{image.Category}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Desktop Grid - Original */}
+              <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {filteredImages.map(image => (
+                  <div
+                    key={image.ID}
+                    className="group cursor-pointer rounded-xl shadow-soft bg-brand-white overflow-hidden 
+                               transition-all duration-300 hover:shadow-lg hover:scale-105 relative h-64"
+                    onClick={() => openLightbox(Number(image.ID))}
+                  >
+                    {image.ImageURL && (
+                      <div className="relative w-full h-full">
+                        <Image
+                          src={image.ImageURL.trim()}
+                          alt={image.Title || 'Gallery image'}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 1024px) 33vw, 25vw"
+                        />
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent 
+                                    opacity-0 group-hover:opacity-100 transition-opacity duration-300 
+                                    flex items-end justify-center p-4">
+                      <div className="text-brand-light text-center">
+                        <h3 className="font-semibold text-base mb-1">{image.Title}</h3>
+                        <p className="text-xs text-brand-light/80">{image.Description}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+      </section>
+
+      {/* Enhanced Mobile-Friendly Lightbox */}
       {selectedImageData && (
-        <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center">
+          {/* Mobile: Simplified controls */}
           <button 
             onClick={closeLightbox} 
             className="absolute top-4 right-4 text-brand-light hover:text-accent z-10 p-2 
                        bg-black/50 rounded-full backdrop-blur-sm transition-colors"
           >
-            <X size={32} />
-          </button>
-          <button 
-            onClick={() => navigateImage('prev')} 
-            className="absolute left-4 text-brand-light hover:text-accent z-10 p-2 
-                       bg-black/50 rounded-full backdrop-blur-sm transition-colors"
-          >
-            <ChevronLeft size={32} />
-          </button>
-          <button 
-            onClick={() => navigateImage('next')} 
-            className="absolute right-4 text-brand-light hover:text-accent z-10 p-2 
-                       bg-black/50 rounded-full backdrop-blur-sm transition-colors"
-          >
-            <ChevronRight size={32} />
+            <X size={24} className="md:w-8 md:h-8" />
           </button>
           
-          <div className="relative max-w-4xl max-h-[80vh] w-full h-full">
+          <button 
+            onClick={() => navigateImage('prev')} 
+            className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 text-brand-light hover:text-accent z-10 p-2 
+                       bg-black/50 rounded-full backdrop-blur-sm transition-colors"
+          >
+            <ChevronLeft size={24} className="md:w-8 md:h-8" />
+          </button>
+          
+          <button 
+            onClick={() => navigateImage('next')} 
+            className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 text-brand-light hover:text-accent z-10 p-2 
+                       bg-black/50 rounded-full backdrop-blur-sm transition-colors"
+          >
+            <ChevronRight size={24} className="md:w-8 md:h-8" />
+          </button>
+          
+          <div className="relative max-w-4xl max-h-[70vh] md:max-h-[80vh] w-full h-full px-4 md:px-0">
             {selectedImageData.ImageURL && (
               <Image
                 src={selectedImageData.ImageURL.trim()}
@@ -278,20 +394,21 @@ const Gallery: React.FC = () => {
             )}
           </div>
           
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/50 to-transparent p-6 text-brand-light">
-            <h3 className="text-2xl font-bold mb-2">{selectedImageData.Title}</h3>
-            <p className="text-brand-light/80">{selectedImageData.Description}</p>
+          {/* Mobile-optimized info panel */}
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/80 to-transparent p-4 md:p-6 text-brand-light">
+            <h3 className="text-lg md:text-2xl font-bold mb-1 md:mb-2 line-clamp-1">{selectedImageData.Title}</h3>
+            <p className="text-brand-light/80 text-sm md:text-base line-clamp-2">{selectedImageData.Description}</p>
           </div>
         </div>
       )}
 
-      {/* Featured Albums */}
-      <section className="py-16 bg-brand-white">
-        <div className="max-w-7xl mx-auto px-4">
-          <h2 className="text-accent font-bold text-2xl sm:text-3xl md:text-4xl mb-12 text-center">
+      {/* Mobile-Optimized Featured Albums */}
+      <section className="py-8 md:py-16 bg-brand-white">
+        <div className="max-w-7xl mx-auto px-3 md:px-4">
+          <h2 className="text-accent font-bold text-xl sm:text-2xl md:text-3xl lg:text-4xl mb-6 md:mb-12 text-center">
             Featured Albums
           </h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
             {albums.map(album => (
               <div
                 key={album.AlbumID}
@@ -299,7 +416,7 @@ const Gallery: React.FC = () => {
                            transition-all duration-300 hover:scale-105 border border-accent/10"
               >
                 {album.AlbumThumbnailURL && (
-                  <div className="relative h-48 w-full">
+                  <div className="relative h-36 md:h-48 w-full">
                     <Image
                       src={album.AlbumThumbnailURL.trim()}
                       alt={album.AlbumTitle || 'Album thumbnail'}
@@ -308,13 +425,13 @@ const Gallery: React.FC = () => {
                     />
                   </div>
                 )}
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold mb-2 text-brand-dark">{album.AlbumTitle}</h3>
-                  <p className="text-brand-dark/80 mb-4 ">{album.AlbumDescription}</p>
+                <div className="p-4 md:p-6">
+                  <h3 className="text-lg md:text-xl font-semibold mb-2 text-brand-dark line-clamp-1">{album.AlbumTitle}</h3>
+                  <p className="text-brand-dark/80 mb-4 text-sm md:text-base line-clamp-2">{album.AlbumDescription}</p>
                   <button
                     onClick={() => window.open(album.AlbumURL, '_blank')}
                     className="text-accent hover:text-accent-hov font-medium transition-colors 
-                               flex items-center gap-2 group"
+                               flex items-center gap-2 group text-sm md:text-base"
                   >
                     View Album 
                     <span className="group-hover:translate-x-1 transition-transform">→</span>

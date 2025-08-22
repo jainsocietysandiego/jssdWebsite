@@ -142,16 +142,16 @@ const PoliciesPage: React.FC = () => {
                     className="object-cover"
                   />
                   <div className="relative z-10 text-center px-4">
-                    <h1 className="font-bold text-brand-light text-3xl sm:text-4xl md:text-5xl">
+                    <h1 className="font-bold text-brand-light text-2xl sm:text-4xl md:text-5xl">
                       {data.heading}
                     </h1>
-                    <p className="mt-2 max-w-5xl mx-auto text-white text-sm sm:text-base md:text-lg text-center">
+                    <p className="mt-2 max-w-5xl mx-auto text-white text-xs sm:text-base md:text-lg text-center">
                       {data.description}
                     </p>
                   </div>
                 </section>
 
-      <section className="py-16 md:py-20 bg-brand-white">
+      <section className="py-10 md:py-20 bg-brand-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 

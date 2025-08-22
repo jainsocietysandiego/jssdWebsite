@@ -233,22 +233,17 @@ const Navbar: React.FC = () => {
       <div className="mx-auto px-4 sm:px-6 lg:px-8 ">
         <div className="flex justify-between items-center h-[8vh] sm:h-[12vh]">
           {/* Logo */}
-          <Link href="/" className="flex items-center text-2xl font-bold text-orange-600 hover:text-orange-700">
-            <Image
-  src="/logo3.png"
-  alt="JSSD Logo"
-  width={150}
-  height={50}
-  className="w-auto transition-all duration-200"
-  priority
-  style={{ 
-    height: 'clamp(6vh, 7vh, 10vh)',
-    maxHeight: '80%'
-  }}
-/>
+         <Link href="/" className="flex items-center text-2xl font-bold text-orange-600 hover:text-orange-700">
+  <Image
+    src="/logo3.png"
+    alt="JSSD Logo"
+    width={150}
+    height={50}
+    className="w-auto transition-all duration-200 h-[clamp(4vh,5vh,7vh)] sm:h-[clamp(6vh,7vh,10vh)]"
+    priority
+  />
+</Link>
 
-
-          </Link>
 
           {/* Desktop Nav - Improved spacing */}
           <div className="hidden md:flex flex-1 justify-end">
